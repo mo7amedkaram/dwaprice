@@ -1,0 +1,35 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs?limit=500&dosage_form=pill",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 400,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "44",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49924",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "error": {
+      "code": "validation_error",
+      "message": "dosage_form: must be one of tablet, capsule, injection, syrup, suspension, drops, sachet, cream, ointment, gel, lotion, solution, spray, powder, inhaler, suppository, other; limit: must be between 1 and 100",
+      "details": [
+        {
+          "param": "dosage_form",
+          "issue": "must be one of tablet, capsule, injection, syrup, suspension, drops, sachet, cream, ointment, gel, lotion, solution, spray, powder, inhaler, suppository, other"
+        },
+        {
+          "param": "limit",
+          "issue": "must be between 1 and 100"
+        }
+      ]
+    }
+  }
+}

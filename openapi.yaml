@@ -1,0 +1,1329 @@
+openapi: 3.1.0
+info:
+  title: Dwaprice Drug Prices API
+  version: 1.0.0
+  summary: Egyptian drug prices, alternatives, price history and a change feed.
+  description: |
+    Public prices of medicines in Egypt (14,700+ products, one record per product and pack),
+    with normalised companies, ingredients, categories, ATC codes, barcodes, alternatives,
+    price history and a delta feed (`/price-changes`) for POS and ERP synchronisation.
+
+    * JSON, UTF-8, snake_case. Numbers are numbers; unknown values are `null`, never `""`.
+    * Dates are ISO 8601 (`YYYY-MM-DD`); timestamps are UTC (`YYYY-MM-DDTHH:MM:SSZ`).
+    * Authentication: `Authorization: Bearer dp_live_…`. The `/sample/*` endpoints need no key and
+      return a fixed set of about 50 drugs, marked `"sample": true`.
+    * Breaking changes only in `/v2`. Clients must ignore unknown fields and enum values.
+
+    Full guide: https://dwaprice.com/api/docs
+  termsOfService: https://dwaprice.com/api/terms
+  contact:
+    name: Dwaprice API support
+    url: https://dwaprice.com/api/request-access
+    email: api@dwaprice.com
+  license:
+    name: Dwaprice API License (no resale or redistribution of the dataset)
+    url: https://dwaprice.com/api/terms
+
+servers:
+  - url: https://api.dwaprice.com/v1
+    description: Production (canonical)
+  - url: https://dwaprice.com/api/v1
+    description: Production (same handlers, website host)
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Drugs
+    description: Products, lookups, alternatives and price history.
+  - name: Changes
+    description: The delta feed for incremental synchronisation.
+  - name: Reference
+    description: Companies and active ingredients.
+  - name: Meta
+    description: Dataset version and counts.
+  - name: Sample
+    description: Free, keyless access to a fixed sample of about 50 drugs. Same shapes as the real endpoints.
+  - name: Enterprise
+    description: Bulk export and webhooks (Enterprise plan).
+
+paths:
+  /drugs:
+    get:
+      tags: [Drugs]
+      operationId: listDrugs
+      summary: List or search drugs
+      description: |
+        Without `q`: the catalogue, filtered and sorted (keyset cursor, stable across updates).
+        With `q`: typo-tolerant search over Arabic and English trade names, approved aliases and
+        spelling variants, active ingredients and barcodes; ranked, at most 1,000 results.
+      parameters:
+        - $ref: '#/components/parameters/q'
+        - name: company
+          in: query
+          description: Company id (see `/companies`).
+          schema: { type: string, examples: [sigma] }
+        - name: ingredient
+          in: query
+          description: Ingredient id (see `/ingredients`); products containing it.
+          schema: { type: string, examples: [paracetamol] }
+        - name: atc
+          in: query
+          description: ATC code prefix, matched against product-level and ingredient-level codes (`J01` matches `J01CR02`).
+          schema: { type: string, pattern: '^[A-Za-z](\d{2}([A-Za-z]([A-Za-z](\d{2})?)?)?)?$', examples: [N02BE] }
+        - name: dosage_form
+          in: query
+          schema: { $ref: '#/components/schemas/DosageFormClass' }
+        - name: route
+          in: query
+          schema: { $ref: '#/components/schemas/RouteClass' }
+        - name: prescription_status
+          in: query
+          schema: { $ref: '#/components/schemas/PrescriptionStatus' }
+        - name: status
+          in: query
+          description: Default is all statuses.
+          schema: { $ref: '#/components/schemas/ListingStatus' }
+        - name: has_barcode
+          in: query
+          schema: { type: boolean }
+        - name: updated_since
+          in: query
+          description: Records whose `updated_at` is after this timestamp (any field change). For price changes alone use `/price-changes`.
+          schema: { type: string, format: date-time }
+        - name: sort
+          in: query
+          description: Ignored when `q` is given (results are ranked by relevance).
+          schema:
+            type: string
+            enum: [name, price, -price, updated_at, -updated_at]
+            default: name
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: A page of drugs.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DrugList' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /drugs/{id}:
+    get:
+      tags: [Drugs]
+      operationId: getDrug
+      summary: One drug by id
+      parameters:
+        - $ref: '#/components/parameters/drugId'
+      responses:
+        '200':
+          description: The drug.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DrugResponse' }
+        '301':
+          description: The id was retired (product renamed in the source list). `Location` points at the current id.
+          headers:
+            Location:
+              schema: { type: string, examples: ['/v1/drugs/congestal-20-tabs'] }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              examples:
+                moved:
+                  value: { error: { code: moved, message: 'This id was replaced by congestal-20-tabs', details: { new_id: congestal-20-tabs } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /drugs/by-barcode/{barcode}:
+    get:
+      tags: [Drugs]
+      operationId: getDrugsByBarcode
+      summary: Drugs by barcode
+      description: |
+        Returns a **list**: in the source price lists 73 barcodes are shared by more than one pack
+        (e.g. two pack sizes of one product). Ordered `listed` first, then newest price date. An unknown
+        barcode gives an empty list.
+      parameters:
+        - name: barcode
+          in: path
+          required: true
+          schema: { type: string, pattern: '^\d{8,14}$', examples: ['6221051011317'] }
+      responses:
+        '200':
+          description: Matching drugs (possibly none).
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DrugArrayResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /drugs/{id}/alternatives:
+    get:
+      tags: [Drugs]
+      operationId: listAlternatives
+      summary: Alternatives with the same ingredients
+      description: |
+        Products with the same active ingredients and the same strength, cheapest first (no price
+        last). `strength=any` appends products with the same ingredients at another strength.
+      parameters:
+        - $ref: '#/components/parameters/drugId'
+        - name: strength
+          in: query
+          schema: { type: string, enum: [same, any], default: same }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: Alternatives.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AlternativeList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /drugs/{id}/price-history:
+    get:
+      tags: [Drugs]
+      operationId: getPriceHistory
+      summary: Price history
+      description: Oldest first; the last point is the current price. Consecutive identical prices are collapsed.
+      parameters:
+        - $ref: '#/components/parameters/drugId'
+      responses:
+        '200':
+          description: Price points.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PriceHistoryResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /price-changes:
+    get:
+      tags: [Changes]
+      operationId: listPriceChanges
+      summary: Delta feed of changes since a time
+      description: |
+        Append-only events ordered by `id`: `price_changed`, `added`, `status_changed`, `removed`,
+        `renamed`. Each event carries the current record, so one call updates a local copy.
+        Sync loop: store `latest_detected_at`, call again with it as `since`, page with `cursor`,
+        skip event ids already applied (delivery is at-least-once). `since` older than the plan's
+        feed window → `400 since_too_old` (reload with `/drugs`). Requires scope `changes:read`.
+      parameters:
+        - name: since
+          in: query
+          description: Events with `detected_at` at or after this timestamp (inclusive; skip event ids already applied). Required unless `cursor` is given — a cursor carries the original `since`.
+          schema: { type: string, format: date-time, examples: ['2026-10-21T00:00:00Z'] }
+        - name: type
+          in: query
+          description: Comma-separated event types; default all.
+          schema: { type: string, examples: ['price_changed,status_changed'] }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: A page of events.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PriceChangeList' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /companies:
+    get:
+      tags: [Reference]
+      operationId: listCompanies
+      summary: Companies
+      parameters:
+        - name: q
+          in: query
+          description: Name prefix, case-insensitive.
+          schema: { type: string, minLength: 1, maxLength: 80 }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: Companies sorted by name.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CompanyList' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /ingredients:
+    get:
+      tags: [Reference]
+      operationId: listIngredients
+      summary: Active ingredients
+      parameters:
+        - name: q
+          in: query
+          description: Arabic or English name prefix.
+          schema: { type: string, minLength: 1, maxLength: 80 }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: Ingredients sorted by English name.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IngredientList' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /meta:
+    get:
+      tags: [Meta]
+      operationId: getMeta
+      summary: Dataset version, update time and counts
+      responses:
+        '200':
+          description: Dataset metadata.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            X-Quota-Limit: { $ref: '#/components/headers/X-Quota-Limit' }
+            X-Quota-Remaining: { $ref: '#/components/headers/X-Quota-Remaining' }
+            X-Quota-Reset: { $ref: '#/components/headers/X-Quota-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MetaResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  # ------------------------------------------------------------------ sample (no key)
+  /sample/drugs:
+    get:
+      tags: [Sample]
+      operationId: sampleListDrugs
+      summary: List or search the sample drugs
+      description: Same parameters as `/drugs`; results come only from the fixed sample set. Rate limit per IP (30/min, 300/day).
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/q'
+        - name: company
+          in: query
+          schema: { type: string }
+        - name: ingredient
+          in: query
+          schema: { type: string }
+        - name: atc
+          in: query
+          schema: { type: string }
+        - name: dosage_form
+          in: query
+          schema: { $ref: '#/components/schemas/DosageFormClass' }
+        - name: prescription_status
+          in: query
+          schema: { $ref: '#/components/schemas/PrescriptionStatus' }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [name, price, -price, updated_at, -updated_at], default: name }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: A page of sample drugs.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleDrugList' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/drugs/{id}:
+    get:
+      tags: [Sample]
+      operationId: sampleGetDrug
+      summary: One sample drug
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/drugId'
+      responses:
+        '200':
+          description: The drug.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleDrugResponse' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/drugs/by-barcode/{barcode}:
+    get:
+      tags: [Sample]
+      operationId: sampleGetDrugsByBarcode
+      summary: Sample drugs by barcode
+      security: []
+      parameters:
+        - name: barcode
+          in: path
+          required: true
+          schema: { type: string, pattern: '^\d{8,14}$' }
+      responses:
+        '200':
+          description: Matching sample drugs (possibly none).
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleDrugArrayResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/drugs/{id}/alternatives:
+    get:
+      tags: [Sample]
+      operationId: sampleListAlternatives
+      summary: Alternatives inside the sample set
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/drugId'
+        - name: strength
+          in: query
+          schema: { type: string, enum: [same, any], default: same }
+      responses:
+        '200':
+          description: Alternatives that are themselves sample drugs.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleAlternativeList' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/drugs/{id}/price-history:
+    get:
+      tags: [Sample]
+      operationId: sampleGetPriceHistory
+      summary: Price history of a sample drug
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/drugId'
+      responses:
+        '200':
+          description: Price points.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SamplePriceHistoryResponse' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/price-changes:
+    get:
+      tags: [Sample]
+      operationId: sampleListPriceChanges
+      summary: Delta feed restricted to the sample drugs
+      security: []
+      parameters:
+        - name: since
+          in: query
+          schema: { type: string, format: date-time }
+        - name: type
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: Events for sample drugs only.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SamplePriceChangeList' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/companies:
+    get:
+      tags: [Sample]
+      operationId: sampleListCompanies
+      summary: Companies of the sample drugs
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: Companies.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleCompanyList' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/ingredients:
+    get:
+      tags: [Sample]
+      operationId: sampleListIngredients
+      summary: Ingredients of the sample drugs
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: Ingredients.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleIngredientList' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /sample/meta:
+    get:
+      tags: [Sample]
+      operationId: sampleGetMeta
+      summary: Dataset metadata (counts of the sample set)
+      security: []
+      responses:
+        '200':
+          description: Metadata.
+          headers:
+            X-Sample: { $ref: '#/components/headers/X-Sample' }
+            X-RateLimit-Limit: { $ref: '#/components/headers/X-RateLimit-Limit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/X-RateLimit-Remaining' }
+            X-RateLimit-Reset: { $ref: '#/components/headers/X-RateLimit-Reset' }
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleMetaResponse' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  # ------------------------------------------------------------------ enterprise
+  /exports:
+    post:
+      tags: [Enterprise]
+      operationId: createExport
+      summary: Request a full dataset export (CSV or JSON)
+      description: One export per dataset version is generated and reused. Requires scope `export` (Enterprise plan).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [format]
+              properties:
+                format: { type: string, enum: [csv, json] }
+      responses:
+        '202':
+          description: Export queued (or already ready).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExportResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /exports/{id}:
+    get:
+      tags: [Enterprise]
+      operationId: getExport
+      summary: Export status and signed download URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Export status; `url` is a signed link valid for one hour once `status` is `ready`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExportResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /webhooks:
+    get:
+      tags: [Enterprise]
+      operationId: listWebhooks
+      summary: Registered webhooks
+      responses:
+        '200':
+          description: Webhooks of the client.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Webhook' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [Enterprise]
+      operationId: createWebhook
+      summary: Register a webhook
+      description: |
+        Batches of events are POSTed within 10 minutes of each dataset capture, signed with
+        `X-Dwaprice-Signature: sha256=<HMAC-SHA256 of the raw body with the secret>` and
+        `X-Dwaprice-Delivery: <id>`. Non-2xx answers are retried with exponential back-off for
+        24 hours; then the webhook is paused and the admin alerted. Requires scope `webhooks`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, events]
+              properties:
+                url: { type: string, format: uri }
+                events:
+                  type: array
+                  minItems: 1
+                  items: { $ref: '#/components/schemas/EventType' }
+                secret:
+                  type: string
+                  description: Optional; generated and returned once when omitted.
+      responses:
+        '201':
+          description: Created; `secret` is shown only in this response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Webhook'
+                      - type: object
+                        properties:
+                          secret: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /webhooks/{id}:
+    delete:
+      tags: [Enterprise]
+      operationId: deleteWebhook
+      summary: Delete a webhook
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: Deleted. }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /webhooks/{id}/test:
+    post:
+      tags: [Enterprise]
+      operationId: testWebhook
+      summary: Send a signed test delivery
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: The receiver's status code and latency.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status: { type: integer }
+                      duration_ms: { type: integer }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: 'dp_live_<40 base32 characters>'
+      description: Keys are issued from the developer dashboard. Keep them server-side.
+
+  parameters:
+    drugId:
+      name: id
+      in: path
+      required: true
+      description: Stable public id (the product's URL slug).
+      schema: { type: string, pattern: '^[a-z0-9]+(-[a-z0-9]+)*$', examples: [congestal-20-tabs] }
+    q:
+      name: q
+      in: query
+      description: Search text, 2–80 characters (Arabic or English; typo-tolerant).
+      schema: { type: string, minLength: 2, maxLength: 80, examples: ['كونجستل', 'augmentin 1g', '6221051011317'] }
+    limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    cursor:
+      name: cursor
+      in: query
+      description: Opaque cursor from `page.next_cursor` of the previous response.
+      schema: { type: string, maxLength: 512 }
+
+  headers:
+    X-RateLimit-Limit:
+      description: Requests per minute allowed for this key (or IP on the sample).
+      schema: { type: integer }
+    X-RateLimit-Remaining:
+      description: Requests left in the current minute.
+      schema: { type: integer }
+    X-RateLimit-Reset:
+      description: Unix time (seconds) when the minute window resets.
+      schema: { type: integer }
+    X-Quota-Limit:
+      description: Requests per calendar month (UTC) for this key.
+      schema: { type: integer }
+    X-Quota-Remaining:
+      description: Requests left this month.
+      schema: { type: integer }
+    X-Quota-Reset:
+      description: Unix time of the next monthly reset.
+      schema: { type: integer }
+    X-Sample:
+      description: Always "true" on sample endpoints.
+      schema: { type: string, const: 'true' }
+    ETag:
+      description: Hash of the body; send it back as If-None-Match to get 304.
+      schema: { type: string }
+
+  responses:
+    BadRequest:
+      description: Invalid parameter, cursor or `since`.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            validation:
+              value: { error: { code: validation_error, message: 'limit must be between 1 and 100', details: [{ param: limit, issue: out_of_range }] } }
+            cursor:
+              value: { error: { code: invalid_cursor, message: 'cursor is expired or does not match the filters', details: null } }
+            since:
+              value: { error: { code: since_too_old, message: 'since is outside the 90-day window of your plan; reload with /drugs', details: { window_days: 90 } } }
+    Unauthorized:
+      description: Missing, malformed, unknown, revoked or expired key.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            missing:
+              value: { error: { code: unauthorized, message: 'Authorization header with a Bearer key is required', details: null } }
+    Forbidden:
+      description: Key valid, but the plan, scope or IP does not allow this request.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            plan:
+              value: { error: { code: forbidden, message: 'Bulk export is available on the Enterprise plan', details: { plan: starter, required_scope: export } } }
+            ip:
+              value: { error: { code: ip_not_allowed, message: 'This IP address is not in the allowlist', details: null } }
+    NotFound:
+      description: Unknown id or path.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            drug:
+              value: { error: { code: not_found, message: 'No drug with id "panadol-xyz"', details: null } }
+    TooManyRequests:
+      description: Per-minute limit or monthly quota exceeded; `Retry-After` in seconds.
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            minute:
+              value: { error: { code: rate_limited, message: 'Rate limit of 300 requests per minute exceeded', details: { retry_after: 12 } } }
+            month:
+              value: { error: { code: quota_exceeded, message: 'Monthly quota of 500000 requests exceeded', details: { resets_at: '2026-11-01T00:00:00Z' } } }
+    InternalError:
+      description: Our fault; quote `request_id` to support.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            error:
+              value: { error: { code: internal_error, message: 'Unexpected error', details: { request_id: 'req_01JAZ3M8Y2' } } }
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, details]
+          properties:
+            code:
+              type: string
+              enum: [validation_error, invalid_cursor, since_too_old, unauthorized, forbidden, ip_not_allowed, not_found, moved, rate_limited, quota_exceeded, internal_error, unavailable]
+            message: { type: string }
+            details:
+              description: Structured context (object or array) or null.
+              oneOf:
+                - type: object
+                - type: array
+                  items: { type: object }
+                - type: 'null'
+
+    Page:
+      type: object
+      required: [limit, has_more, next_cursor]
+      properties:
+        limit: { type: integer }
+        has_more: { type: boolean }
+        next_cursor:
+          type: [string, 'null']
+          description: Opaque; pass as `cursor`. Null on the last page.
+
+    Meta:
+      type: object
+      required: [dataset_version, generated_at]
+      properties:
+        dataset_version: { type: string, examples: ['2026-10-21.184'] }
+        generated_at: { type: string, format: date-time }
+
+    DosageFormClass:
+      type: string
+      enum: [tablet, capsule, injection, syrup, suspension, drops, sachet, cream, ointment, gel, lotion, solution, spray, powder, inhaler, suppository, other]
+    RouteClass:
+      type: string
+      enum: [oral, topical, injection, ophthalmic, vaginal, rectal, nasal, inhalation, otic, other]
+    PrescriptionStatus:
+      type: string
+      enum: [prescription, otc, not_applicable]
+    ListingStatus:
+      type: string
+      description: 'The price list''s own marker on the line. `listed` = no marker; it is not a stock indication.'
+      enum: [listed, not_available, not_yet_available, cancelled, illegal_import]
+    EventType:
+      type: string
+      enum: [price_changed, added, status_changed, removed, renamed]
+
+    Ingredient:
+      type: object
+      required: [id, name_en, name_ar, strength, atc_code]
+      properties:
+        id: { type: [string, 'null'], examples: [paracetamol] }
+        name_en: { type: [string, 'null'], examples: ['Paracetamol (acetaminophen)'] }
+        name_ar: { type: [string, 'null'], examples: ['باراسيتامول'] }
+        strength: { type: [string, 'null'], examples: ['650 mg'] }
+        atc_code: { type: [string, 'null'], examples: [N02BE01] }
+
+    Price:
+      type: object
+      required: [current, previous, unit_price, currency, effective_date, updated_at, verified, verified_at]
+      properties:
+        current: { type: [number, 'null'], examples: [50] }
+        previous: { type: [number, 'null'], examples: [31] }
+        unit_price: { type: [number, 'null'], description: 'Price per tablet, capsule, sachet… as listed.', examples: [2.5] }
+        currency: { type: string, const: EGP }
+        effective_date: { type: [string, 'null'], format: date, description: Date of the current price on the price list. }
+        updated_at: { type: [string, 'null'], format: date-time, description: 'When the API recorded the current price (sync key). Null only when there is no price.' }
+        verified: { type: boolean, description: Checked against a published source. }
+        verified_at: { type: [string, 'null'], format: date }
+
+    NamedRef:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, examples: [sigma] }
+        name: { type: string, examples: [Sigma] }
+
+    Category:
+      type: object
+      required: [id, en, ar]
+      properties:
+        id: { type: string, examples: [cold] }
+        en: { type: [string, 'null'], examples: ['Cold/cough combination (analgesic + antihistamine + decongestant)'] }
+        ar: { type: [string, 'null'] }
+
+    DosageForm:
+      type: object
+      required: [class, en, ar]
+      properties:
+        class: { $ref: '#/components/schemas/DosageFormClass' }
+        en: { type: [string, 'null'], examples: [Tablet] }
+        ar: { type: [string, 'null'], examples: ['قرص'] }
+
+    Drug:
+      type: object
+      required:
+        - id
+        - trade_name_en
+        - trade_name_ar
+        - scientific_name
+        - ingredients
+        - strength
+        - dosage_form
+        - route
+        - route_text
+        - units_per_package
+        - packaging
+        - price
+        - barcode
+        - company
+        - manufacturer
+        - category
+        - atc_codes
+        - prescription_status
+        - status
+        - price_list_name
+        - created_at
+        - updated_at
+        - links
+      properties:
+        id: { type: string, description: 'Stable public id (URL slug).', examples: [congestal-20-tabs] }
+        trade_name_en: { type: string, examples: ['Congestal 20 tabs'] }
+        trade_name_ar: { type: [string, 'null'], examples: ['كونجستال 20 قرص'] }
+        scientific_name: { type: [string, 'null'], examples: ['Chlorpheniramine+paracetamol(acetaminophen)+pseudoephedrine'] }
+        ingredients:
+          type: array
+          items: { $ref: '#/components/schemas/Ingredient' }
+        strength: { type: [string, 'null'], examples: ['650/4/60 mg'] }
+        dosage_form: { $ref: '#/components/schemas/DosageForm' }
+        route:
+          oneOf:
+            - $ref: '#/components/schemas/RouteClass'
+            - type: 'null'
+        route_text: { type: [string, 'null'], examples: [Oral] }
+        units_per_package: { type: [integer, 'null'], examples: [20] }
+        packaging: { type: [string, 'null'], examples: ['20 tablets (2 blisters of 10)'] }
+        price: { $ref: '#/components/schemas/Price' }
+        barcode: { type: [string, 'null'], examples: ['6221051011317'] }
+        company:
+          description: Marketing company when known, else the manufacturer.
+          oneOf:
+            - $ref: '#/components/schemas/NamedRef'
+            - type: 'null'
+        manufacturer:
+          description: Set when a separate manufacturer is listed.
+          oneOf:
+            - $ref: '#/components/schemas/NamedRef'
+            - type: 'null'
+        category:
+          oneOf:
+            - $ref: '#/components/schemas/Category'
+            - type: 'null'
+        atc_codes:
+          type: array
+          items: { type: string }
+          description: Product-level ATC codes; ingredient-level codes are on `ingredients[]`.
+        prescription_status:
+          oneOf:
+            - $ref: '#/components/schemas/PrescriptionStatus'
+            - type: 'null'
+        status: { $ref: '#/components/schemas/ListingStatus' }
+        price_list_name: { type: string, description: 'The exact line name on the source price list.', examples: ['Congestal 20 tabs'] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time, description: 'Last change of any field.' }
+        links:
+          type: object
+          required: [web_url]
+          properties:
+            web_url: { type: string, format: uri, examples: ['https://dwaprice.com/dawa/congestal-20-tabs'] }
+      examples:
+        - id: congestal-20-tabs
+          trade_name_en: Congestal 20 tabs
+          trade_name_ar: كونجستال 20 قرص
+          scientific_name: Chlorpheniramine+paracetamol(acetaminophen)+pseudoephedrine
+          ingredients:
+            - { id: paracetamol, name_en: 'Paracetamol (acetaminophen)', name_ar: باراسيتامول, strength: 650 mg, atc_code: N02BE01 }
+            - { id: chlorpheniramine, name_en: Chlorphenamine maleate, name_ar: كلورفينيرامين ماليات, strength: 4 mg, atc_code: R06AB04 }
+            - { id: pseudoephedrine, name_en: Pseudoephedrine hydrochloride, name_ar: سودوإيفيدرين هيدروكلوريد, strength: 60 mg, atc_code: R01BA02 }
+          strength: 650/4/60 mg
+          dosage_form: { class: tablet, en: Tablet, ar: قرص }
+          route: oral
+          route_text: Oral
+          units_per_package: 20
+          packaging: 20 tablets (2 blisters of 10)
+          price: { current: 50, previous: 31, unit_price: 2.5, currency: EGP, effective_date: '2024-06-06', updated_at: '2026-11-01T00:00:00Z', verified: true, verified_at: '2026-10-03' }
+          barcode: '6221051011317'
+          company: { id: sigma, name: Sigma }
+          manufacturer: null
+          category: { id: cold, en: 'Cold/cough combination (analgesic + antihistamine + decongestant)', ar: null }
+          atc_codes: []
+          prescription_status: otc
+          status: listed
+          price_list_name: Congestal 20 tabs
+          created_at: '2026-11-01T00:00:00Z'
+          updated_at: '2026-11-01T00:00:00Z'
+          links: { web_url: 'https://dwaprice.com/dawa/congestal-20-tabs' }
+
+    Alternative:
+      allOf:
+        - $ref: '#/components/schemas/Drug'
+        - type: object
+          required: [match, same_form, same_product, price_diff, unit_price_diff_pct]
+          properties:
+            match: { type: string, enum: [same_strength, other_strength] }
+            same_form: { type: boolean, description: Same dosage-form class as the requested drug. }
+            same_product: { type: boolean, description: Another pack of the same product. }
+            price_diff: { type: [number, 'null'], description: 'alternative.price.current − drug.price.current' }
+            unit_price_diff_pct: { type: [number, 'null'], description: Unit-price difference in percent (negative = cheaper per unit). }
+
+    PricePoint:
+      type: object
+      required: [price, effective_date, recorded_at, source]
+      properties:
+        price: { type: number }
+        effective_date: { type: [string, 'null'], format: date }
+        recorded_at: { type: [string, 'null'], format: date-time }
+        source: { type: string, enum: [catalog, change_log] }
+
+    PriceChangeEvent:
+      type: object
+      required: [id, type, detected_at, drug_id, data, drug]
+      properties:
+        id: { type: integer, description: Monotonic ordering key. }
+        type: { $ref: '#/components/schemas/EventType' }
+        detected_at: { type: string, format: date-time }
+        drug_id: { type: string }
+        data:
+          type: object
+          description: 'price_changed: {old, new, effective_date, change_pct}; added: {price}; status_changed: {old, new}; removed: {last_price, last_status}; renamed: {new_id}'
+          additionalProperties: true
+        drug:
+          description: The current record; null for `removed`.
+          oneOf:
+            - $ref: '#/components/schemas/Drug'
+            - type: 'null'
+      examples:
+        - id: 48213
+          type: price_changed
+          detected_at: '2026-10-21T12:22:04Z'
+          drug_id: congestal-20-tabs
+          data: { old: 31, new: 50, effective_date: '2024-06-06', change_pct: 61.29 }
+          drug: { id: congestal-20-tabs, trade_name_en: Congestal 20 tabs, '...': '...' }
+
+    Company:
+      type: object
+      required: [id, name, product_count]
+      properties:
+        id: { type: string, examples: [eva-pharma] }
+        name: { type: string, examples: [Eva Pharma] }
+        product_count: { type: integer, examples: [305] }
+
+    IngredientSummary:
+      type: object
+      required: [id, name_en, name_ar, product_count]
+      properties:
+        id: { type: string, examples: [paracetamol] }
+        name_en: { type: [string, 'null'], examples: [Paracetamol] }
+        name_ar: { type: [string, 'null'], examples: ['باراسيتامول'] }
+        product_count: { type: integer, examples: [179] }
+
+    DatasetMeta:
+      type: object
+      required: [dataset_version, updated_at, last_price_change_at, last_price_list_date, counts, api_version, docs_url]
+      properties:
+        dataset_version: { type: string, examples: ['2026-10-21.184'] }
+        updated_at: { type: string, format: date-time }
+        last_price_change_at: { type: [string, 'null'], format: date-time }
+        last_price_list_date: { type: [string, 'null'], format: date }
+        counts:
+          type: object
+          required: [drugs, priced, verified, with_barcode, companies, ingredients, categories]
+          properties:
+            drugs: { type: integer, examples: [14726] }
+            priced: { type: integer, examples: [14169] }
+            verified: { type: integer, examples: [13597] }
+            with_barcode: { type: integer, examples: [5302] }
+            companies: { type: integer, examples: [3270] }
+            ingredients: { type: integer, examples: [3771] }
+            categories: { type: integer, examples: [987] }
+        api_version: { type: string, examples: [1.0.0] }
+        docs_url: { type: string, format: uri }
+
+    Webhook:
+      type: object
+      required: [id, url, events, status, created_at, last_delivery_at, last_status]
+      properties:
+        id: { type: string }
+        url: { type: string, format: uri }
+        events:
+          type: array
+          items: { $ref: '#/components/schemas/EventType' }
+        status: { type: string, enum: [active, paused] }
+        created_at: { type: string, format: date-time }
+        last_delivery_at: { type: [string, 'null'], format: date-time }
+        last_status: { type: [integer, 'null'] }
+
+    ExportResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [id, format, status, dataset_version, url, expires_at, rows]
+          properties:
+            id: { type: string }
+            format: { type: string, enum: [csv, json] }
+            status: { type: string, enum: [queued, running, ready, failed] }
+            dataset_version: { type: string }
+            url: { type: [string, 'null'], format: uri, description: 'Signed download link, valid one hour; null until ready.' }
+            expires_at: { type: [string, 'null'], format: date-time }
+            rows: { type: [integer, 'null'] }
+
+    # ------------------------------------------------------------------ envelopes
+    DrugResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data: { $ref: '#/components/schemas/Drug' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    DrugArrayResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Drug' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    DrugList:
+      type: object
+      required: [data, page, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Drug' }
+        page: { $ref: '#/components/schemas/Page' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    AlternativeList:
+      type: object
+      required: [data, drug_id, page, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Alternative' }
+        drug_id: { type: string }
+        page: { $ref: '#/components/schemas/Page' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    PriceHistoryResponse:
+      type: object
+      required: [data, drug_id, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/PricePoint' }
+        drug_id: { type: string }
+        meta: { $ref: '#/components/schemas/Meta' }
+    PriceChangeList:
+      type: object
+      required: [data, page, latest_detected_at, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/PriceChangeEvent' }
+        page: { $ref: '#/components/schemas/Page' }
+        latest_detected_at:
+          type: [string, 'null']
+          format: date-time
+          description: Use as `since` on the next sync (null when the page is empty).
+        meta: { $ref: '#/components/schemas/Meta' }
+    CompanyList:
+      type: object
+      required: [data, page, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Company' }
+        page: { $ref: '#/components/schemas/Page' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    IngredientList:
+      type: object
+      required: [data, page, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/IngredientSummary' }
+        page: { $ref: '#/components/schemas/Page' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    MetaResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: '#/components/schemas/DatasetMeta' }
+
+    SampleFlag:
+      type: object
+      required: [sample]
+      properties:
+        sample: { type: boolean, const: true, description: Always true on sample endpoints. }
+    SampleDrugResponse:
+      allOf: [{ $ref: '#/components/schemas/DrugResponse' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SampleDrugArrayResponse:
+      allOf: [{ $ref: '#/components/schemas/DrugArrayResponse' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SampleDrugList:
+      allOf: [{ $ref: '#/components/schemas/DrugList' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SampleAlternativeList:
+      allOf: [{ $ref: '#/components/schemas/AlternativeList' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SamplePriceHistoryResponse:
+      allOf: [{ $ref: '#/components/schemas/PriceHistoryResponse' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SamplePriceChangeList:
+      allOf: [{ $ref: '#/components/schemas/PriceChangeList' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SampleCompanyList:
+      allOf: [{ $ref: '#/components/schemas/CompanyList' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SampleIngredientList:
+      allOf: [{ $ref: '#/components/schemas/IngredientList' }, { $ref: '#/components/schemas/SampleFlag' }]
+    SampleMetaResponse:
+      allOf: [{ $ref: '#/components/schemas/MetaResponse' }, { $ref: '#/components/schemas/SampleFlag' }]

@@ -1,0 +1,204 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs?limit=3&dosage_form=syrup&sort=price",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"54ZDHUaWcLJUralXYwK85QPXg7o\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "58",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49938",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "opichestal-syrup-120ml",
+        "trade_name_en": "Opichestal syrup 120 ml",
+        "trade_name_ar": "اوبيشستال شراب 120 مل",
+        "scientific_name": "Salbutamol",
+        "ingredients": [
+          {
+            "id": "salbutamol",
+            "name_en": "Salbutamol (albuterol)",
+            "name_ar": "سالبوتامول",
+            "strength": null,
+            "atc_code": "R03CC02"
+          }
+        ],
+        "strength": null,
+        "dosage_form": {
+          "class": "syrup",
+          "en": "Syrup",
+          "ar": "شراب"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": null,
+        "packaging": "1 bottle 120 ml",
+        "price": {
+          "current": 2,
+          "previous": null,
+          "unit_price": null,
+          "currency": "EGP",
+          "effective_date": null,
+          "updated_at": "2026-10-21T14:04:30Z",
+          "verified": true,
+          "verified_at": "2026-10-14"
+        },
+        "barcode": null,
+        "company": {
+          "id": "el-obour-pharmaceutical-industries",
+          "name": "El-Obour Pharmaceutical Industries"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "bronchodilator",
+          "en": "Bronchodilator",
+          "ar": "موسع للشعب الهوائية"
+        },
+        "atc_codes": [
+          "R03CC02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Opichestal syrup 120ml",
+        "created_at": "2026-10-21T14:04:30Z",
+        "updated_at": "2026-10-21T14:04:30Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/opichestal-syrup-120ml"
+        }
+      },
+      {
+        "id": "salbulin-syrup-120ml",
+        "trade_name_en": "Salbulin 2 mg syrup",
+        "trade_name_ar": null,
+        "scientific_name": "Salbutamol",
+        "ingredients": [
+          {
+            "id": "salbutamol",
+            "name_en": "Salbutamol (albuterol)",
+            "name_ar": "سالبوتامول",
+            "strength": "2mg",
+            "atc_code": null
+          }
+        ],
+        "strength": "2 mg (per dose volume not stated by the source)",
+        "dosage_form": {
+          "class": "syrup",
+          "en": "Syrup",
+          "ar": "شراب"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": null,
+        "packaging": "120 ml (from source spreadsheet name; not confirmed)",
+        "price": {
+          "current": 2,
+          "previous": null,
+          "unit_price": null,
+          "currency": "EGP",
+          "effective_date": null,
+          "updated_at": "2026-10-21T14:05:03Z",
+          "verified": false,
+          "verified_at": "2026-10-21"
+        },
+        "barcode": null,
+        "company": null,
+        "manufacturer": null,
+        "category": {
+          "id": "bronchodilator",
+          "en": "Bronchodilator (beta-2 adrenergic agonist)",
+          "ar": "موسع للشعب الهوائية"
+        },
+        "atc_codes": [],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Salbulin syrup 120 ml",
+        "created_at": "2026-10-21T14:05:03Z",
+        "updated_at": "2026-10-21T14:05:03Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/salbulin-syrup-120ml"
+        }
+      },
+      {
+        "id": "pararhinol-syrup-120ml",
+        "trade_name_en": "Pararhinol syrup",
+        "trade_name_ar": "بارارينول شراب 120مل",
+        "scientific_name": "Chlorpheniramine + Phenylephrine",
+        "ingredients": [
+          {
+            "id": "chlorpheniramine",
+            "name_en": "Chlorpheniramine",
+            "name_ar": "كلورفينيرامين",
+            "strength": null,
+            "atc_code": null
+          },
+          {
+            "id": "phenylephrine",
+            "name_en": "Phenylephrine",
+            "name_ar": "فينيليفرين",
+            "strength": null,
+            "atc_code": null
+          }
+        ],
+        "strength": null,
+        "dosage_form": {
+          "class": "syrup",
+          "en": "Syrup",
+          "ar": "شراب"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": null,
+        "packaging": "120 ml bottle",
+        "price": {
+          "current": 2.5,
+          "previous": null,
+          "unit_price": null,
+          "currency": "EGP",
+          "effective_date": "2022-12-08",
+          "updated_at": "2026-10-21T14:04:30Z",
+          "verified": true,
+          "verified_at": "2026-10-14"
+        },
+        "barcode": "6221035003116",
+        "company": {
+          "id": "misr-company-for-pharmaceutical-industries-misr",
+          "name": "Misr Company for Pharmaceutical Industries (Misr)"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "cold-drugs",
+          "en": "Cold drugs",
+          "ar": "أدوية البرد"
+        },
+        "atc_codes": [],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Pararhinol syrup 120ml",
+        "created_at": "2026-10-21T14:04:30Z",
+        "updated_at": "2026-10-21T14:04:30Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/pararhinol-syrup-120ml"
+        }
+      }
+    ],
+    "page": {
+      "limit": 3,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiMDUzMThmYjM2ZTNmNmYwNSIsImsiOlsiMi41MCIsInBhcmFyaGlub2wtc3lydXAtMTIwbWwiXSwiZSI6MTc5MjY4MDgxNX0.51cc84e8c23da4df"
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:35Z"
+    }
+  }
+}

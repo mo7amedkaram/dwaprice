@@ -1,0 +1,674 @@
+{
+  "pages": [
+    {
+      "name": "home",
+      "path": "/",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "أسعار الأدوية في مصر محدثة يومياً | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com",
+      "hreflang": [],
+      "jsonld": [
+        "WebSite",
+        "Organization"
+      ],
+      "h1": "أسعار الأدوية في مصر محدثة يومياً",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "home",
+      "path": "/",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "أسعار الأدوية في مصر محدثة يومياً | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com",
+      "hreflang": [],
+      "jsonld": [
+        "WebSite",
+        "Organization"
+      ],
+      "h1": "أسعار الأدوية في مصر محدثة يومياً",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "landing-ar",
+      "path": "/api",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "API أسعار الأدوية في مصر 2026 | بيانات محدثة للمطورين والشركات",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api",
+      "hreflang": [
+        "ar=https://dwaprice.com/api",
+        "en=https://dwaprice.com/api/en",
+        "x-default=https://dwaprice.com/api"
+      ],
+      "jsonld": [
+        "BreadcrumbList",
+        "FAQPage"
+      ],
+      "h1": "API أسعار الأدوية في مصر",
+      "chrome": "ar",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "landing-ar",
+      "path": "/api",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "API أسعار الأدوية في مصر 2026 | بيانات محدثة للمطورين والشركات",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api",
+      "hreflang": [
+        "ar=https://dwaprice.com/api",
+        "en=https://dwaprice.com/api/en",
+        "x-default=https://dwaprice.com/api"
+      ],
+      "jsonld": [
+        "BreadcrumbList",
+        "FAQPage"
+      ],
+      "h1": "API أسعار الأدوية في مصر",
+      "chrome": "ar",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "landing-en",
+      "path": "/api/en",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "Egyptian Drug Prices API 2026 | Updated data for developers and businesses",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en",
+      "hreflang": [
+        "ar=https://dwaprice.com/api",
+        "en=https://dwaprice.com/api/en",
+        "x-default=https://dwaprice.com/api"
+      ],
+      "jsonld": [
+        "BreadcrumbList",
+        "FAQPage"
+      ],
+      "h1": "Egyptian Drug Prices API",
+      "chrome": "en",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "landing-en",
+      "path": "/api/en",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "Egyptian Drug Prices API 2026 | Updated data for developers and businesses",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en",
+      "hreflang": [
+        "ar=https://dwaprice.com/api",
+        "en=https://dwaprice.com/api/en",
+        "x-default=https://dwaprice.com/api"
+      ],
+      "jsonld": [
+        "BreadcrumbList",
+        "FAQPage"
+      ],
+      "h1": "Egyptian Drug Prices API",
+      "chrome": "en",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "sample",
+      "path": "/api/sample",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "جرّب عينة الـ API | دليل الأدوية المصري",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/api/sample",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/sample",
+        "en=https://dwaprice.com/api/en/sample",
+        "x-default=https://dwaprice.com/api/sample"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "جرّب الـ API على عينة حقيقية",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "sample",
+      "path": "/api/sample",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "جرّب عينة الـ API | دليل الأدوية المصري",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/api/sample",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/sample",
+        "en=https://dwaprice.com/api/en/sample",
+        "x-default=https://dwaprice.com/api/sample"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "جرّب الـ API على عينة حقيقية",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "sample-en",
+      "path": "/api/en/sample",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "Try the Drug Prices API sample",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/api/en/sample",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/sample",
+        "en=https://dwaprice.com/api/en/sample",
+        "x-default=https://dwaprice.com/api/sample"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "Try the API on a real sample",
+      "chrome": "en",
+      "smallTargets": []
+    },
+    {
+      "name": "sample-en",
+      "path": "/api/en/sample",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "Try the Drug Prices API sample",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/api/en/sample",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/sample",
+        "en=https://dwaprice.com/api/en/sample",
+        "x-default=https://dwaprice.com/api/sample"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "Try the API on a real sample",
+      "chrome": "en",
+      "smallTargets": []
+    },
+    {
+      "name": "docs",
+      "path": "/api/docs",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "توثيق API أسعار الأدوية (v1) | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/docs",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/docs",
+        "en=https://dwaprice.com/api/en/docs",
+        "x-default=https://dwaprice.com/api/docs"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "توثيق الـ API v1.0.0",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "docs",
+      "path": "/api/docs",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "توثيق API أسعار الأدوية (v1) | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/docs",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/docs",
+        "en=https://dwaprice.com/api/en/docs",
+        "x-default=https://dwaprice.com/api/docs"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "توثيق الـ API v1.0.0",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "docs-en",
+      "path": "/api/en/docs",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "Drug Prices API documentation (v1)",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en/docs",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/docs",
+        "en=https://dwaprice.com/api/en/docs",
+        "x-default=https://dwaprice.com/api/docs"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "Dwaprice Drug Prices API v1.0.0",
+      "chrome": "en",
+      "smallTargets": []
+    },
+    {
+      "name": "docs-en",
+      "path": "/api/en/docs",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "Drug Prices API documentation (v1)",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en/docs",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/docs",
+        "en=https://dwaprice.com/api/en/docs",
+        "x-default=https://dwaprice.com/api/docs"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "Dwaprice Drug Prices API v1.0.0",
+      "chrome": "en",
+      "smallTargets": []
+    },
+    {
+      "name": "request-access",
+      "path": "/api/request-access",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "طلب الوصول إلى API أسعار الأدوية | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/request-access",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/request-access",
+        "en=https://dwaprice.com/api/en/request-access",
+        "x-default=https://dwaprice.com/api/request-access"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "اطلب الوصول إلى الـ API",
+      "chrome": "ar",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "request-access",
+      "path": "/api/request-access",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "طلب الوصول إلى API أسعار الأدوية | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/request-access",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/request-access",
+        "en=https://dwaprice.com/api/en/request-access",
+        "x-default=https://dwaprice.com/api/request-access"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "اطلب الوصول إلى الـ API",
+      "chrome": "ar",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "request-access-en",
+      "path": "/api/en/request-access",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "Request access to the Egyptian Drug Prices API",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en/request-access",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/request-access",
+        "en=https://dwaprice.com/api/en/request-access",
+        "x-default=https://dwaprice.com/api/request-access"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "Request access to the API",
+      "chrome": "en",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "request-access-en",
+      "path": "/api/en/request-access",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "Request access to the Egyptian Drug Prices API",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en/request-access",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/request-access",
+        "en=https://dwaprice.com/api/en/request-access",
+        "x-default=https://dwaprice.com/api/request-access"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "Request access to the API",
+      "chrome": "en",
+      "smallTargets": [
+        "INPUT",
+        "INPUT",
+        "INPUT"
+      ]
+    },
+    {
+      "name": "terms",
+      "path": "/api/terms",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "شروط ترخيص API أسعار الأدوية | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/terms",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/terms",
+        "en=https://dwaprice.com/api/en/terms",
+        "x-default=https://dwaprice.com/api/terms"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "شروط ترخيص الـ API",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "terms",
+      "path": "/api/terms",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "شروط ترخيص API أسعار الأدوية | دليل الأدوية المصري",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/terms",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/terms",
+        "en=https://dwaprice.com/api/en/terms",
+        "x-default=https://dwaprice.com/api/terms"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "شروط ترخيص الـ API",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "terms-en",
+      "path": "/api/en/terms",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "Drug Prices API license terms",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en/terms",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/terms",
+        "en=https://dwaprice.com/api/en/terms",
+        "x-default=https://dwaprice.com/api/terms"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "API license terms",
+      "chrome": "en",
+      "smallTargets": []
+    },
+    {
+      "name": "terms-en",
+      "path": "/api/en/terms",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "Drug Prices API license terms",
+      "robots": "index, follow",
+      "canonical": "https://dwaprice.com/api/en/terms",
+      "hreflang": [
+        "ar=https://dwaprice.com/api/terms",
+        "en=https://dwaprice.com/api/en/terms",
+        "x-default=https://dwaprice.com/api/terms"
+      ],
+      "jsonld": [
+        "BreadcrumbList"
+      ],
+      "h1": "API license terms",
+      "chrome": "en",
+      "smallTargets": []
+    },
+    {
+      "name": "developer-login",
+      "path": "/developer/login",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "الدخول إلى لوحة المطورين | دليل الأدوية المصري",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/developer/login",
+      "hreflang": [],
+      "jsonld": [],
+      "h1": "لوحة المطورين",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "developer-login",
+      "path": "/developer/login",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "الدخول إلى لوحة المطورين | دليل الأدوية المصري",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/developer/login",
+      "hreflang": [],
+      "jsonld": [],
+      "h1": "لوحة المطورين",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "admin-login",
+      "path": "/admin/api/login",
+      "width": 360,
+      "status": 200,
+      "overflowX": false,
+      "title": "دخول إدارة الـ API | دليل الأدوية المصري",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/admin/api/login",
+      "hreflang": [],
+      "jsonld": [],
+      "h1": "إدارة الـ API",
+      "chrome": "ar",
+      "smallTargets": []
+    },
+    {
+      "name": "admin-login",
+      "path": "/admin/api/login",
+      "width": 1280,
+      "status": 200,
+      "overflowX": false,
+      "title": "دخول إدارة الـ API | دليل الأدوية المصري",
+      "robots": "noindex, follow",
+      "canonical": "https://dwaprice.com/admin/api/login",
+      "hreflang": [],
+      "jsonld": [],
+      "h1": "إدارة الـ API",
+      "chrome": "ar",
+      "smallTargets": []
+    }
+  ],
+  "flow": [
+    {
+      "step": "docs ar → English switch",
+      "path": "/api/en/docs",
+      "h1": "Dwaprice Drug Prices API v1.0.0"
+    },
+    {
+      "step": "English docs → Try the sample",
+      "path": "/api/en/sample",
+      "h1": "Try the API on a real sample",
+      "chrome": "en"
+    },
+    {
+      "step": "English explorer: q=augmentn",
+      "ok": true
+    },
+    {
+      "step": "English → Developer dashboard (login)",
+      "path": "/developer/login",
+      "h1": "Developer dashboard",
+      "chrome": "en"
+    },
+    {
+      "step": "English overview → request access → terms",
+      "path": "/api/en/terms",
+      "h1": "API license terms"
+    },
+    {
+      "step": "back to Arabic → dashboard login in Arabic",
+      "path": "/developer/login",
+      "h1": "لوحة المطورين",
+      "chrome": "ar"
+    },
+    {
+      "step": "sample explorer: q=اوجمنتن",
+      "ids": [
+        "augmentin-1-2g-vial-for-i-v-inj-inf",
+        "amoxicillin",
+        "clavulanic-acid",
+        "glaxosmithkline-manufactured-by-medical-union-pharmaceuticals-mup-egypt",
+        "antibacterial"
+      ]
+    },
+    {
+      "step": "request access submitted",
+      "url": "http://localhost:3100/api/request-access?sent=1"
+    },
+    {
+      "step": "admin login with a wrong password",
+      "alert": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      "emailKept": "showcase-admin@example.com"
+    },
+    {
+      "step": "admin login with e-mail + password",
+      "path": "/admin/api"
+    },
+    {
+      "step": "approved → client page → key issued once",
+      "clientUrl": "http://localhost:3100/admin/api/clients/bd78dafd-bcf3-4bd7-9432-3591cc84a15b",
+      "keyPrefix": "dp_live_qpf6ukel…"
+    },
+    {
+      "step": "issued key works against /v1/meta",
+      "dataset_version": "2026-10-21.1"
+    },
+    {
+      "step": "admin pages without a session",
+      "path": "/admin/api/login"
+    },
+    {
+      "step": "developer: create → rotate → revoke",
+      "keys": [
+        "POS backenddp_live_ctfrizt4…drugs:read, changes:readملغى—",
+        "POS backenddp_live_kzpgmt3g…drugs:read, changes:readينتهي 22 أكتوبر 2026—تدويرإلغاءسيتوقف هذا المفتاح فورًا ولا يمكن است",
+        "admin-issueddp_live_qpf6ukel…drugs:read, changes:readنشط21 أكتوبر 2026تدويرإلغاءسيتوقف هذا المفتاح فورًا ولا يمكن استرجا",
+        "2026-09-2200",
+        "2026-09-2300",
+        "2026-09-2400",
+        "2026-09-2500",
+        "2026-09-2600",
+        "2026-09-2700",
+        "2026-09-2800",
+        "2026-09-2900",
+        "2026-09-3000",
+        "2026-10-0100",
+        "2026-10-0200",
+        "2026-10-0300",
+        "2026-10-0400",
+        "2026-10-0500",
+        "2026-10-0600",
+        "2026-10-0700",
+        "2026-10-0800",
+        "2026-10-0900",
+        "2026-10-1000",
+        "2026-10-1100",
+        "2026-10-1200",
+        "2026-10-1300",
+        "2026-10-1400",
+        "2026-10-1500",
+        "2026-10-1600",
+        "2026-10-1700",
+        "2026-10-1800",
+        "2026-10-1900",
+        "2026-10-2000",
+        "2026-10-2110"
+      ]
+    },
+    {
+      "step": "dashboard after switching to English",
+      "h1": "صيدلية الاختبار mviibcrx",
+      "keysHeading": "API keys",
+      "chrome": "en"
+    },
+    {
+      "step": "logout → /developer/login",
+      "ok": true
+    }
+  ]
+}

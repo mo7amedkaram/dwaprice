@@ -1,0 +1,211 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs?limit=3",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"hKcaT28TMplwXNZsY8ij4NZhXIM\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "28",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "ator-20mg-10-f-c-tab",
+        "trade_name_en": "Ator 20mg 10 f.c. tab.",
+        "trade_name_ar": "اتور 20مجم 10 اقراص",
+        "scientific_name": "Atorvastatin",
+        "ingredients": [
+          {
+            "id": "atorvastatin",
+            "name_en": "Atorvastatin",
+            "name_ar": "أتورفاستاتين",
+            "strength": "20 mg",
+            "atc_code": "C10AA05"
+          }
+        ],
+        "strength": "20 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablet",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 10,
+        "packaging": "Box of 10 film-coated tablets",
+        "price": {
+          "current": 79,
+          "previous": 59,
+          "unit_price": 7.9,
+          "currency": "EGP",
+          "effective_date": "2024-09-18",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6221032115652",
+        "company": {
+          "id": "eipico",
+          "name": "Eipico"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antihyperlipidaemic",
+          "en": "Antihyperlipidaemic - statin",
+          "ar": "خافض للدهون"
+        },
+        "atc_codes": [
+          "C10AA05"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Ator 20mg 10 f.c. tab.",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/ator-20mg-10-f-c-tab"
+        }
+      },
+      {
+        "id": "aspocid-75mg-30-tab",
+        "trade_name_en": "Aspocid 75 mg 30 tablets",
+        "trade_name_ar": "اسبوسيد 75مجم 30 قرص",
+        "scientific_name": "Acetylsalicylic acid",
+        "ingredients": [
+          {
+            "id": "acetylsalicylic-acid",
+            "name_en": "Acetylsalicylic acid (aspirin)",
+            "name_ar": "حمض الأسيتيل ساليسيليك (أسبرين)",
+            "strength": "75mg",
+            "atc_code": "B01AC06"
+          }
+        ],
+        "strength": "75 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Tablets",
+          "ar": "أقراص"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 30,
+        "packaging": "30 tablets (3 strips)",
+        "price": {
+          "current": 33,
+          "previous": 21,
+          "unit_price": 1.1,
+          "currency": "EGP",
+          "effective_date": "2024-12-08",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6221043010359",
+        "company": {
+          "id": "cid-chemical-industries-development",
+          "name": "CID (Chemical Industries Development)"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antiplatelet",
+          "en": "Antiplatelet (low-dose aspirin)",
+          "ar": "مضاد صفائح"
+        },
+        "atc_codes": [
+          "B01AC06"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Aspocid 75mg 30 tab.",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/aspocid-75mg-30-tab"
+        }
+      },
+      {
+        "id": "allergicasone-125-50mcg-nasal-spray-140-actuations",
+        "trade_name_en": "Allergicasone 125/50 mcg nasal spray (140 actuations)",
+        "trade_name_ar": "اليرجيكازون 125/50مكجم بخاخ للانف 140 جرعة",
+        "scientific_name": "Azelastine + fluticasone propionate",
+        "ingredients": [
+          {
+            "id": "azelastine",
+            "name_en": "Azelastine",
+            "name_ar": "أزيلاستين",
+            "strength": "125 mcg",
+            "atc_code": "R01AC03"
+          },
+          {
+            "id": "fluticasone-propionate",
+            "name_en": "Fluticasone propionate",
+            "name_ar": "بروبيونات الفلوتيكازون",
+            "strength": "50 mcg",
+            "atc_code": null
+          }
+        ],
+        "strength": "Azelastine 125 mcg + fluticasone propionate 50 mcg per actuation",
+        "dosage_form": {
+          "class": "suspension",
+          "en": "Nasal spray, suspension",
+          "ar": "بخاخ أنفي (معلق)"
+        },
+        "route": "nasal",
+        "route_text": "Nasal",
+        "units_per_package": null,
+        "packaging": "1 spray bottle, 140 actuations",
+        "price": {
+          "current": 92,
+          "previous": 62,
+          "unit_price": null,
+          "currency": "EGP",
+          "effective_date": "2024-10-28",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6223004161155",
+        "company": {
+          "id": "al-esraa-pharmaceutical-optima",
+          "name": "Al Esraa Pharmaceutical Optima"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antiallergic",
+          "en": "Antiallergic - nasal antihistamine/corticosteroid combination",
+          "ar": "مضاد للحساسية"
+        },
+        "atc_codes": [
+          "R01AD58"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Allergicasone 125/50 mcg nasal spray 140 actuations",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/allergicasone-125-50mcg-nasal-spray-140-actuations"
+        }
+      }
+    ],
+    "page": {
+      "limit": 3,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiYjc0MGY4NjY1NWI2YzBiYSIsImsiOlsi2KfZhNmK2LHYrNmK2YPYp9iy2YjZhiAxMjUvNTDZhdmD2KzZhSDYqNiu2KfYriDZhNmE2KfZhtmBIDE0MCDYrNix2LnYqSIsImFsbGVyZ2ljYXNvbmUtMTI1LTUwbWNnLW5hc2FsLXNwcmF5LTE0MC1hY3R1YXRpb25zIl0sImUiOjE3OTI2ODA4MTF9.e108dfdac6c94660"
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:31Z"
+    }
+  }
+}

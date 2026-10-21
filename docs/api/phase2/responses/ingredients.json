@@ -1,0 +1,51 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/ingredients?q=%D8%A8%D8%A7%D8%B1%D8%A7&limit=3",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"kclOgw_dztnNma5OQ4fLkrCJDYE\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "47",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49927",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "light-liquid-paraffin",
+        "name_en": "Light liquid paraffin",
+        "name_ar": "بارافين سائل خفيف",
+        "product_count": 4
+      },
+      {
+        "id": "liquid-paraffin",
+        "name_en": "Liquid paraffin",
+        "name_ar": "بارافين سائل",
+        "product_count": 14
+      },
+      {
+        "id": "paracetamol",
+        "name_en": "Paracetamol",
+        "name_ar": "باراسيتامول",
+        "product_count": 188
+      }
+    ],
+    "page": {
+      "limit": 3,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiNzZlOTE1NTMzNmZmZjE5NyIsImsiOlsicGFyYWNldGFtb2wiLCJwYXJhY2V0YW1vbCJdLCJlIjoxNzkyNjgwODE5fQ.d3ac314a7a2b2dab"
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:39Z"
+    }
+  }
+}

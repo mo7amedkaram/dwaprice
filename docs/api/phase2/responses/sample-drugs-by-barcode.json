@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs/by-barcode/6221051011317",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"K_mEQH5gZ0DxjD1MnL_FK1eo4Ts\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "23",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [],
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:33Z"
+    }
+  }
+}

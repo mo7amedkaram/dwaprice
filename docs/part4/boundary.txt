@@ -1,0 +1,80 @@
+PASS | session identity/settings                                      | allowed ["web_reader","web"]
+PASS | SELECT web.drug_cards                                          | allowed ["5"]
+PASS | SELECT web.drug_pages                                          | allowed ["5"]
+PASS | SELECT web.drug_price_history                                  | allowed ["5"]
+PASS | SELECT web.drug_alternatives                                   | allowed ["5"]
+PASS | SELECT web.ingredients                                         | allowed ["5"]
+PASS | SELECT web.companies                                           | allowed ["5"]
+PASS | SELECT web.categories                                          | allowed ["5"]
+PASS | SELECT web.atc_classes                                         | allowed ["5"]
+PASS | SELECT web.hub_drugs                                           | allowed ["5"]
+PASS | SELECT web.latest_price_changes                                | allowed ["5"]
+PASS | SELECT web.dosing_rules_public                                 | allowed ["0"]
+PASS | SELECT web.search_index                                        | allowed ["5"]
+PASS | SELECT web.slug_lookup                                         | allowed ["5"]
+PASS | SELECT web.popular_drugs                                       | allowed ["5"]
+PASS | SELECT web.sitemap_drugs                                       | allowed ["5"]
+PASS | SELECT web.drug_group_members                                  | allowed ["5"]
+PASS | SELECT web.product_group_members                               | allowed ["5"]
+PASS | SELECT web.site_stats                                          | allowed ["1"]
+PASS | EXECUTE web.search_normalize                                   | allowed ["بنادول اكسترا 24 قرص"]
+PASS | EXECUTE web.search_drugs (misspelled Arabic)                   | allowed ["congestal-20-tabs"]
+PASS | web.search_drugs: quote/injection attempt returns rows, runs nothing | allowed ["0"]
+PASS | web.search_drugs: limit capped at 50                           | allowed ["capped"]
+PASS | web.search_drugs: returns public catalogue columns only        | allowed ["TABLE(slug text, name_ar text, name_en text, strength text, dosage_form_ar tex
+PASS | EXECUTE web.search_skeleton (PUBLIC, pure string function)     | allowed ["امكسلن"]
+PASS | extensions schema (pg_trgm) not usable directly                | denied: permission denied for schema extensions
+PASS | pg_stat_statements (query texts of other roles)                | denied: permission denied for schema extensions
+PASS | SELECT public.patient_profiles                                 | denied: permission denied for table patient_profiles
+PASS | SELECT public.prescriptions                                    | denied: permission denied for table prescriptions
+PASS | SELECT public.prescription_items                               | denied: permission denied for table prescription_items
+PASS | SELECT public.prescription_scan_sessions                       | denied: permission denied for table prescription_scan_sessions
+PASS | SELECT public.prescription_scan_images                         | denied: permission denied for table prescription_scan_images
+PASS | SELECT public.prescription_extracted_medications               | denied: permission denied for table prescription_extracted_medications
+PASS | SELECT public.prescription_model_calls                         | denied: permission denied for table prescription_model_calls
+PASS | SELECT public.medicine_cabinet_items                           | denied: permission denied for table medicine_cabinet_items
+PASS | SELECT public.medication_reminders                             | denied: permission denied for table medication_reminders
+PASS | SELECT public.medication_administration_logs                   | denied: permission denied for table medication_administration_logs
+PASS | SELECT public.user_profiles                                    | denied: permission denied for table user_profiles
+PASS | SELECT public.user_favorites                                   | denied: permission denied for table user_favorites
+PASS | SELECT public.user_notifications                               | denied: permission denied for table user_notifications
+PASS | SELECT public.user_push_devices                                | denied: permission denied for table user_push_devices
+PASS | SELECT public.notification_preferences                         | denied: permission denied for table notification_preferences
+PASS | SELECT public.price_watchlist                                  | denied: permission denied for table price_watchlist
+PASS | SELECT public.recognition_learned_names                        | denied: permission denied for table recognition_learned_names
+PASS | SELECT public.recognition_reviewers                            | denied: permission denied for table recognition_reviewers
+PASS | SELECT public.professional_accounts                            | denied: permission denied for table professional_accounts
+PASS | SELECT public.daily_dose_preferences                           | denied: permission denied for table daily_dose_preferences
+PASS | SELECT public.drugle_sessions                                  | denied: permission denied for table drugle_sessions
+PASS | SELECT auth.users                                              | denied: permission denied for schema auth
+PASS | SELECT auth.sessions                                           | denied: permission denied for schema auth
+PASS | SELECT storage.objects                                         | denied: permission denied for schema storage
+PASS | SELECT vault.decrypted_secrets                                 | denied: permission denied for schema vault
+PASS | SELECT public.drugs                                            | denied: permission denied for table drugs
+PASS | SELECT public.drug_ingredients                                 | denied: permission denied for table drug_ingredients
+PASS | SELECT public.price_change_events                              | denied: permission denied for table price_change_events
+PASS | SELECT public.drug_search_aliases                              | denied: permission denied for table drug_search_aliases
+PASS | SELECT public.recognition_product_index                        | denied: permission denied for table recognition_product_index
+PASS | SELECT public.clinical_dosing_rules                            | denied: permission denied for table clinical_dosing_rules
+PASS | SELECT public.egypt_drug_catalog                               | denied: permission denied for table egypt_drug_catalog
+PASS | SELECT web.slugs                                               | denied: permission denied for table slugs
+PASS | SELECT web.products                                            | denied: permission denied for table products
+PASS | SELECT web.drug_facts                                          | denied: permission denied for table drug_facts
+PASS | SELECT web.labels                                              | denied: permission denied for table labels
+PASS | SELECT web.sync_state                                          | denied: permission denied for table sync_state
+PASS | SELECT pg_catalog.pg_authid                                    | denied: permission denied for table pg_authid
+PASS | EXECUTE web.sync()                                             | denied: permission denied for function sync
+PASS | INSERT into web view                                           | denied: cannot insert into view "slug_lookup"
+PASS | CREATE TABLE in web                                            | denied: cannot execute CREATE TABLE in a read-only transaction
+PASS | CREATE TABLE in public                                         | denied: cannot execute CREATE TABLE in a read-only transaction
+PASS | SET ROLE postgres                                              | denied: permission denied to set role "postgres"
+PASS | auth.uid() (impersonation path)                                | denied: permission denied for schema auth
+PASS | write via SECURITY DEFINER (read-only tx default)              | denied: cannot execute UPDATE in a read-only transaction
+FAIL | write via SECURITY DEFINER after SET TRANSACTION READ WRITE    | allowed 
+FAIL | pg_net http_get after SET TRANSACTION READ WRITE               | allowed 
+FAIL | pg_net request queue (PUBLIC grant)                            | allowed ["0"]
+FAIL | pg_net response log (PUBLIC grant)                             | allowed ["360"]
+FAIL | public.drugs_changed_since (SECURITY DEFINER, ids only)        | allowed ["5"]
+PASS | public.search_drugs (invoker)                                  | denied: permission denied for table drugs
+
+SUMMARY 73 pass / 78

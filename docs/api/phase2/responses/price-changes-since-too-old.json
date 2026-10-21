@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/price-changes?since=2025-12-25T14:53:30Z",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 400,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "49",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49929",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "error": {
+      "code": "since_too_old",
+      "message": "since is outside the 7-day window of your plan; reload with /drugs",
+      "details": {
+        "window_days": 7
+      }
+    }
+  }
+}

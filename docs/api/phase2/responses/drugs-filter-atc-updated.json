@@ -1,0 +1,204 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs?atc=J01C&prescription_status=prescription&limit=3",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"Z1NrJ2rZYV7lKe0zRvkzVLnFnC8\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "56",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49936",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "epcimox-125mg-8-oral-dis-tab",
+        "trade_name_en": "Epcimox 125mg 8 oral dis. tab",
+        "trade_name_ar": "ابسيموكس 125 مجم 8 اقراص",
+        "scientific_name": "Amoxicillin",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "125 mg",
+            "atc_code": "J01CA04"
+          }
+        ],
+        "strength": "125 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Orally disintegrating tablet",
+          "ar": "أقراص سريعة التفتت بالفم"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 8,
+        "packaging": "8 orally disintegrating tablets",
+        "price": {
+          "current": 3.25,
+          "previous": null,
+          "unit_price": 0.41,
+          "currency": "EGP",
+          "effective_date": "2022-07-30",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-04"
+        },
+        "barcode": null,
+        "company": {
+          "id": "epci",
+          "name": "EPCI"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic - aminopenicillin",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CA04"
+        ],
+        "prescription_status": "prescription",
+        "status": "listed",
+        "price_list_name": "Epcimox 125mg 8 oral dis. tab.",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/epcimox-125mg-8-oral-dis-tab"
+        }
+      },
+      {
+        "id": "epicocillin-1gm-vial-i-m-i-v",
+        "trade_name_en": "Epicocillin 1 gm vial. i.m/i.v",
+        "trade_name_ar": "ابيكوسيللين 1جم فيال",
+        "scientific_name": "Ampicillin",
+        "ingredients": [
+          {
+            "id": "ampicillin",
+            "name_en": "Ampicillin",
+            "name_ar": "أمبيسيلين",
+            "strength": "1 gm",
+            "atc_code": "J01CA01"
+          }
+        ],
+        "strength": "1 gm",
+        "dosage_form": {
+          "class": "injection",
+          "en": "Powder for solution for injection (vial, IM/IV)",
+          "ar": "مسحوق لمحلول الحقن (فيال، عضلي/وريدي)"
+        },
+        "route": "injection",
+        "route_text": "Intramuscular / Intravenous",
+        "units_per_package": 1,
+        "packaging": "1 vial (IM/IV use)",
+        "price": {
+          "current": 10,
+          "previous": null,
+          "unit_price": 10,
+          "currency": "EGP",
+          "effective_date": "2023-01-07",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-04"
+        },
+        "barcode": "6221032310897",
+        "company": {
+          "id": "eipico-egyptian-international-pharmaceutical-industries-co",
+          "name": "EIPICO (Egyptian International Pharmaceutical Industries Co.)"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic — aminopenicillin (ampicillin)",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CA01"
+        ],
+        "prescription_status": "prescription",
+        "status": "listed",
+        "price_list_name": "Epicocillin 1 gm vial. i.m/i.v",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/epicocillin-1gm-vial-i-m-i-v"
+        }
+      },
+      {
+        "id": "epcimox-250mg-8-oral-dis-tab",
+        "trade_name_en": "Epcimox 250mg 8 oral dis. tab",
+        "trade_name_ar": "ايبسيموكس 250 مجم 8 أقراص",
+        "scientific_name": "Amoxicillin",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "250 mg",
+            "atc_code": "J01CA04"
+          }
+        ],
+        "strength": "250 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Orally disintegrating tablet",
+          "ar": "أقراص سريعة التفتت بالفم"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 8,
+        "packaging": "8 orally disintegrating tablets",
+        "price": {
+          "current": 5,
+          "previous": null,
+          "unit_price": 0.63,
+          "currency": "EGP",
+          "effective_date": "2022-07-24",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-04"
+        },
+        "barcode": null,
+        "company": {
+          "id": "epci",
+          "name": "EPCI"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic - aminopenicillin",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CA04"
+        ],
+        "prescription_status": "prescription",
+        "status": "listed",
+        "price_list_name": "Epcimox 250mg 8 oral dis. tab.",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/epcimox-250mg-8-oral-dis-tab"
+        }
+      }
+    ],
+    "page": {
+      "limit": 3,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiNjlmYzU3NjkyYTY5MTUyNyIsImsiOlsi2KfZitio2LPZitmF2YjZg9izIDI1MCDZhdis2YUgOCDYp9mC2LHYp9i1IiwiZXBjaW1veC0yNTBtZy04LW9yYWwtZGlzLXRhYiJdLCJlIjoxNzkyNjgwODE2fQ.7799d45aa9326145"
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:36Z"
+    }
+  }
+}

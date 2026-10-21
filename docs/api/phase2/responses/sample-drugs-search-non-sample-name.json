@@ -1,0 +1,32 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs?q=%D8%A8%D8%A7%D9%86%D8%A7%D8%AF%D9%88%D9%84",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"0LdeTlbFGx7H2CN0OAy0uq49tCU\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "26",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [],
+    "page": {
+      "limit": 20,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:32Z"
+    }
+  }
+}

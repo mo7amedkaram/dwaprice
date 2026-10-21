@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs/congestal-20-tabs",
+    "auth": "none",
+    "body": null
+  },
+  "status": 404,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "24",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "error": {
+      "code": "not_found",
+      "message": "No drug with id \"congestal-20-tabs\"",
+      "details": null
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs?limit=2&company=sigma&cursor=eyJmIjoiZTgwZTQzYTkyZGQ1YmI3OSIsImsiOlsi2KfYsdmK2KjYqNix2YrZg9izIDEw2YXYrNmFIDIwINmC2LHYtSIsImFyaXBpcHJleC0xMG1nLTIwLWYtYy10YWIiXSwiZSI6MTc5MjY4MDgxOX0.3551d91b96ff9d7a",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"9FPuOKxOSBMxMX6_wkRdwl1Gj_w\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "45",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49925",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "aripiprex-30mg-20-f-c-tab",
+        "trade_name_en": "Aripiprex 30 mg 20 film-coated tablets",
+        "trade_name_ar": "اريببريكس 30 مجم 20 قرص",
+        "scientific_name": "Aripiprazole",
+        "ingredients": [
+          {
+            "id": "aripiprazole",
+            "name_en": "Aripiprazole",
+            "name_ar": "أريبيبرازول",
+            "strength": "30 mg",
+            "atc_code": "N05AX12"
+          }
+        ],
+        "strength": "30 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablets",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 20,
+        "packaging": "20 film-coated tablets",
+        "price": {
+          "current": 160,
+          "previous": null,
+          "unit_price": 8,
+          "currency": "EGP",
+          "effective_date": "2021-09-16",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": null,
+        "company": {
+          "id": "andalous-pharma",
+          "name": "Andalous Pharma"
+        },
+        "manufacturer": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "category": {
+          "id": "antipsychotic",
+          "en": "Antipsychotic - atypical",
+          "ar": "مضاد للذهان"
+        },
+        "atc_codes": [
+          "N05AX12"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Aripiprex 30mg 20 f.c.tab.",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/aripiprex-30mg-20-f-c-tab"
+        }
+      },
+      {
+        "id": "azolacone-200mg-vial",
+        "trade_name_en": "Azolacone 200 mg vial",
+        "trade_name_ar": "ازولاكون 200مجم فيال",
+        "scientific_name": "Voriconazole",
+        "ingredients": [
+          {
+            "id": "voriconazole",
+            "name_en": "Voriconazole",
+            "name_ar": "فوريكونازول",
+            "strength": "200mg",
+            "atc_code": "J02AC03"
+          }
+        ],
+        "strength": "200 mg voriconazole per vial",
+        "dosage_form": {
+          "class": "injection",
+          "en": "Vial for injection (presentation not stated by the Egyptian source)",
+          "ar": "فيال للحقن (لم يحدد المصدر المصري الشكل بدقة)"
+        },
+        "route": "injection",
+        "route_text": null,
+        "units_per_package": 1,
+        "packaging": "1 vial (200 mg)",
+        "price": {
+          "current": 400,
+          "previous": null,
+          "unit_price": 400,
+          "currency": "EGP",
+          "effective_date": "2022-08-25",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": null,
+        "company": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antifungal",
+          "en": "Antifungal (triazole)",
+          "ar": "مضاد فطريات"
+        },
+        "atc_codes": [
+          "J02AC03"
+        ],
+        "prescription_status": null,
+        "status": "not_yet_available",
+        "price_list_name": "Azolacone 200mg vial(n/a yet)",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/azolacone-200mg-vial"
+        }
+      }
+    ],
+    "page": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiZTgwZTQzYTkyZGQ1YmI3OSIsImsiOlsi2KfYstmI2YTYp9mD2YjZhiAyMDDZhdis2YUg2YHZitin2YQiLCJhem9sYWNvbmUtMjAwbWctdmlhbCJdLCJlIjoxNzkyNjgwODE5fQ.26a01b88e7e8362d"
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:39Z"
+    }
+  }
+}

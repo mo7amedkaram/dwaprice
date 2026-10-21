@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/exports/{id}/download?exp=…&sig=…",
+    "auth": "signed URL"
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "text/csv; charset=utf-8",
+    "cache-control": "private, no-store",
+    "content-disposition": "attachment; filename=\"dwaprice-drugs-2026-10-21.1.csv\"",
+    "x-dataset-version": "2026-10-21.1"
+  },
+  "rows": 14729,
+  "first_lines": [
+    "id,trade_name_en,trade_name_ar,scientific_name,ingredients,strength,dosage_form_class,dosage_form_en,dosage_form_ar,route,route_text,units_per_package,packaging,price_current,price_previous,price_unit_price,price_currency,price_effective_date,price_updated_at,price_verified,price_verified_at,barcode,company,manufacturer,category,atc_codes,prescription_status,status,price_list_name,created_at,updat",
+    "900-900-900-ku,900-900-900ku,,,\"{\"\"id\"\":null,\"\"name_en\"\":null,\"\"name_ar\"\":null,\"\"strength\"\":null,\"\"atc_code\"\":null}\",,other,,,,,,,,,,EGP,,,false,,,,,,,,listed,900-900-900ku,2026-10-21T14:01:31Z,2026-10-21T14:01:31Z,https://dwaprice.com/dawa/900-900-900-ku",
+    "abc-mocotive-topical-spray-70ml,ABC Mocotive topical spray 70 ml,ايه بي سي موكوتيف سبراي 70 مل,Alcohol 70% + tea tree oil + vitamin E + chamomile + aluminium chloride hexahydrate + glycerin,\"{\"\"id\"\":\"\"ethyl-alcohol\"\",\"\"name_en\"\":\"\"Ethyl alcohol\"\",\"\"name_ar\"\":\"\"كحول إيثيلي\"\",\"\"strength\"\":\"\"70 %\"\",\"\"atc_code\"\":null}|{\"\"id\"\":\"\"tea-tree-oil\"\",\"\"name_en\"\":\"\"Tea tree oil\"\",\"\"name_ar\"\":\"\"زيت شجرة الشاي\"\""
+  ]
+}

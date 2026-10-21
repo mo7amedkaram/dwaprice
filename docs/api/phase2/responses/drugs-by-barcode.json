@@ -1,0 +1,97 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs/by-barcode/6221051011317",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"19bSYy5YagV09Oc8ErMn-r2ZeJs\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "53",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49933",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "congestal-20-tabs",
+        "trade_name_en": "Congestal 20 tabs",
+        "trade_name_ar": "كونجستال 20 قرص",
+        "scientific_name": "Chlorpheniramine+paracetamol(acetaminophen)+pseudoephedrine",
+        "ingredients": [
+          {
+            "id": "paracetamol",
+            "name_en": "Paracetamol (acetaminophen)",
+            "name_ar": "باراسيتامول",
+            "strength": "650 mg",
+            "atc_code": "N02BE01"
+          },
+          {
+            "id": "chlorpheniramine",
+            "name_en": "Chlorphenamine maleate",
+            "name_ar": "كلورفينيرامين ماليات",
+            "strength": "4 mg",
+            "atc_code": "R06AB04"
+          },
+          {
+            "id": "pseudoephedrine",
+            "name_en": "Pseudoephedrine hydrochloride",
+            "name_ar": "سودوإيفيدرين هيدروكلوريد",
+            "strength": "60 mg",
+            "atc_code": "R01BA02"
+          }
+        ],
+        "strength": "650/4/60 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Tablet",
+          "ar": "قرص"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 20,
+        "packaging": "20 tablets (2 blisters of 10)",
+        "price": {
+          "current": 50,
+          "previous": 31,
+          "unit_price": 2.5,
+          "currency": "EGP",
+          "effective_date": "2024-06-06",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-03"
+        },
+        "barcode": "6221051011317",
+        "company": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "cold",
+          "en": "Cold/cough combination (analgesic + antihistamine + decongestant)",
+          "ar": null
+        },
+        "atc_codes": [],
+        "prescription_status": "otc",
+        "status": "listed",
+        "price_list_name": "Congestal 20 tabs",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/congestal-20-tabs"
+        }
+      }
+    ],
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:37Z"
+    }
+  }
+}

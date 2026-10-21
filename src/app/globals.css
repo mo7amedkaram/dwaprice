@@ -1,0 +1,155 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+/* dark: follows the theme attribute set by src/lib/theme.ts, not the device directly. */
+@custom-variant dark (&:where(html[data-theme="dark"], html[data-theme="dark"] *));
+
+/* ---------------------------------------------------------------- base */
+@layer base {
+  html {
+    color-scheme: light;
+    color: var(--color-ink);
+    background: var(--color-bg);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    letter-spacing: 0;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4 {
+    line-height: var(--leading-heading);
+    font-weight: 600;
+  }
+
+  /* Latin drug names and ingredients (wrap them in <span dir="ltr" lang="en">). */
+  :lang(en) {
+    font-family: var(--font-latin);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-control-sm);
+  }
+
+  ::selection {
+    background: var(--color-primary-tint);
+  }
+
+  ::placeholder {
+    color: var(--color-muted);
+  }
+
+  /* Theme changes animate through the existing transition-colors utilities; keep them still here. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------- type scale */
+@utility type-h1 {
+  font-size: var(--text-h1);
+  line-height: var(--leading-heading);
+  font-weight: 600;
+  @media (width >= 48rem) {
+    font-size: var(--text-h1-desktop);
+  }
+}
+
+@utility type-h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-heading);
+  font-weight: 600;
+  @media (width >= 48rem) {
+    font-size: var(--text-h2-desktop);
+  }
+}
+
+@utility type-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+@utility type-small {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  @media (width >= 48rem) {
+    font-size: var(--text-small-desktop);
+  }
+}
+
+@utility type-price {
+  font-size: var(--text-price);
+  line-height: 1.2;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  @media (width >= 48rem) {
+    font-size: var(--text-price-desktop);
+  }
+}
+
+/* Every price uses tabular figures. */
+@utility price {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@utility tap {
+  min-height: var(--size-tap);
+  min-width: var(--size-tap);
+}
+
+/* Long-form text of the static pages (/about, /privacy…). */
+@utility prose-ar {
+  max-width: 46rem;
+  color: var(--color-text-2);
+  & h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-ink);
+    font-size: var(--text-h2);
+    @media (width >= 48rem) {
+      font-size: var(--text-h2-desktop);
+    }
+  }
+  & h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-ink);
+  }
+  & p,
+  & ul,
+  & ol {
+    margin-bottom: 1rem;
+  }
+  & ul {
+    list-style: disc;
+    padding-inline-start: 1.5rem;
+  }
+  & ol {
+    list-style: decimal;
+    padding-inline-start: 1.5rem;
+  }
+  & li {
+    margin-bottom: 0.375rem;
+  }
+  & a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  & strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+}

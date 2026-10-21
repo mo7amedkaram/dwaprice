@@ -1,0 +1,52 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/ingredients?limit=5",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"AjtiSCWxuDrp4Cl3Eyx-lL1dmEI\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "18",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "acetylsalicylic-acid",
+        "name_en": "Acetylsalicylic acid",
+        "name_ar": "حمض الأسيتيل ساليسيليك",
+        "product_count": 25
+      },
+      {
+        "id": "ambroxol",
+        "name_en": "Ambroxol",
+        "name_ar": "أمبروكسول",
+        "product_count": 23
+      },
+      {
+        "id": "amoxicillin",
+        "name_en": "Amoxicillin",
+        "name_ar": "أموكسيسيلين",
+        "product_count": 157
+      },
+      "… 2 more item(s) omitted here (full response had 5)"
+    ],
+    "page": {
+      "limit": 5,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiYjE5MGU5NjQxNWRhNGY2YSIsImsiOlsiYXplbGFzdGluZSIsImF6ZWxhc3RpbmUiXSwiZSI6MTc5MjY4MDgxNX0.1af950e8e5bf038e"
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:35Z"
+    }
+  }
+}

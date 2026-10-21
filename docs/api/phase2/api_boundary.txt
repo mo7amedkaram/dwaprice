@@ -1,0 +1,63 @@
+PASS | session identity/settings                                | allowed ["api_app","api, web"]
+PASS | SELECT web.drug_cards                                    | allowed ["3"]
+PASS | SELECT web.drug_pages                                    | allowed ["3"]
+PASS | SELECT web.drug_price_history                            | allowed ["3"]
+PASS | SELECT web.drug_alternatives                             | allowed ["3"]
+PASS | SELECT web.ingredients                                   | allowed ["3"]
+PASS | SELECT web.companies                                     | allowed ["3"]
+PASS | SELECT web.search_index                                  | allowed ["3"]
+PASS | SELECT web.slug_lookup                                   | allowed ["3"]
+PASS | SELECT web.product_group_members                         | allowed ["3"]
+PASS | EXECUTE web.search_drugs                                 | allowed ["3"]
+PASS | SELECT api.drug_state                                    | allowed ["14726"]
+PASS | SELECT api.events                                        | allowed ["0"]
+PASS | SELECT api.dataset_versions                              | allowed ["1"]
+PASS | SELECT api.sample_drugs                                  | allowed ["50"]
+PASS | SELECT api.plans                                         | allowed ["4"]
+PASS | SELECT api.clients                                       | allowed ["2"]
+PASS | SELECT api.api_keys                                      | allowed ["2"]
+PASS | SELECT api.usage_daily                                   | allowed ["16"]
+PASS | SELECT api.request_log                                   | allowed ["645"]
+PASS | SELECT api.rate_buckets                                  | allowed ["2250"]
+PASS | SELECT api.canaries                                      | allowed ["3"]
+PASS | SELECT api.exports                                       | allowed ["3"]
+PASS | SELECT api.webhooks                                      | allowed ["0"]
+PASS | INSERT api.request_log (rolled back)                     | allowed ["650"]
+PASS | INSERT api.rate_buckets (rolled back)                    | allowed [1]
+PASS | UPDATE api.plans (admin page; rolled back)               | allowed ["starter"]
+PASS | EXECUTE api.diff_events (pure)                           | allowed ["1"]
+PASS | UPDATE api.drug_state                                    | denied: permission denied for table drug_state
+PASS | INSERT api.events                                        | denied: permission denied for table events
+PASS | DELETE api.sample_drugs                                  | denied: permission denied for table sample_drugs
+PASS | INSERT api.plans (admin page, 0045; rolled back)         | allowed ["x"]
+PASS | EXECUTE api.capture()                                    | denied: permission denied for function capture
+PASS | EXECUTE api.build_records()                              | denied: permission denied for function build_records
+PASS | EXECUTE api.retention()                                  | denied: permission denied for function retention
+PASS | EXECUTE web.sync()                                       | denied: permission denied for function sync
+PASS | SELECT public.drugs                                      | denied: permission denied for table drugs
+PASS | SELECT public.drug_search_aliases                        | denied: permission denied for table drug_search_aliases
+PASS | SELECT public.patient_profiles                           | denied: permission denied for table patient_profiles
+PASS | SELECT public.prescriptions                              | denied: permission denied for table prescriptions
+PASS | SELECT public.prescription_items                         | denied: permission denied for table prescription_items
+PASS | SELECT public.medication_reminders                       | denied: permission denied for table medication_reminders
+PASS | SELECT public.medication_administration_logs             | denied: permission denied for table medication_administration_logs
+PASS | SELECT public.medicine_cabinet_items                     | denied: permission denied for table medicine_cabinet_items
+PASS | SELECT public.user_profiles                              | denied: permission denied for table user_profiles
+PASS | SELECT public.user_favorites                             | denied: permission denied for table user_favorites
+PASS | SELECT public.recognition_learned_names                  | denied: permission denied for table recognition_learned_names
+PASS | SELECT public.price_change_events                        | denied: permission denied for table price_change_events
+PASS | SELECT web.slugs                                         | denied: permission denied for table slugs
+PASS | SELECT web.products                                      | denied: permission denied for table products
+PASS | SELECT web.labels                                        | denied: permission denied for table labels
+PASS | SELECT auth.users                                        | denied: permission denied for schema auth
+PASS | SELECT storage.objects                                   | denied: permission denied for schema storage
+PASS | SELECT vault.decrypted_secrets                           | denied: permission denied for schema vault
+PASS | SELECT extensions.pg_stat_statements                     | denied: permission denied for schema extensions
+PASS | CREATE TABLE in api                                      | denied: permission denied for schema api
+PASS | SET ROLE postgres                                        | denied: permission denied to set role "postgres"
+PASS | extensions schema (pg_trgm)                              | denied: permission denied for schema extensions
+PASS | auth.uid()                                               | denied: permission denied for schema auth
+PASS | retention keeps monthly quota buckets (definition)       | allowed [true]
+PASS | no forbidden field in any api.drug_state.record          | allowed ["0"]
+
+SUMMARY 61 pass / 61

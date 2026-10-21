@@ -1,0 +1,33 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/price-changes?since=2026-10-19T14:53:30Z",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"asuqLckYyzUZ_zNgzMw4_Vyyw9U\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "20",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [],
+    "page": {
+      "limit": 20,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "latest_detected_at": null,
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:34Z"
+    }
+  }
+}

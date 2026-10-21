@@ -1,0 +1,43 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/meta",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"tlp1PXvvr81nxFtid3y67vYINZw\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "29",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": {
+      "dataset_version": "2026-10-21.1",
+      "updated_at": "2026-10-21T14:05:03Z",
+      "last_price_change_at": null,
+      "last_price_list_date": "2026-10-14",
+      "counts": {
+        "drugs": 50,
+        "priced": 50,
+        "verified": 50,
+        "with_barcode": 50,
+        "companies": 39,
+        "ingredients": 43,
+        "categories": 34
+      },
+      "api_version": "1.0.0",
+      "docs_url": "https://dwaprice.com/api/docs"
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:31Z"
+    }
+  }
+}

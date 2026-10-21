@@ -1,0 +1,31 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/webhooks/d93c9b94-f4e9-4d84-8ea4-7aa8b3caf969/test",
+    "auth": "enterprise key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"-ii3GVUEx_jQC_NDZxLUk62dXcA\"",
+    "x-ratelimit-limit": "1000",
+    "x-ratelimit-remaining": "995",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "5000000",
+    "x-quota-remaining": "4999977",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": {
+      "status": 405,
+      "duration_ms": 198,
+      "error": null
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:51Z"
+    }
+  }
+}

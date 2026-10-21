@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "DELETE",
+    "path": "/webhooks/d93c9b94-f4e9-4d84-8ea4-7aa8b3caf969",
+    "auth": "enterprise key",
+    "body": null
+  },
+  "status": 204,
+  "headers": {
+    "cache-control": "private, max-age=60",
+    "etag": "\"jTRNVp8pFQ1rbINKSMk4tn_DnOM\"",
+    "x-ratelimit-limit": "1000",
+    "x-ratelimit-remaining": "994",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "5000000",
+    "x-quota-remaining": "4999976",
+    "x-quota-reset": "1793491200"
+  },
+  "body": ""
+}

@@ -1,0 +1,8 @@
+# Lint config for openapi.yaml: npx @redocly/cli lint openapi.yaml
+extends:
+  - recommended
+rules:
+  # /drugs/by-barcode/{barcode} next to /drugs/{id}/alternatives is flagged as ambiguous for a
+  # generic router; Next.js resolves static segments before dynamic ones, so "by-barcode" can
+  # never be read as an id (ids never contain that segment either).
+  no-ambiguous-paths: off

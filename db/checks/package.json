@@ -1,0 +1,7 @@
+{
+  "name": "dwaprice-db-checks",
+  "private": true,
+  "type": "module",
+  "description": "Audit, security-boundary and performance checks for the web.* read layer (part 1).",
+  "dependencies": { "pg": "8.13.1" }
+}

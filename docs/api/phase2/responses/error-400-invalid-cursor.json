@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs?cursor=abc.def",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 400,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "43",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49923",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "error": {
+      "code": "invalid_cursor",
+      "message": "cursor is expired, malformed, or does not match the filters",
+      "details": null
+    }
+  }
+}

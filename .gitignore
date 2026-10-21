@@ -1,0 +1,21 @@
+# dependencies and build output
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# credentials (web_reader connection string, secrets) — .env.example is committed
+.env*
+*.env
+!.env.example
+
+# check outputs and dependencies
+db/checks/node_modules/
+db/checks/bench_*.json
+db/checks/bench_params.json
+
+node_modules
+.next
+.env
+.env.local

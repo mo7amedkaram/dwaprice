@@ -1,0 +1,234 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs?q=%D9%83%D9%88%D9%86%D8%AC%D8%B3%D8%AA%D9%84&limit=3",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"AvDcKBJPkNTHlqZ8vMMhFqKvMEY\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "57",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49937",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "congestal-20-tabs",
+        "trade_name_en": "Congestal 20 tabs",
+        "trade_name_ar": "كونجستال 20 قرص",
+        "scientific_name": "Chlorpheniramine+paracetamol(acetaminophen)+pseudoephedrine",
+        "ingredients": [
+          {
+            "id": "paracetamol",
+            "name_en": "Paracetamol (acetaminophen)",
+            "name_ar": "باراسيتامول",
+            "strength": "650 mg",
+            "atc_code": "N02BE01"
+          },
+          {
+            "id": "chlorpheniramine",
+            "name_en": "Chlorphenamine maleate",
+            "name_ar": "كلورفينيرامين ماليات",
+            "strength": "4 mg",
+            "atc_code": "R06AB04"
+          },
+          {
+            "id": "pseudoephedrine",
+            "name_en": "Pseudoephedrine hydrochloride",
+            "name_ar": "سودوإيفيدرين هيدروكلوريد",
+            "strength": "60 mg",
+            "atc_code": "R01BA02"
+          }
+        ],
+        "strength": "650/4/60 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Tablet",
+          "ar": "قرص"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 20,
+        "packaging": "20 tablets (2 blisters of 10)",
+        "price": {
+          "current": 50,
+          "previous": 31,
+          "unit_price": 2.5,
+          "currency": "EGP",
+          "effective_date": "2024-06-06",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-03"
+        },
+        "barcode": "6221051011317",
+        "company": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "cold",
+          "en": "Cold/cough combination (analgesic + antihistamine + decongestant)",
+          "ar": null
+        },
+        "atc_codes": [],
+        "prescription_status": "otc",
+        "status": "listed",
+        "price_list_name": "Congestal 20 tabs",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/congestal-20-tabs"
+        }
+      },
+      {
+        "id": "congestal-day-10-tabs",
+        "trade_name_en": "Congestal day 10 tabs",
+        "trade_name_ar": "كونجستال داي 10 اقراص",
+        "scientific_name": "Paracetamol(acetaminophen)+phenylephrine hydrochloride",
+        "ingredients": [
+          {
+            "id": "paracetamol",
+            "name_en": "Paracetamol (acetaminophen)",
+            "name_ar": "باراسيتامول",
+            "strength": "paracetamol amount per tablet not stated on directory",
+            "atc_code": "N02BE01"
+          },
+          {
+            "id": "phenylephrine",
+            "name_en": "Phenylephrine hydrochloride",
+            "name_ar": "فينيليفرين هيدروكلوريد",
+            "strength": "phenylephrine HCl amount per tablet not stated on directory",
+            "atc_code": "R01BA03"
+          }
+        ],
+        "strength": null,
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Tablet",
+          "ar": "قرص"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 10,
+        "packaging": "10 tablets",
+        "price": {
+          "current": 6,
+          "previous": 6,
+          "unit_price": 0.6,
+          "currency": "EGP",
+          "effective_date": "2022-12-04",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-03"
+        },
+        "barcode": "6221051014806",
+        "company": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "cold-combination",
+          "en": "Cold combination (analgesic + decongestant) — day formula",
+          "ar": "مركب نزلات برد"
+        },
+        "atc_codes": [],
+        "prescription_status": "otc",
+        "status": "not_available",
+        "price_list_name": "Congestal day 10 tabs.(n/a)",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/congestal-day-10-tabs"
+        }
+      },
+      {
+        "id": "congestal-syrup-120ml",
+        "trade_name_en": "Congestal syrup 120ml",
+        "trade_name_ar": "كونجستال شراب 120 مل",
+        "scientific_name": "Chlorpheniramine+dextromethorphan+paracetamol(acetaminophen)+pseudoephedrine",
+        "ingredients": [
+          {
+            "id": "paracetamol",
+            "name_en": "Paracetamol (acetaminophen)",
+            "name_ar": "باراسيتامول",
+            "strength": "amount per 5 ml not stated on directory",
+            "atc_code": "N02BE01"
+          },
+          {
+            "id": "chlorpheniramine",
+            "name_en": "Chlorphenamine maleate",
+            "name_ar": "كلورفينيرامين ماليات",
+            "strength": "amount per 5 ml not stated on directory",
+            "atc_code": "R06AB04"
+          },
+          {
+            "id": "dextromethorphan",
+            "name_en": "Dextromethorphan",
+            "name_ar": "ديكستروميثورفان",
+            "strength": "amount per 5 ml not stated on directory",
+            "atc_code": "R05DA09"
+          },
+          "… 1 more item(s) omitted here (full response had 4)"
+        ],
+        "strength": null,
+        "dosage_form": {
+          "class": "syrup",
+          "en": "Oral syrup",
+          "ar": "شراب فموي"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": null,
+        "packaging": "Bottle 120 ml",
+        "price": {
+          "current": 44,
+          "previous": 31,
+          "unit_price": null,
+          "currency": "EGP",
+          "effective_date": "2024-06-26",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-03"
+        },
+        "barcode": "6221051041086",
+        "company": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "paediatric-cold",
+          "en": "Paediatric cold/cough combination syrup",
+          "ar": null
+        },
+        "atc_codes": [],
+        "prescription_status": "otc",
+        "status": "listed",
+        "price_list_name": "Congestal syrup 120ml",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/congestal-syrup-120ml"
+        }
+      }
+    ],
+    "page": {
+      "limit": 3,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiNTZkZjkzZGI0MjdkOTkwMSIsImsiOlszXSwiZSI6MTc5MjY4MDgxNn0.a1a7831623d1e869"
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:36Z"
+    }
+  }
+}

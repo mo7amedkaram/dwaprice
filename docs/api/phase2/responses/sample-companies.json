@@ -1,0 +1,49 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/companies?limit=5",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"3ViIiqf4miawJrDlJHXfOWysGYI\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "19",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "a-nattermann-and-cie-gmbh-germany",
+        "name": "A. Nattermann & Cie GmbH (Germany)",
+        "product_count": 2
+      },
+      {
+        "id": "abbott-laboratories",
+        "name": "Abbott Laboratories",
+        "product_count": 35
+      },
+      {
+        "id": "al-esraa-pharmaceutical-optima",
+        "name": "Al Esraa Pharmaceutical Optima",
+        "product_count": 49
+      },
+      "… 2 more item(s) omitted here (full response had 5)"
+    ],
+    "page": {
+      "limit": 5,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiMTFiZWZmOTkyODA1ZDBhNSIsImsiOlsiYXN0cmEgemVuZWNhIiwiYXN0cmEtemVuZWNhIl0sImUiOjE3OTI2ODA4MTV9.a5913866cb4d83aa"
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:35Z"
+    }
+  }
+}

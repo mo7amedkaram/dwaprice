@@ -1,0 +1,90 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs/augmentin-1gm-14-tablets",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"gxJG_2c3F2mUrbwU6B4PIUhYCW4\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "25",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": {
+      "id": "augmentin-1gm-14-tablets",
+      "trade_name_en": "Augmentin 1 g film-coated tablets (14 tablets)",
+      "trade_name_ar": "اوجمنتين 1جم 14 قرص",
+      "scientific_name": "Amoxicillin + Clavulanic acid",
+      "ingredients": [
+        {
+          "id": "amoxicillin",
+          "name_en": "Amoxicillin",
+          "name_ar": "أموكسيسيلين",
+          "strength": "Amoxicillin 875 mg (as trihydrate) per tablet (Egyptian name: Augmentin 1gm)",
+          "atc_code": "J01CA04"
+        },
+        {
+          "id": "clavulanic-acid",
+          "name_en": "Clavulanic acid",
+          "name_ar": "حمض الكلافولانيك",
+          "strength": "Clavulanic acid 125 mg (as potassium clavulanate) per tablet (Egyptian name: Augmentin 1gm)",
+          "atc_code": null
+        }
+      ],
+      "strength": "1 g (amoxicillin 875 mg + clavulanic acid 125 mg per tablet)",
+      "dosage_form": {
+        "class": "tablet",
+        "en": "Film-coated tablets",
+        "ar": "أقراص مغلفة"
+      },
+      "route": "oral",
+      "route_text": "Oral",
+      "units_per_package": 14,
+      "packaging": "14 film-coated tablets (2 strips of 7)",
+      "price": {
+        "current": 210,
+        "previous": 131,
+        "unit_price": 15,
+        "currency": "EGP",
+        "effective_date": "2024-12-02",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "verified": true,
+        "verified_at": "2026-09-27"
+      },
+      "barcode": "6221045011279",
+      "company": {
+        "id": "glaxosmithkline-manufactured-by-medical-union-pharmaceuticals-mup-egypt",
+        "name": "GlaxoSmithKline (manufactured by Medical Union Pharmaceuticals - MUP, Egypt)"
+      },
+      "manufacturer": null,
+      "category": {
+        "id": "antibacterial",
+        "en": "Antibacterial - penicillin with beta-lactamase inhibitor",
+        "ar": "مضاد بكتيري"
+      },
+      "atc_codes": [
+        "J01CR02"
+      ],
+      "prescription_status": null,
+      "status": "listed",
+      "price_list_name": "Augmentin 1gm 14 tablets",
+      "created_at": "2026-10-21T14:01:31Z",
+      "updated_at": "2026-10-21T14:01:31Z",
+      "links": {
+        "web_url": "https://dwaprice.com/dawa/augmentin-1gm-14-tablets"
+      }
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:32Z"
+    }
+  }
+}

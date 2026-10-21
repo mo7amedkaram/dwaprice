@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs/no-such-drug",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 404,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "54",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49934",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "error": {
+      "code": "not_found",
+      "message": "No drug with id \"no-such-drug\"",
+      "details": null
+    }
+  }
+}

@@ -1,0 +1,156 @@
+[
+ {
+  "page": "1-popular-alerid",
+  "width": 360,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر اليريد 10مجم 30 قرص 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "1-popular-alerid",
+  "width": 1280,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر اليريد 10مجم 30 قرص 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "2-no-history-alphafen",
+  "width": 360,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر الفافين 100مجم/5مل معلق 120 مل 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "2-no-history-alphafen",
+  "width": 1280,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر الفافين 100مجم/5مل معلق 120 مل 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "3-duplicate-fucidin-30g",
+  "width": 360,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر فيوسيدين 2% مرهم 30 جرام 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "3-duplicate-fucidin-30g",
+  "width": 1280,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر فيوسيدين 2% مرهم 30 جرام 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "4-rx-montelurama",
+  "width": 360,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر مونتيلوراما 10مجم 20 قرص مغلف 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "4-rx-montelurama",
+  "width": 1280,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "سعر مونتيلوراما 10مجم 20 قرص مغلف 2026"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "5-dosing-sample-design",
+  "width": 360,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "نظام التصميم Clinical Clean"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "5-dosing-sample-design",
+  "width": 1280,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "نظام التصميم Clinical Clean"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "6-alternatives-montelurama",
+  "width": 360,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "بدائل مونتيلوراما 10مجم 20 قرص مغلف"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "6-alternatives-montelurama",
+  "width": 1280,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "بدائل مونتيلوراما 10مجم 20 قرص مغلف"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "7-uses-montelurama",
+  "width": 360,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "دواعي استعمال مونتيلوراما 10مجم 20 قرص مغلف"
+  ],
+  "contentFetches": 0
+ },
+ {
+  "page": "7-uses-montelurama",
+  "width": 1280,
+  "status": 200,
+  "overflowX": false,
+  "smallTargets": 0,
+  "h1": [
+   "دواعي استعمال مونتيلوراما 10مجم 20 قرص مغلف"
+  ],
+  "contentFetches": 0
+ }
+]

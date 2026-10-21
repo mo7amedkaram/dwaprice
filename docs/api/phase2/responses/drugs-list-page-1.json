@@ -1,0 +1,153 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs?limit=2&company=sigma",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"wxlGgWmOGcKXUS-iVm8uFQSMCzU\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "46",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49926",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "actifast-50mg-30-sachets",
+        "trade_name_en": "Actifast 50 mg 30 sachets",
+        "trade_name_ar": null,
+        "scientific_name": "Diclofenac potassium",
+        "ingredients": [
+          {
+            "id": "diclofenac-sodium",
+            "name_en": "Diclofenac potassium",
+            "name_ar": "ديكلوفيناك البوتاسيوم",
+            "strength": "50 mg",
+            "atc_code": "M01AB05"
+          }
+        ],
+        "strength": "50 mg",
+        "dosage_form": {
+          "class": "sachet",
+          "en": "Sachets",
+          "ar": "أكياس"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 30,
+        "packaging": "Box of 30 sachets",
+        "price": {
+          "current": 105,
+          "previous": null,
+          "unit_price": 3.5,
+          "currency": "EGP",
+          "effective_date": null,
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": null,
+        "company": {
+          "id": "october-pharma",
+          "name": "October Pharma"
+        },
+        "manufacturer": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "category": {
+          "id": "analgesic",
+          "en": "Analgesic / NSAID",
+          "ar": "مسكن"
+        },
+        "atc_codes": [
+          "M01AB05"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Actifast 50 mg 30 sachets",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/actifast-50mg-30-sachets"
+        }
+      },
+      {
+        "id": "aripiprex-10mg-20-f-c-tab",
+        "trade_name_en": "Aripiprex 10 mg 20 film-coated tablets",
+        "trade_name_ar": "اريببريكس 10مجم 20 قرص",
+        "scientific_name": "Aripiprazole",
+        "ingredients": [
+          {
+            "id": "aripiprazole",
+            "name_en": "Aripiprazole",
+            "name_ar": "أريبيبرازول",
+            "strength": "10 mg",
+            "atc_code": "N05AX12"
+          }
+        ],
+        "strength": "10 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablets",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 20,
+        "packaging": "20 film-coated tablets",
+        "price": {
+          "current": 80,
+          "previous": null,
+          "unit_price": 4,
+          "currency": "EGP",
+          "effective_date": "2021-09-16",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": null,
+        "company": {
+          "id": "andalous-pharma",
+          "name": "Andalous Pharma"
+        },
+        "manufacturer": {
+          "id": "sigma",
+          "name": "Sigma"
+        },
+        "category": {
+          "id": "antipsychotic",
+          "en": "Antipsychotic - atypical",
+          "ar": "مضاد للذهان"
+        },
+        "atc_codes": [
+          "N05AX12"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Aripiprex 10mg 20 f.c.tab.",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/aripiprex-10mg-20-f-c-tab"
+        }
+      }
+    ],
+    "page": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiZTgwZTQzYTkyZGQ1YmI3OSIsImsiOlsi2KfYsdmK2KjYqNix2YrZg9izIDEw2YXYrNmFIDIwINmC2LHYtSIsImFyaXBpcHJleC0xMG1nLTIwLWYtYy10YWIiXSwiZSI6MTc5MjY4MDgxOX0.3551d91b96ff9d7a"
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:39Z"
+    }
+  }
+}

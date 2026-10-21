@@ -1,0 +1,244 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs/augmentin-1gm-14-tablets/alternatives?strength=any",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"X8fGOHtJGFHtEHVStCkCuO3AN8g\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "22",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "hibiotic-1gm-16-tab",
+        "trade_name_en": "Hibiotic 1 gm 16 tab",
+        "trade_name_ar": "هاي بيوتك 1جم 16 قرص",
+        "scientific_name": "Amoxicillin + clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "1 gm (combined)",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "1 gm (combined)",
+            "atc_code": null
+          }
+        ],
+        "strength": "1 gm (875 mg + 125 mg)",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablet",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 16,
+        "packaging": "16 tablets",
+        "price": {
+          "current": 173,
+          "previous": 120,
+          "unit_price": 10.81,
+          "currency": "EGP",
+          "effective_date": "2024-06-12",
+          "updated_at": "2026-10-21T14:03:55Z",
+          "verified": true,
+          "verified_at": "2026-10-05"
+        },
+        "barcode": "6221025022547",
+        "company": {
+          "id": "amoun",
+          "name": "Amoun"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic (penicillin + beta-lactamase inhibitor)",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Hibiotic 1 gm 16 tab",
+        "created_at": "2026-10-21T14:03:55Z",
+        "updated_at": "2026-10-21T14:03:55Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/hibiotic-1gm-16-tab"
+        },
+        "match": "same_strength",
+        "same_form": true,
+        "same_product": false,
+        "price_diff": -37,
+        "unit_price_diff_pct": -27.9
+      },
+      {
+        "id": "augmacillin-457mg-5ml-susp-60ml",
+        "trade_name_en": "Augmacillin 457 mg/5 ml powder for oral suspension 60 ml",
+        "trade_name_ar": "اوجماسيللين 457مجم/5 مل معلق 60 مل",
+        "scientific_name": "Amoxicillin + Clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "400 mg amoxicillin per 5 ml (as trihydrate; combined strength stated in Egypt as 457 mg/5 ml)",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "57 mg clavulanic acid per 5 ml (as potassium clavulanate; combined strength stated in Egypt as 457 mg/5 ml)",
+            "atc_code": null
+          }
+        ],
+        "strength": "457 mg/5 ml (amoxicillin 400 mg + clavulanic acid 57 mg per 5 ml)",
+        "dosage_form": {
+          "class": "suspension",
+          "en": "Powder for oral suspension",
+          "ar": "مسحوق لمعلق فموي"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": null,
+        "packaging": "One bottle, 60 ml of suspension after reconstitution",
+        "price": {
+          "current": 47.5,
+          "previous": 32.5,
+          "unit_price": null,
+          "currency": "EGP",
+          "effective_date": "2024-05-06",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6223002210428",
+        "company": {
+          "id": "mepaco",
+          "name": "Mepaco"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibacterial",
+          "en": "Antibacterial - penicillin with beta-lactamase inhibitor",
+          "ar": "مضاد بكتيري"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Augmacillin 457mg/5ml susp. 60 ml",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/augmacillin-457mg-5ml-susp-60ml"
+        },
+        "match": "other_strength",
+        "same_form": false,
+        "same_product": false,
+        "price_diff": -162.5,
+        "unit_price_diff_pct": null
+      },
+      {
+        "id": "augmentin-625mg-10-f-c-tab",
+        "trade_name_en": "Augmentin 625 mg 10 film-coated tablets",
+        "trade_name_ar": "اوجمنتين 625 مجم 10 اقراص",
+        "scientific_name": "Amoxicillin + Clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "amoxicillin 500 mg (as amoxicillin trihydrate)",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "clavulanic acid 125 mg (as potassium clavulanate)",
+            "atc_code": null
+          }
+        ],
+        "strength": "625 mg (amoxicillin 500 mg + clavulanic acid 125 mg per tablet)",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablet",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 10,
+        "packaging": "Carton of 10 film-coated tablets (1 blister of 10)",
+        "price": {
+          "current": 117,
+          "previous": 81.5,
+          "unit_price": 11.7,
+          "currency": "EGP",
+          "effective_date": "2024-09-25",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6221045011286",
+        "company": {
+          "id": "smithkline-beecham",
+          "name": "SmithKline Beecham"
+        },
+        "manufacturer": {
+          "id": "mup",
+          "name": "MUP"
+        },
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic (penicillin with beta-lactamase inhibitor)",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Augmentin 625mg 10 f.c. tab.",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/augmentin-625mg-10-f-c-tab"
+        },
+        "match": "other_strength",
+        "same_form": true,
+        "same_product": false,
+        "price_diff": -93,
+        "unit_price_diff_pct": -22
+      }
+    ],
+    "drug_id": "augmentin-1gm-14-tablets",
+    "page": {
+      "limit": 50,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:33Z"
+    }
+  }
+}

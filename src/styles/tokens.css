@@ -1,0 +1,115 @@
+/*
+ * "Clinical Clean" design tokens — the ONE place for colors, fonts, type scale,
+ * radii and layout widths. Tailwind v4 turns every token below into a CSS
+ * variable (:root) and a utility (bg-primary, text-ink, rounded-card, ...).
+ * Components use only these names; no hex values anywhere else.
+ */
+@theme {
+  /* Tailwind's default palette is removed so that only these colors exist. */
+  --color-*: initial;
+
+  --color-primary: #0D7C66;
+  --color-primary-hover: #0A6553;
+  --color-primary-tint: #E6F4F0;
+
+  --color-ink: #0F172A;
+  --color-text-2: #475569;
+  --color-muted: #5B6B82;   /* 5.4:1 on bg, 4.8:1 on every tint; was #94A3B8 (2.6:1, failed as text) */
+
+  --color-bg: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-on-primary: #FFFFFF; /* text on a primary background (buttons, active chips) */
+  --color-figure: #F8FAFC;     /* behind product photos (white images glare in the dark theme) */
+
+  /* price went down / cheapest */
+  --color-down: #15803D;    /* 4.6:1 on down-bg; was #16A34A (3.0:1) */
+  --color-down-bg: #DCFCE7;
+  /* price went up */
+  --color-up: #B91C1C;      /* 5.3:1 on up-bg; was #DC2626 (4.0:1) */
+  --color-up-bg: #FEE2E2;
+  /* prescription / warning */
+  --color-rx: #B45309;
+  --color-rx-bg: #FEF3C7;
+
+  /* Fonts: next/font injects --font-plex-arabic and --font-inter on <html>. */
+  --font-sans: var(--font-plex-arabic), "Segoe UI", Tahoma, system-ui, sans-serif;
+  --font-latin: var(--font-inter), var(--font-plex-arabic), "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace; /* code samples and keys */
+
+  /* Type scale: mobile value, then the desktop value (>= 768px). */
+  --text-h1: 1.5rem;          /* 24 */
+  --text-h1-desktop: 2rem;    /* 32 */
+  --text-h2: 1.25rem;         /* 20 */
+  --text-h2-desktop: 1.5rem;  /* 24 */
+  --text-body: 1rem;          /* 16 */
+  --text-small: 0.8125rem;    /* 13 */
+  --text-small-desktop: 0.875rem; /* 14 */
+  --text-price: 1.625rem;     /* 26 */
+  --text-price-desktop: 2rem; /* 32 */
+
+  --leading-body: 1.8;
+  --leading-heading: 1.4;
+
+  /* Shape: 4px spacing grid (Tailwind's default --spacing is 0.25rem). */
+  --radius-card: 12px;
+  --radius-control: 10px;
+  --radius-control-sm: 8px;
+
+  /* Layout */
+  --container-site: 1200px;
+  --width-price-card: 22.5rem; /* 360px sticky column on lg */
+  --size-tap: 2.75rem;         /* 44px minimum tap target */
+}
+
+/*
+ * Dark theme. src/lib/theme.ts runs in <head> before the first paint and sets
+ * html[data-theme="dark"|"light"] from the saved choice (localStorage "dw_theme") or the
+ * device setting; without JavaScript the media query follows the device. The values are
+ * written twice on purpose: light-dark() is not safe on older phones, and a declaration
+ * the browser rejects would leave every utility without a colour.
+ * Contrast (WCAG AA, checked with scratch contrast script): text on bg/surface >= 4.6,
+ * primary on bg 8.6, every badge text on its tint >= 5.1, text-on-primary 8.6.
+ */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-primary: #3CC9A7;
+  --color-primary-hover: #5FD8BB;
+  --color-primary-tint: #11362F;
+  --color-ink: #E2E8F0;
+  --color-text-2: #94A3B8;
+  --color-muted: #8391A8;
+  --color-bg: #0F172A;
+  --color-surface: #1E293B;
+  --color-border: #334155;
+  --color-on-primary: #0F172A;
+  --color-figure: #CBD5E1;
+  --color-down: #4ADE80;
+  --color-down-bg: #163A26;
+  --color-up: #F87171;
+  --color-up-bg: #4A1D1D;
+  --color-rx: #FBBF24;
+  --color-rx-bg: #422F0B;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-primary: #3CC9A7;
+    --color-primary-hover: #5FD8BB;
+    --color-primary-tint: #11362F;
+    --color-ink: #E2E8F0;
+    --color-text-2: #94A3B8;
+    --color-muted: #8391A8;
+    --color-bg: #0F172A;
+    --color-surface: #1E293B;
+    --color-border: #334155;
+    --color-on-primary: #0F172A;
+    --color-figure: #CBD5E1;
+    --color-down: #4ADE80;
+    --color-down-bg: #163A26;
+    --color-up: #F87171;
+    --color-up-bg: #4A1D1D;
+    --color-rx: #FBBF24;
+    --color-rx-bg: #422F0B;
+  }
+}

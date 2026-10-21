@@ -1,0 +1,33 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/price-changes?since=2026-10-19T14:53:30Z&limit=3",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"Y7SP1mylUmn-plp7gkuag97WbjY\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "50",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49930",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [],
+    "page": {
+      "limit": 3,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "latest_detected_at": null,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:38Z"
+    }
+  }
+}

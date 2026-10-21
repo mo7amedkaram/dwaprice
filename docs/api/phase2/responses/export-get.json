@@ -1,0 +1,35 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/exports/22bf7076-7bcb-4101-ac75-04c27e927cbc",
+    "auth": "enterprise key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"WCgr3cQKFN5Gp46HfXfiDdWhIpA\"",
+    "x-ratelimit-limit": "1000",
+    "x-ratelimit-remaining": "998",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "5000000",
+    "x-quota-remaining": "4999980",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": {
+      "id": "22bf7076-7bcb-4101-ac75-04c27e927cbc",
+      "format": "csv",
+      "status": "ready",
+      "dataset_version": "2026-10-21.1",
+      "url": "http://localhost:3100/api/v1/exports/22bf7076-7bcb-4101-ac75-04c27e927cbc/download?exp=1792598020&sig=23194dae5ad6b673a1e4099c015e8bea",
+      "expires_at": "2026-10-21T15:53:40Z",
+      "rows": 14729
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:40Z"
+    }
+  }
+}

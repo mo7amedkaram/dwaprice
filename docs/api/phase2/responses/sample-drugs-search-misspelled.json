@@ -1,0 +1,228 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs?q=%D8%A7%D9%88%D8%AC%D9%85%D9%86%D8%AA%D9%86",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"0hm2xp_2wHZcso-BJw4IiMynzD4\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "27",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "augmentin-1-2g-vial-for-i-v-inj-inf",
+        "trade_name_en": "Augmentin 1.2 g vial for intravenous injection/infusion",
+        "trade_name_ar": "اوجمنتين 1.2 جم 1فيال",
+        "scientific_name": "Amoxicillin + Clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin (as sodium)",
+            "name_ar": "أموكسيسيلين",
+            "strength": "Amoxicillin sodium equivalent to 1000 mg amoxicillin per vial (combined strength stated in Egypt as 1.2 g)",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid (as potassium clavulanate)",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "Potassium clavulanate equivalent to 200 mg clavulanic acid per vial (combined strength stated in Egypt as 1.2 g)",
+            "atc_code": null
+          }
+        ],
+        "strength": "1.2 g (amoxicillin 1000 mg + clavulanic acid 200 mg per vial)",
+        "dosage_form": {
+          "class": "injection",
+          "en": "Powder for solution for intravenous injection/infusion (vial)",
+          "ar": "مسحوق لمحلول للحقن/التسريب الوريدي (فيال)"
+        },
+        "route": "injection",
+        "route_text": "Intravenous",
+        "units_per_package": 1,
+        "packaging": "1 vial",
+        "price": {
+          "current": 36,
+          "previous": null,
+          "unit_price": 36,
+          "currency": "EGP",
+          "effective_date": "2022-12-03",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6221045009139",
+        "company": {
+          "id": "glaxosmithkline-manufactured-by-medical-union-pharmaceuticals-mup-egypt",
+          "name": "GlaxoSmithKline (manufactured by Medical Union Pharmaceuticals - MUP, Egypt)"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibacterial",
+          "en": "Antibacterial - penicillin with beta-lactamase inhibitor",
+          "ar": "مضاد بكتيري"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Augmentin 1.2g vial for i.v. inj./inf.",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/augmentin-1-2g-vial-for-i-v-inj-inf"
+        }
+      },
+      {
+        "id": "augmentin-1gm-14-tablets",
+        "trade_name_en": "Augmentin 1 g film-coated tablets (14 tablets)",
+        "trade_name_ar": "اوجمنتين 1جم 14 قرص",
+        "scientific_name": "Amoxicillin + Clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "Amoxicillin 875 mg (as trihydrate) per tablet (Egyptian name: Augmentin 1gm)",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "Clavulanic acid 125 mg (as potassium clavulanate) per tablet (Egyptian name: Augmentin 1gm)",
+            "atc_code": null
+          }
+        ],
+        "strength": "1 g (amoxicillin 875 mg + clavulanic acid 125 mg per tablet)",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablets",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 14,
+        "packaging": "14 film-coated tablets (2 strips of 7)",
+        "price": {
+          "current": 210,
+          "previous": 131,
+          "unit_price": 15,
+          "currency": "EGP",
+          "effective_date": "2024-12-02",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6221045011279",
+        "company": {
+          "id": "glaxosmithkline-manufactured-by-medical-union-pharmaceuticals-mup-egypt",
+          "name": "GlaxoSmithKline (manufactured by Medical Union Pharmaceuticals - MUP, Egypt)"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibacterial",
+          "en": "Antibacterial - penicillin with beta-lactamase inhibitor",
+          "ar": "مضاد بكتيري"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Augmentin 1gm 14 tablets",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/augmentin-1gm-14-tablets"
+        }
+      },
+      {
+        "id": "augmentin-625mg-10-f-c-tab",
+        "trade_name_en": "Augmentin 625 mg 10 film-coated tablets",
+        "trade_name_ar": "اوجمنتين 625 مجم 10 اقراص",
+        "scientific_name": "Amoxicillin + Clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "amoxicillin 500 mg (as amoxicillin trihydrate)",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "clavulanic acid 125 mg (as potassium clavulanate)",
+            "atc_code": null
+          }
+        ],
+        "strength": "625 mg (amoxicillin 500 mg + clavulanic acid 125 mg per tablet)",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablet",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 10,
+        "packaging": "Carton of 10 film-coated tablets (1 blister of 10)",
+        "price": {
+          "current": 117,
+          "previous": 81.5,
+          "unit_price": 11.7,
+          "currency": "EGP",
+          "effective_date": "2024-09-25",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6221045011286",
+        "company": {
+          "id": "smithkline-beecham",
+          "name": "SmithKline Beecham"
+        },
+        "manufacturer": {
+          "id": "mup",
+          "name": "MUP"
+        },
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic (penicillin with beta-lactamase inhibitor)",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Augmentin 625mg 10 f.c. tab.",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/augmentin-625mg-10-f-c-tab"
+        }
+      }
+    ],
+    "page": {
+      "limit": 20,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:31Z"
+    }
+  }
+}

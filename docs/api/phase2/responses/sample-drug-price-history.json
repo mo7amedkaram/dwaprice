@@ -1,0 +1,41 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/sample/drugs/augmentin-1gm-14-tablets/price-history",
+    "auth": "none",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "public, s-maxage=300, stale-while-revalidate=3600",
+    "etag": "\"2vll4yHB78t1dhYGycmmbAOAOfE\"",
+    "x-sample": "true",
+    "x-ratelimit-limit": "30",
+    "x-ratelimit-remaining": "21",
+    "x-ratelimit-reset": "1792594440",
+    "access-control-allow-origin": "*"
+  },
+  "body": {
+    "data": [
+      {
+        "price": 131,
+        "effective_date": null,
+        "recorded_at": null,
+        "source": "catalog"
+      },
+      {
+        "price": 210,
+        "effective_date": "2024-12-02",
+        "recorded_at": null,
+        "source": "catalog"
+      }
+    ],
+    "drug_id": "augmentin-1gm-14-tablets",
+    "sample": true,
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:34Z"
+    }
+  }
+}

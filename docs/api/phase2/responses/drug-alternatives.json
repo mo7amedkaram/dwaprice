@@ -1,0 +1,244 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/drugs/augmentin-1gm-14-tablets/alternatives?limit=3",
+    "auth": "starter key",
+    "body": null
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "private, max-age=60",
+    "etag": "\"5E8z-mEgKcZiNcCyZFx3q3t_wwI\"",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "52",
+    "x-ratelimit-reset": "1792594440",
+    "x-quota-limit": "50000",
+    "x-quota-remaining": "49932",
+    "x-quota-reset": "1793491200"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "clavosigma-875-125mg-10-f-c-tabs",
+        "trade_name_en": "Clavosigma 875/125 mg",
+        "trade_name_ar": "كلافوسيجما 875/125 مجم 10 أقراص مغلفة",
+        "scientific_name": "Amoxicillin + clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "875 mg amoxicillin per tablet",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "125 mg clavulanic acid per tablet",
+            "atc_code": null
+          }
+        ],
+        "strength": "875/125 mg",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablets",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 10,
+        "packaging": "Box of 10 film-coated tablets",
+        "price": {
+          "current": 36,
+          "previous": null,
+          "unit_price": 3.6,
+          "currency": "EGP",
+          "effective_date": "2022-09-22",
+          "updated_at": "2026-10-21T14:02:00Z",
+          "verified": true,
+          "verified_at": "2026-10-03"
+        },
+        "barcode": null,
+        "company": {
+          "id": "sigma-tec",
+          "name": "Sigma Tec"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": "prescription",
+        "status": "listed",
+        "price_list_name": "Clavosigma 875/125mg 10 f.c. tabs.",
+        "created_at": "2026-10-21T14:02:00Z",
+        "updated_at": "2026-10-21T14:02:00Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/clavosigma-875-125mg-10-f-c-tabs"
+        },
+        "match": "same_strength",
+        "same_form": true,
+        "same_product": false,
+        "price_diff": -174,
+        "unit_price_diff_pct": -76
+      },
+      {
+        "id": "klavox-1gm-14-f-c-tab",
+        "trade_name_en": "Klavox 1 g film-coated tablets",
+        "trade_name_ar": "كلافوكس 1جم 14 قرص",
+        "scientific_name": "Amoxicillin + Clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "Amoxicillin (trihydrate) - 875mg",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid (as potassium clavulanate)",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "Clavulanic Acid (potassium) - 125mg",
+            "atc_code": null
+          }
+        ],
+        "strength": "Amoxicillin 875 mg + clavulanic acid 125 mg per tablet (1 g)",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablet",
+          "ar": "قرص مغلف"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 14,
+        "packaging": "14 film-coated tablets per pack (directory: 2 strips)",
+        "price": {
+          "current": 75,
+          "previous": null,
+          "unit_price": 5.36,
+          "currency": "EGP",
+          "effective_date": "2022-12-06",
+          "updated_at": "2026-10-21T14:04:09Z",
+          "verified": true,
+          "verified_at": "2026-10-05"
+        },
+        "barcode": "6281086041505",
+        "company": {
+          "id": "eimc",
+          "name": "EIMC"
+        },
+        "manufacturer": {
+          "id": "spimaco",
+          "name": "Spimaco"
+        },
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic (penicillin with beta-lactamase inhibitor)",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Klavox 1gm 14 f.c.tab.",
+        "created_at": "2026-10-21T14:04:09Z",
+        "updated_at": "2026-10-21T14:04:09Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/klavox-1gm-14-f-c-tab"
+        },
+        "match": "same_strength",
+        "same_form": true,
+        "same_product": false,
+        "price_diff": -135,
+        "unit_price_diff_pct": -64.3
+      },
+      {
+        "id": "augram-1gm-7-tablets",
+        "trade_name_en": "Augram 1 g 7 film-coated tablets",
+        "trade_name_ar": "اوجرام 1جم 7 اقراص",
+        "scientific_name": "Amoxicillin + Clavulanic acid",
+        "ingredients": [
+          {
+            "id": "amoxicillin",
+            "name_en": "Amoxicillin",
+            "name_ar": "أموكسيسيلين",
+            "strength": "Amoxicillin 875mg",
+            "atc_code": "J01CA04"
+          },
+          {
+            "id": "clavulanic-acid",
+            "name_en": "Clavulanic acid",
+            "name_ar": "حمض الكلافولانيك",
+            "strength": "Clavulanic acid 125mg",
+            "atc_code": null
+          }
+        ],
+        "strength": "1 g (amoxicillin 875 mg + clavulanic acid 125 mg per tablet)",
+        "dosage_form": {
+          "class": "tablet",
+          "en": "Film-coated tablet",
+          "ar": "أقراص مغلفة"
+        },
+        "route": "oral",
+        "route_text": "Oral",
+        "units_per_package": 7,
+        "packaging": "Pack of 7 film-coated tablets",
+        "price": {
+          "current": 76,
+          "previous": 58,
+          "unit_price": 10.86,
+          "currency": "EGP",
+          "effective_date": "2024-08-27",
+          "updated_at": "2026-10-21T14:01:31Z",
+          "verified": true,
+          "verified_at": "2026-09-27"
+        },
+        "barcode": "6223003975135",
+        "company": {
+          "id": "rameda",
+          "name": "Rameda"
+        },
+        "manufacturer": null,
+        "category": {
+          "id": "antibiotic",
+          "en": "Antibiotic (penicillin with beta-lactamase inhibitor)",
+          "ar": "مضاد حيوي"
+        },
+        "atc_codes": [
+          "J01CR02"
+        ],
+        "prescription_status": null,
+        "status": "listed",
+        "price_list_name": "Augram 1gm 7 tablets",
+        "created_at": "2026-10-21T14:01:31Z",
+        "updated_at": "2026-10-21T14:01:31Z",
+        "links": {
+          "web_url": "https://dwaprice.com/dawa/augram-1gm-7-tablets"
+        },
+        "match": "same_strength",
+        "same_form": true,
+        "same_product": false,
+        "price_diff": -134,
+        "unit_price_diff_pct": -27.6
+      }
+    ],
+    "drug_id": "augmentin-1gm-14-tablets",
+    "page": {
+      "limit": 3,
+      "has_more": true,
+      "next_cursor": "eyJmIjoiZWJlNzlmZTU1MDZjMGI4YyIsImsiOlszXSwiZSI6MTc5MjY4MDgxN30.f47138ba96f3c43c"
+    },
+    "meta": {
+      "dataset_version": "2026-10-21.1",
+      "generated_at": "2026-10-21T14:53:37Z"
+    }
+  }
+}
