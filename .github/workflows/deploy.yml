@@ -1,0 +1,138 @@
+# Build on GitHub Actions, ship the standalone bundle to the VPS over SSH, activate it there
+# with scripts/server/deploy.sh. The server never builds and never pulls from GitHub.
+# Server setup and the secrets this needs: DEPLOY.md.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One run at a time, in push order: a newer run waits (never cancels a deploy mid-upload),
+# and runs still waiting are replaced by the newest one.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  APP_DIR: /www/wwwroot/dwaprice.com
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      # next-env.d.ts and .next/types are git-ignored; generate them so route types are checked too.
+      - run: npx next typegen
+      - run: npm run typecheck
+      - run: npm test
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: https://dwaprice.com
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # Prerendering reads the database, so the build needs the production settings.
+      # Not passed on purpose: WEB_DB_POOL_MAX / API_DB_POOL_MAX (runtime only, in shared/.env:
+      # the build runs 3 workers on the default pool of 3), and API_ALLOW_PRIVATE_WEBHOOKS /
+      # API_DEV_LOGIN_LINKS (local development only).
+      # No .next/cache restore either: stale unstable_cache data would end up in prerendered pages.
+      - name: Build
+        run: npm run build
+        env:
+          WEB_DATABASE_URL: ${{ secrets.WEB_DATABASE_URL }}
+          WEB_DATABASE_CA: ${{ secrets.WEB_DATABASE_CA }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+          API_DATABASE_URL: ${{ secrets.API_DATABASE_URL }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ALERT_FROM_EMAIL: ${{ secrets.ALERT_FROM_EMAIL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          WHATSAPP_NUMBER: ${{ secrets.WHATSAPP_NUMBER }}
+
+      # .next/standalone has server.js and the traced node_modules; static assets, public/ and
+      # files read at runtime are not traced, so they are copied in here.
+      - name: Assemble release bundle
+        run: |
+          set -euo pipefail
+          test -f .next/standalone/server.js
+          cp -a .next/standalone release
+          mkdir -p release/.next release/scripts/server
+          cp -a .next/static release/.next/static
+          if [ -d public ]; then cp -a public release/public; fi
+          cp openapi.yaml ecosystem.config.js release/
+          cp scripts/server/deploy.sh release/scripts/server/
+          rm -rf release/.next/cache
+          if compgen -G 'release/.env*' >/dev/null; then echo "::error::.env file in the bundle"; exit 1; fi
+          du -sh release
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          # tr: secrets pasted from Windows may carry CRLF, which OpenSSH rejects.
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
+          {
+            echo "Host server"
+            echo "  HostName $SSH_HOST"
+            echo "  Port ${SSH_PORT:-22}"
+            echo "  User $SSH_USER"
+            echo "  IdentityFile ~/.ssh/deploy_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+            echo "  ServerAliveInterval 30"
+          } > ~/.ssh/config
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts ~/.ssh/config
+
+      # A re-run for the commit that is already live skips the upload: rewriting the files of
+      # the running release would mix two builds under the live server.
+      - name: Upload release
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          live="$(ssh server "readlink -e $APP_DIR/current || true")"
+          if [ "${live##*/}" = "$SHA" ]; then
+            echo "$SHA is already live, nothing to upload"
+            exit 0
+          fi
+          ssh server "mkdir -p $APP_DIR/releases/$SHA"
+          rsync -az --delete --exclude=/.env --exclude=/.next/cache release/ "server:$APP_DIR/releases/$SHA/"
+
+      - name: Activate release
+        env:
+          SHA: ${{ github.sha }}
+        run: ssh server "bash $APP_DIR/releases/$SHA/scripts/server/deploy.sh $SHA"

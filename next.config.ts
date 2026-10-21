@@ -10,6 +10,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Self-contained server (.next/standalone/server.js) for the VPS deploy (DEPLOY.md).
+  // .next/static and openapi.yaml are copied next to it by .github/workflows/deploy.yml.
+  output: 'standalone',
+  // Commit of this build, inlined at build time and reported by /api/health so the
+  // deploy script can tell the new release from the one it replaces.
+  env: { COMMIT_SHA: process.env.GITHUB_SHA ?? '' },
   // pg is a server-only dependency; keep it out of the bundler.
   serverExternalPackages: ['pg'],
   // Build workers each hold a small pg pool (lib/db/pool.ts, max 3). The database
