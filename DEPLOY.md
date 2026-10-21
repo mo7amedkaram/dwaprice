@@ -4,7 +4,7 @@ Every push to `main` deploys the site automatically:
 
 1. **GitHub Actions, job `check`** runs lint, typecheck and tests.
 2. **GitHub Actions, job `deploy`** runs `next build` and packs the standalone server. It uploads the bundle with rsync over SSH to `/www/wwwroot/dwaprice.com/releases/<commit>/` and runs [`scripts/server/deploy.sh`](scripts/server/deploy.sh) on the server.
-3. **`deploy.sh`** links the shared `.env` and cache into the new release, then points `current` at it and reloads PM2 (zero downtime). Next it waits until `http://127.0.0.1:3000/api/health` reports the new commit. If that never happens, `current` goes back to the previous release and the deploy fails (red in GitHub).
+3. **`deploy.sh`** links the shared `.env` and cache into the new release, then points `current` at it and reloads PM2 (zero downtime). Next it waits until `http://127.0.0.1:3100/api/health` reports the new commit. If that never happens, `current` goes back to the previous release and the deploy fails (red in GitHub).
 
 The server never runs `next build` and never pulls from GitHub. The workflow is [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). You can also start it by hand under **Actions → Deploy → Run workflow**.
 
@@ -19,8 +19,10 @@ The server never runs `next build` and never pulls from GitHub. The workflow is 
 │   └── logs/             PM2 logs (out.log, error.log)
 └── current -> releases/9bc1…    the live release
 
-Browser ──HTTPS──> Nginx (aaPanel) ──> 127.0.0.1:3000 ──> PM2 "dwaprice" (current/server.js)
+Browser ──HTTPS──> Nginx (aaPanel) ──> 127.0.0.1:3100 ──> PM2 "dwaprice" (current/server.js)
 ```
+
+The site runs on port **3100**, because port 3000 is used by another app on this server. Local development (`npm run dev`) stays on 3000.
 
 ---
 
@@ -32,6 +34,7 @@ Run these as **root**: use SSH, or the **Terminal** in aaPanel's left menu. Comm
 
 ```bash
 uname -m                     # should print x86_64
+ss -ltnp | grep ':3100 '     # should print nothing: port 3100 must be free for this site
 apt update
 apt install -y curl rsync
 ```
@@ -153,11 +156,13 @@ Menu names differ a little between aaPanel versions.
 
 - **aaPanel 7:** **Website → Proxy Project → Add proxy**.
   - Domain: `dwaprice.com`, then `www.dwaprice.com` and `api.dwaprice.com`, one per line.
-  - Target URL: `http://127.0.0.1:3000`
+  - Target URL: `http://127.0.0.1:3100`
   - Send domain (host): `$host`
 - **Older aaPanel:** **Website → Add site**, with the domains one per line and PHP version **Static** (no database, no FTP). Then open the site → **Reverse proxy → Add reverse proxy**.
-  - Target URL: `http://127.0.0.1:3000`
+  - Target URL: `http://127.0.0.1:3100`
   - Send domain: `$host`
+
+Use port **3100**, not 3000: 3000 is the other app on this server.
 
 In both cases, leave the proxy **Cache** option **off**. aaPanel's proxy cache would store HTML pages and break price updates (`/api/revalidate`).
 
@@ -189,7 +194,7 @@ If you later put Cloudflare in front of the site, `$remote_addr` becomes a Cloud
 ```nginx
     # Hashed build files (/_next/static/...) never change: let browsers keep them for a year.
     location ^~ /_next/static/ {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3100;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_hide_header Cache-Control;
@@ -299,7 +304,7 @@ Push to `main`, or open **Actions → Deploy → Run workflow**. Open the run to
 The `Activate release` step ends with `<sha> is live`. Then check:
 
 ```bash
-curl -s http://127.0.0.1:3000/api/health      # on the server: {"ok":true,"commit":"<sha>"}
+curl -s http://127.0.0.1:3100/api/health      # on the server: {"ok":true,"commit":"<sha>"}
 ```
 
 Then open https://dwaprice.com/api/health in your browser.
@@ -349,7 +354,7 @@ sudo -iu deploy
 cd /www/wwwroot/dwaprice.com
 ln -sfn /www/wwwroot/dwaprice.com/releases/<old-sha> current.tmp && mv -Tf current.tmp current
 pm2 reload dwaprice
-curl -s http://127.0.0.1:3000/api/health            # "commit" should now be <old-sha>
+curl -s http://127.0.0.1:3100/api/health            # "commit" should now be <old-sha>
 ```
 
 **Option C: through GitHub.** Revert the bad commit (`git revert <sha>`, push), or re-run an older successful Deploy run under Actions.
@@ -364,7 +369,7 @@ curl -s http://127.0.0.1:3000/api/health            # "commit" should now be <ol
 
 ```bash
 SECRET="$(grep -E '^API_SECRET=' /www/wwwroot/dwaprice.com/shared/.env | cut -d= -f2- | tr -d '"')"
-curl -fsS -m 120 -o /dev/null -H "x-jobs-secret: $SECRET" "http://127.0.0.1:3000/api/v1/internal/jobs?job=all" && echo ok
+curl -fsS -m 120 -o /dev/null -H "x-jobs-secret: $SECRET" "http://127.0.0.1:3100/api/v1/internal/jobs?job=all" && echo ok
 ```
 
 The secret is read from `shared/.env`, so it never appears in the cron task or its log.
@@ -372,6 +377,13 @@ The secret is read from `shared/.env`, so it never appears in the cron task or i
 ### Uptime monitoring
 
 Point any uptime monitor at `https://dwaprice.com/api/health`. It answers `200` only when the app is running and the database responds.
+
+### Changing the port later
+
+1. Edit `APP_PORT=3100` at the top of [`scripts/server/deploy.sh`](scripts/server/deploy.sh). PM2 gets the port from there.
+2. In aaPanel, change the reverse proxy target (step 8) and the `/_next/static/` `proxy_pass` (step 10b).
+3. Update the port in the cron script above.
+4. Push. The deploy restarts the app on the new port and runs the health check on it.
 
 ---
 
@@ -385,7 +397,9 @@ Point any uptime monitor at `https://dwaprice.com/api/health`. It answers `200` 
 | `pm2 is not on PATH` | Node/PM2 were installed through aaPanel or only for root. Install them as in step 3. |
 | `shared/.env is missing` | Create it (step 12). |
 | `health check failed …` | The new release did not start or can't reach the database. Look at `pm2 logs dwaprice --lines 100`: usually a wrong or missing value in `shared/.env`. The previous release is back online. |
-| 502 Bad Gateway in the browser | The app is not running: run `sudo -iu deploy pm2 status`, then check the logs. |
+| 502 Bad Gateway in the browser | The app is not running: run `sudo -iu deploy pm2 status`, then check the logs. Also check that the aaPanel proxy target and the `/_next/static/` `proxy_pass` both use `127.0.0.1:3100`. |
+| The other app's pages appear on dwaprice.com | A proxy target still points to `127.0.0.1:3000` (the other app). Change it to `3100` (steps 8 and 10b). |
+| `EADDRINUSE` in `pm2 logs dwaprice` | Something else already uses port 3100: `ss -ltnp \| grep ':3100 '` shows what. Free the port, or choose another one ("Changing the port later"). |
 | Pages load but some `.png`/`.jpg`/`.js`/`.css` URLs return 404 | aaPanel's site config has `location ~ .*\.(gif\|jpg\|…)$` and `location ~ .*\.(js\|css)?$` blocks that look for files on disk. If the proxy block is `location /` rather than `location ^~ /`, those win: delete the two blocks in **Config file**. |
 | GitHub logs show `***` where you expect the word "deploy" | Normal: `SSH_USER` is a secret, so GitHub hides its value (`deploy`) everywhere in the logs, e.g. `[*** 10:15:02] activating …`. |
 | `$'\r': command not found` | `deploy.sh` has Windows line endings. `.gitattributes` keeps it LF; re-checkout the file and push. |

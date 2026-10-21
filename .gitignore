@@ -19,3 +19,5 @@ node_modules
 .next
 .env
 .env.local
+# production values for GitHub Actions secrets / the server's shared/.env (DEPLOY.md)
+.env.deploy

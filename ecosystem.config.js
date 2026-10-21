@@ -23,7 +23,8 @@ module.exports = {
       // App settings and secrets come from shared/.env, which Next loads from the release.
       env: {
         NODE_ENV: 'production',
-        PORT: 3000,
+        // APP_PORT comes from scripts/server/deploy.sh; 3100 if PM2 is run with this file by hand.
+        PORT: Number(process.env.APP_PORT) || 3100,
         HOSTNAME: '127.0.0.1',
       },
       out_file: `${APP_DIR}/shared/logs/out.log`,

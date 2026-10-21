@@ -11,7 +11,10 @@
 set -euo pipefail
 
 APP_DIR=/www/wwwroot/dwaprice.com
-HEALTH_URL=http://127.0.0.1:3000/api/health
+# Production port, passed to PM2 (ecosystem.config.js). Port 3000 belongs to another app on
+# the server. Changing it also means changing the Nginx proxy targets (DEPLOY.md, step 8).
+APP_PORT=3100
+HEALTH_URL="http://127.0.0.1:$APP_PORT/api/health"
 HEALTH_TRIES=20 # 3 s apart
 KEEP_RELEASES=5
 
@@ -59,7 +62,7 @@ activate() {
   ln -sfn "$1" "$APP_DIR/.current.tmp"
   mv -Tf "$APP_DIR/.current.tmp" "$CURRENT"
   touch "$1" # newest first when pruning
-  pm2 startOrReload "$1/ecosystem.config.js" --update-env 9>&- || log "pm2 reload failed"
+  APP_PORT="$APP_PORT" pm2 startOrReload "$1/ecosystem.config.js" --update-env 9>&- || log "pm2 reload failed"
   pm2 save 9>&- >/dev/null || log "pm2 save failed"
 }
 
