@@ -103,11 +103,11 @@ describe('index builder keeps only the allowed columns', () => {
 });
 
 const manifestPath = new URL('../data/search-index/manifest.json', import.meta.url);
+// The files are read inside it(): a skipped describe still runs its body to collect tests.
 (existsSync(manifestPath) ? describe : describe.skip)('the generated index on disk', () => {
-  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as SearchIndexManifest;
-  const index = JSON.parse(readFileSync(new URL(`../data/search-index/${manifest.file}`, import.meta.url), 'utf8')) as SearchIndexFile;
-
   it('is well-formed, free of forbidden data and under 1 MB compressed', () => {
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as SearchIndexManifest;
+    const index = JSON.parse(readFileSync(new URL(`../data/search-index/${manifest.file}`, import.meta.url), 'utf8')) as SearchIndexFile;
     expect(SEARCH_INDEX_FILE_RE.test(manifest.file)).toBe(true);
     checkStructure(index);
     expect(index.n).toBe(manifest.drugs);
