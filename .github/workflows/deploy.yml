@@ -60,6 +60,9 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          # Prerendering many pages at once can push a heavy aggregate past the 5 s statement
+          # timeout from contention alone; retry those during the build only (lib/db/pool.ts).
+          WEB_DB_BUILD_RETRY: '1'
           WEB_DATABASE_URL: ${{ secrets.WEB_DATABASE_URL }}
           WEB_DATABASE_CA: ${{ secrets.WEB_DATABASE_CA }}
           SITE_URL: ${{ secrets.SITE_URL }}

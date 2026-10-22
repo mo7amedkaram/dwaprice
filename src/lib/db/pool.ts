@@ -46,15 +46,26 @@ function isTransient(error: unknown): boolean {
   );
 }
 
-/** Runs a parameterised query against the web.* views (2 retries on transient network errors). */
+// During `next build`, up to 9 pages prerender at once against the small shared database, and a
+// heavy aggregate (e.g. the active-ingredient index over web.ingredients) can exceed the 5 s
+// statement timeout purely from that contention — the same query finishes well under 5 s when the
+// site serves it. WEB_DB_BUILD_RETRY=1 (set in the deploy workflow's build step only) retries such
+// statement timeouts (SQLSTATE 57014) with a longer backoff, so a momentary spike doesn't fail the
+// build. Left off at runtime, where a statement timeout means a genuinely too-slow query.
+const RETRY_STATEMENT_TIMEOUT = process.env.WEB_DB_BUILD_RETRY === '1';
+const isStatementTimeout = (error: unknown) => (error as { code?: string }).code === '57014';
+
+/** Runs a parameterised query against the web.* views (2 retries on transient network errors; also statement timeouts during the build). */
 export async function query<T extends QueryResultRow>(text: string, params: unknown[] = []): Promise<T[]> {
   for (let attempt = 0; ; attempt++) {
     try {
       const result = await pool().query<T>(text, params);
       return result.rows;
     } catch (error) {
-      if (attempt >= 2 || !isTransient(error)) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 500 * 3 ** attempt));
+      const timeout = RETRY_STATEMENT_TIMEOUT && isStatementTimeout(error);
+      if (attempt >= 2 || (!isTransient(error) && !timeout)) throw error;
+      // A timed-out query needs the competing queries to drain, so wait longer: 2 s, 6 s (vs 0.5 s, 1.5 s).
+      await new Promise((resolve) => setTimeout(resolve, (timeout ? 2000 : 500) * 3 ** attempt));
     }
   }
 }

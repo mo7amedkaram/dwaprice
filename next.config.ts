@@ -36,9 +36,11 @@ const nextConfig: NextConfig = {
   // pg is a server-only dependency; keep it out of the bundler.
   serverExternalPackages: ['pg'],
   // Build workers each hold a small pg pool (lib/db/pool.ts, max 3). The database
-  // is a small shared-CPU instance and web_reader allows 20 connections, so
-  // prerendering is kept to 3 parallel workers (3 x 3 = 9 connections).
-  experimental: { cpus: 3 },
+  // is a small shared-CPU instance and web_reader allows 20 connections. 2 parallel
+  // workers (2 x 3 = 6 connections) keep the heaviest aggregates (the hub indexes
+  // over web.ingredients/companies) under the 5 s statement timeout while prerendering;
+  // statement timeouts during the build are also retried (WEB_DB_BUILD_RETRY, pool.ts).
+  experimental: { cpus: 2 },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },
