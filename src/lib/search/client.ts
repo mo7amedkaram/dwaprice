@@ -24,9 +24,13 @@ export interface SuggestResult {
   source: SuggestionSource;
 }
 
-/** Hashed file name of the current index, inlined at build time (next.config.ts); '' = no index built. */
+/** Hashed file name of the build-time index, inlined at build (next.config.ts); '' = none built. */
 const INDEX_FILE = process.env.NEXT_PUBLIC_SEARCH_INDEX || '';
+/** Build-time static index: the first-load fallback when the live route is unreachable. */
 export const INDEX_URL = INDEX_FILE ? `${SEARCH_INDEX_PATH}/${INDEX_FILE}` : null;
+/** Live, database-built index and its tiny version marker (freshness without a deploy). */
+const VERSION_URL = `${SEARCH_INDEX_PATH}/version.json`;
+const CURRENT_URL = `${SEARCH_INDEX_PATH}/current.json`;
 const FALLBACK_LIMIT = 50;
 const RETRY_MS = 5000;
 
@@ -78,7 +82,9 @@ export function toSuggestion(hit: ServerHit): Suggestion {
 }
 
 export class SearchClient {
-  status: SearchStatus = INDEX_URL ? 'idle' : 'unavailable';
+  // The live route is built from the database on demand, so an index is always reachable even when
+  // no build-time file was inlined; 'idle' until the user's intent (focus) or the idle prefetch.
+  status: SearchStatus = 'idle';
   private worker: Worker | null = null;
   private seq = 0;
   private readonly pending = new Map<number, (items: Suggestion[]) => void>();
@@ -127,30 +133,52 @@ export class SearchClient {
     return { items: await this.fromServer(term), source: 'server' };
   }
 
+  /** The index URL to load: the live current.json at its current version, else the build-time file. */
+  private async resolveUrl(): Promise<string | null> {
+    try {
+      const res = await fetch(VERSION_URL, { credentials: 'omit' });
+      if (res.ok) {
+        const { hash } = (await res.json()) as { hash?: string };
+        // The content hash makes each version its own immutable URL, so the worker's Cache API
+        // reuses an unchanged index and downloads a new one only when the catalogue changed.
+        if (hash) return `${CURRENT_URL}?v=${encodeURIComponent(hash)}`;
+      }
+    } catch {
+      /* offline or route down: fall back to the build-time static index */
+    }
+    return INDEX_URL;
+  }
+
   private load(startedBy: 'idle' | 'focus'): void {
-    if (!INDEX_URL) return;
     this.debug.startedBy = startedBy;
     this.setStatus('loading');
-    try {
-      this.worker = new Worker(new URL('./search.worker.ts', import.meta.url));
-    } catch (err) {
-      this.fail(err instanceof Error ? err.message : 'worker');
-      return;
-    }
-    this.worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
-      const m = e.data;
-      if (m.t === 'ready') {
-        Object.assign(this.debug, { from: m.from, bytes: m.bytes, transferBytes: m.transferBytes, loadMs: m.loadMs, buildMs: m.buildMs, readyAt: Math.round(performance.now()), error: null });
-        this.setStatus('ready');
-      } else if (m.t === 'error') {
-        this.fail(m.message);
-      } else if (m.t === 'r') {
-        this.pending.get(m.id)?.(m.items);
-        this.pending.delete(m.id);
+    void this.resolveUrl().then((url) => {
+      if (!url) {
+        this.fail('no index url');
+        return;
       }
-    };
-    this.worker.onerror = () => this.fail('worker error');
-    this.post({ t: 'load', url: INDEX_URL });
+      this.debug.url = url;
+      try {
+        this.worker = new Worker(new URL('./search.worker.ts', import.meta.url));
+      } catch (err) {
+        this.fail(err instanceof Error ? err.message : 'worker');
+        return;
+      }
+      this.worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
+        const m = e.data;
+        if (m.t === 'ready') {
+          Object.assign(this.debug, { from: m.from, bytes: m.bytes, transferBytes: m.transferBytes, loadMs: m.loadMs, buildMs: m.buildMs, readyAt: Math.round(performance.now()), error: null });
+          this.setStatus('ready');
+        } else if (m.t === 'error') {
+          this.fail(m.message);
+        } else if (m.t === 'r') {
+          this.pending.get(m.id)?.(m.items);
+          this.pending.delete(m.id);
+        }
+      };
+      this.worker.onerror = () => this.fail('worker error');
+      this.post({ t: 'load', url });
+    });
   }
 
   private fail(message: string): void {
@@ -190,11 +218,14 @@ export class SearchClient {
     if (key.length < MIN_QUERY_CHARS) return [];
     const prefix = await this.prefixResults(key);
     if (prefix === null) return []; // aborted or offline
-    // If the 2-char prefix response was capped at the limit, the cached list is incomplete, so
-    // filtering it locally for a longer query can wrongly return nothing (this is the "كونجستال"
-    // bug). Ask the server for the full text instead (Part B.2).
+    // The 2-char prefix response is capped at FALLBACK_LIMIT, so filtering that truncated list
+    // locally for a longer query can wrongly return nothing (the "كونجستال" bug). Ask the server
+    // for the full text when the list was capped, OR when the local filter finds nothing but the
+    // query is longer than the prefix — the match may simply have been past the cap.
     if (prefix.length >= FALLBACK_LIMIT && nq.length > key.length) return this.fullResults(nq);
-    return prefix.filter((hit) => matchesLocally(hit, nq)).slice(0, SUGGESTION_LIMIT);
+    const local = prefix.filter((hit) => matchesLocally(hit, nq)).slice(0, SUGGESTION_LIMIT);
+    if (local.length === 0 && nq.length > key.length) return this.fullResults(nq);
+    return local;
   }
 
   /** Cached top-50 for a 2-character prefix; null on error/abort. */

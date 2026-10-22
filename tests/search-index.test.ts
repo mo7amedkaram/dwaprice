@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildSearchIndex, serializeSearchIndex, type DrugSource } from '@/lib/search/index-build';
 import { SEARCH_INDEX_FILE_RE, SEARCH_INDEX_KEYS, SEARCH_INDEX_VERSION, type SearchIndexFile, type SearchIndexManifest } from '@/lib/search/index-format';
-import { matchesLocally, shouldSkipPrefetch, toSuggestion } from '@/lib/search/client';
+import { matchesLocally, SearchClient, shouldSkipPrefetch, toSuggestion } from '@/lib/search/client';
 import { pickEncoding } from '@/app/search-index/[file]/route';
 
 // Rows as the web views could hand them over: full of fields the index must not keep.
@@ -130,24 +130,51 @@ const manifestPath = new URL('../data/search-index/manifest.json', import.meta.u
     expect(index.slug.includes('brufen-600mg-30-tab')).toBe(true);
   });
 
-  // Coverage: the index must contain every drug that has a public page. Needs the database.
-  const DB = process.env.WEB_DATABASE_URL || (() => { try { return readFileSync(new URL('../.env.local', import.meta.url), 'utf8').split('\n').find((l) => l.startsWith('WEB_DATABASE_URL='))?.slice('WEB_DATABASE_URL='.length).trim(); } catch { return undefined; } })();
-  (DB ? it : it.skip)('contains exactly the drugs with a public page', { timeout: 60_000 }, async () => {
-    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as SearchIndexManifest;
-    const { default: pg } = await import('pg');
-    const client = new pg.Client({ connectionString: DB, ssl: { rejectUnauthorized: false } });
-    await client.connect();
-    try {
-      const pages = Number((await client.query<{ n: string }>('select count(*) n from web.drug_cards')).rows[0].n);
-      expect(manifest.drugs).toBe(pages);
-    } finally {
-      await client.end();
-    }
+});
+
+// The index BUILT FROM THE DATABASE — the one /search-index/current.json serves live. Tests that it
+// covers the current catalogue (freshness: not a frozen snapshot) and finds every drug by its name.
+const DB = process.env.WEB_DATABASE_URL || (() => { try { return readFileSync(new URL('../.env.local', import.meta.url), 'utf8').split('\n').find((l) => l.startsWith('WEB_DATABASE_URL='))?.slice('WEB_DATABASE_URL='.length).trim(); } catch { return undefined; } })();
+
+async function buildFromDb(): Promise<{ index: SearchIndexFile; pages: number }> {
+  const { default: pg } = await import('pg');
+  const client = new pg.Client({ connectionString: DB, ssl: { rejectUnauthorized: false } });
+  await client.connect();
+  const q = <T>(text: string, params?: unknown[]) => client.query(text, params).then((r) => r.rows as T[]);
+  try {
+    const { collectDrugSources } = await import('@/lib/search/build-from-db');
+    const { buildSearchIndex } = await import('@/lib/search/index-build');
+    const { sources, ingredients } = await collectDrugSources(q);
+    const pages = Number((await q<{ n: string }>('select count(*) n from web.drug_cards'))[0].n);
+    return { index: buildSearchIndex(sources, ingredients), pages };
+  } finally {
+    await client.end();
+  }
+}
+
+(DB ? describe : describe.skip)('the database-built suggestion index (live current.json)', () => {
+  it('covers exactly the drugs with a public page, and carries no forbidden data', { timeout: 120_000 }, async () => {
+    const { index, pages } = await buildFromDb();
+    expect(index.n).toBe(pages); // every drug with deleted_at is null and a name; nothing dropped
+    expect(index.n).toBeGreaterThan(1000);
+    checkStructure(index);
   });
 
-  (DB ? it : it.skip)('100 random drug names find their own drug (index mode and fallback mode)', { timeout: 120_000 }, async () => {
-    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as SearchIndexManifest;
-    const index = JSON.parse(readFileSync(new URL(`../data/search-index/${manifest.file}`, import.meta.url), 'utf8')) as SearchIndexFile;
+  it('finds known drugs by Arabic and English name', { timeout: 120_000 }, async () => {
+    const { index } = await buildFromDb();
+    const { SearchEngine } = await import('@/lib/search/engine');
+    const engine = new SearchEngine(index);
+    const finds = (query: string, slugPart: string) => engine.search(query).some((s) => s.slug.includes(slugPart));
+    expect(finds('كونجستال', 'congestal-20-tabs')).toBe(true);
+    expect(finds('brufen', 'brufen')).toBe(true);
+    expect(finds('بروفين', 'brufen')).toBe(true);
+    expect(finds('بروفين 600', 'brufen-600mg-30-tab')).toBe(true);
+    expect(finds('brufen 600', 'brufen-600mg-30-tab')).toBe(true);
+    expect(finds('انتنال', 'antinal-200mg-24-capsules')).toBe(true);
+  });
+
+  it('200 random drug names find their own drug (index mode and fallback mode)', { timeout: 180_000 }, async () => {
+    const { index } = await buildFromDb();
     const { SearchEngine } = await import('@/lib/search/engine');
     const engine = new SearchEngine(index);
     const { default: pg } = await import('pg');
@@ -155,7 +182,7 @@ const manifestPath = new URL('../data/search-index/manifest.json', import.meta.u
     await client.connect();
     try {
       const sample = (await client.query<{ slug: string; name_ar: string | null; name_en: string }>(
-        'select slug, name_ar, name_en from web.drug_cards order by md5(slug) limit 100',
+        'select slug, name_ar, name_en from web.drug_cards order by md5(slug) limit 200',
       )).rows;
       // index mode: the engine (same code the worker runs) must find each drug by its own name.
       const indexMiss: string[] = [];
@@ -198,6 +225,23 @@ describe('client helpers', () => {
     expect(shouldSkipPrefetch(nav({ effectiveType: '2g' }))).toBe(true);
     expect(shouldSkipPrefetch(nav({ effectiveType: 'slow-2g' }))).toBe(true);
     expect(shouldSkipPrefetch(nav({ effectiveType: '3g' }))).toBe(false);
+  });
+
+  it('asks the server for the full text when the 2-char prefix list hid the match', async () => {
+    const target = { slug: 'zapples-100mg-10-tab', name_ar: null, name_en: 'Zapples 100mg 10 tab', dosage_form_ar: null };
+    const decoys = Array.from({ length: 10 }, (_, i) => ({ slug: `zan-${i}`, name_ar: null, name_en: `Zan ${i} 10 tab`, dosage_form_ar: null }));
+    const orig = globalThis.fetch;
+    // 2-char prefix "za" returns decoys only (target absent); the full query "zapples" returns it.
+    globalThis.fetch = (async (url: string) => {
+      const q = new URL(url, 'http://x').searchParams.get('q') ?? '';
+      return { ok: true, json: async () => ({ results: q === 'zapples' ? [target] : decoys }) } as Response;
+    }) as typeof fetch;
+    try {
+      const { items } = await new SearchClient().suggest('zapples');
+      expect(items.map((i) => i.slug)).toContain('zapples-100mg-10-tab');
+    } finally {
+      globalThis.fetch = orig;
+    }
   });
 });
 

@@ -34,5 +34,12 @@ export async function POST(request: NextRequest) {
     revalidateTag(tags.prices, 'max');
     revalidateTag(tags.sitemap, 'max');
   }
+  // Any catalogue change (a drug added, edited or removed; a full "catalog" refresh) changes the
+  // sitemap and the browser suggestion index, so new drugs appear in search and the sitemap without
+  // waiting for the time-based rebuild.
+  if (valid.includes(tags.catalog) || valid.some((t) => t.startsWith('drug:'))) {
+    revalidateTag(tags.searchIndex, 'max');
+    revalidateTag(tags.sitemap, 'max');
+  }
   return NextResponse.json({ revalidated: valid, rejected: requested.length - valid.length });
 }

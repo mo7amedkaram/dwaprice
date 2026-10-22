@@ -7,6 +7,10 @@
 
 export const REVALIDATE_SECONDS = 86_400;
 
+/** Sitemaps refresh hourly on their own (plus instantly when the catalogue webhook fires), so newly
+ * added drugs reach the sitemap without waiting a day for the page cache. */
+export const SITEMAP_REVALIDATE_SECONDS = 3_600;
+
 /** How many of the most visited drug pages are generated at build time. */
 export const STATIC_TOP_DRUGS = 200;
 
@@ -18,6 +22,8 @@ export const tags = {
   prices: 'prices',
   sitemap: 'sitemap',
   slugs: 'slugs',
+  /** The DB-built browser suggestion index (/search-index/current.json). Busted when the catalogue changes. */
+  searchIndex: 'search-index',
   /** Editable site settings + uploaded assets (admin area). Revalidated on save, so the live site updates in seconds. */
   settings: 'site-settings',
 } as const;

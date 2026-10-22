@@ -1,7 +1,7 @@
 import 'server-only';
 import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
-import { REVALIDATE_SECONDS, tags } from '@/lib/cache';
+import { SITEMAP_REVALIDATE_SECONDS, tags } from '@/lib/cache';
 import { isoDate } from '@/lib/format';
 import { routes } from '@/lib/site';
 import { hasUsesPage, nonCanonicalSlugs } from '@/lib/drug/logic';
@@ -83,7 +83,7 @@ async function load(type: SitemapType): Promise<SitemapEntry[]> {
 }
 
 export const getSitemapEntries = unstable_cache(load, ['sitemap-entries-v4'], {
-  revalidate: REVALIDATE_SECONDS,
+  revalidate: SITEMAP_REVALIDATE_SECONDS,
   tags: [tags.catalog, tags.sitemap],
 });
 
