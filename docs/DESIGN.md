@@ -484,8 +484,9 @@ admin sessions time out after 12 h (developer sessions stay 30 days). Full write
   `max-age=86400`, revalidated by the tag) or the built-in brand mark rendered to size; `<head>` carries
   the icon/apple/manifest links. `metadata` in the root layout and home page is now `generateMetadata`
   reading the settings (title suffix, description, icons, verification on home only).
-* **Google Analytics 4** (`SiteAnalytics`): loaded only after the Arabic cookie notice is accepted
-  (Consent Mode v2, denied by default; refusing loads nothing). IP anonymised, Google signals and ad
-  personalisation off, automatic page_view off — `page_view` is sent with the path only, never `?q=`
-  (`lib/analytics.ts`). Events via `track()`. Not loaded on `/admin`. Privacy page updated; the GA4
-  property's enhanced "Site search" must be turned off by hand (a user action).
+* **Google Analytics 4** (`SiteAnalytics`): loaded on every page view — no cookie-consent gate and no
+  cookie notice (product decision 2026-10-22, so Google's tag detector and GA4 Realtime see the tag).
+  IP anonymised, Google signals and ad personalisation off, automatic page_view off — `page_view` is
+  sent with the path only, never `?q=` (`lib/analytics.ts`). Events via `track()`. Not loaded on
+  `/admin`, and not loaded when the GA4 id is empty. Privacy page updated; the GA4 property's enhanced
+  "Site search" must be turned off by hand (a user action).

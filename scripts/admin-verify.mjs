@@ -77,7 +77,7 @@ try {
   const afterIco = (await (await fetch(`${base}/favicon.ico`)).arrayBuffer()).byteLength;
   check('favicon changed after upload (icon-192 is the new colour)', pinkPixel, `ico ${beforeIco}→${afterIco} bytes`);
 
-  // --- Analytics + verification: GA gated by consent; verification tags on home ---
+  // --- Analytics + verification: GA loads directly (no consent gate); verification tags on home ---
   await page.goto(`${base}/admin/analytics`, { waitUntil: 'load' });
   await page.fill('#f-ga4MeasurementId', 'G-TEST123456');
   await page.locator('form', { has: page.locator('#f-ga4MeasurementId') }).locator('button[type="submit"]').click();
@@ -94,30 +94,17 @@ try {
   });
   check('verification meta tags on the home page', verifyOk, '');
 
-  // GA: a fresh visitor sees the cookie notice but NO Google script until they accept.
+  // GA: a fresh visitor gets the Google script loaded on first paint, with no cookie notice to click.
   const visitor = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const vp = await visitor.newPage();
   await vp.goto(`${base}/`, { waitUntil: 'load' });
-  await sleep(800);
-  const noticeShown = (await vp.locator('[role="dialog"][aria-label="إشعار ملفات تعريف الارتباط"]').count()) > 0;
-  const scriptsBefore = await vp.evaluate(() => document.querySelectorAll('script[src*="googletagmanager"]').length);
-  check('cookie notice shown and GA not loaded before consent', noticeShown && scriptsBefore === 0, `notice=${noticeShown} gtag=${scriptsBefore}`);
-  await vp.screenshot({ path: `${out}cookie-notice-390.png` });
-  await vp.click('button:has-text("موافق")');
   await vp.waitForFunction(() => document.querySelectorAll('script[src*="googletagmanager"]').length > 0, null, { timeout: 8000 }).catch(() => null);
-  const scriptsAfter = await vp.evaluate(() => document.querySelectorAll('script[src*="googletagmanager"]').length);
-  check('GA loads after accepting consent', scriptsAfter > 0, `gtag scripts after accept = ${scriptsAfter}`);
-  // refusing: a second fresh visitor clicks رفض, GA never loads
-  const refuser = await browser.newContext();
-  const rp = await refuser.newPage();
-  await rp.goto(`${base}/`, { waitUntil: 'load' });
-  await sleep(600);
-  await rp.click('button:has-text("رفض")');
-  await sleep(800);
-  const refScripts = await rp.evaluate(() => document.querySelectorAll('script[src*="googletagmanager"]').length);
-  check('GA stays off after refusing consent', refScripts === 0, `gtag=${refScripts}`);
+  const gaScripts = await vp.evaluate(() => document.querySelectorAll('script[src*="googletagmanager"]').length);
+  const noticeShown = (await vp.locator('[role="dialog"][aria-label="إشعار ملفات تعريف الارتباط"]').count()) > 0;
+  check('GA loads on first visit with no consent click', gaScripts > 0, `gtag scripts = ${gaScripts}`);
+  check('no cookie-consent notice is shown', !noticeShown, `notice=${noticeShown}`);
+  await vp.screenshot({ path: `${out}home-ga-390.png` });
   await visitor.close();
-  await refuser.close();
 
   // --- audit log ---
   await page.goto(`${base}/admin/audit`, { waitUntil: 'load' });

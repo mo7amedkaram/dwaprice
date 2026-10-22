@@ -51,7 +51,7 @@ export default function PrivacyPage() {
         </li>
         <li>أوقفنا «إشارات Google» وتخصيص الإعلانات، ونُفعّل إخفاء عنوان IP.</li>
         <li>
-          لا يُحمَّل القياس إلا بعد موافقتك على الإشعار الذي يظهر عند أول زيارة. إن ضغطت «رفض» فلن يُحمَّل Google Analytics إطلاقًا. يمكنك أيضًا إيقافه من
+          يُحمَّل القياس في كل زيارة لإحصاء عدد الزيارات فقط. يمكنك إيقافه من
           إعدادات المتصفح أو عبر{' '}
           <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener noreferrer" target="_blank">
             إضافة إيقاف Google Analytics

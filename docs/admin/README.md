@@ -42,15 +42,15 @@ public, max-age=86400` (not immutable, so a change propagates). The `<head>` car
 manifest. `favicon.ico` is a real ICO (16/32/48 PNG payloads packed by hand — `sharp` cannot write
 ICO). The old `src/app/icon.svg` was removed after the routes were verified.
 
-## Google Analytics 4 + consent
+## Google Analytics 4
 
-Loaded only after the visitor accepts the Arabic cookie notice (موافق / رفض, remembered); refusing
-loads nothing from Google. Consent Mode v2 (everything denied by default). `anonymize_ip`,
-`allow_google_signals:false`, `allow_ad_personalization_signals:false`, automatic page_view off — we
-send `page_view` ourselves with the **path only**, never `?q=` or any query string
-(`lib/analytics.ts#pageViewParams`). Events: `search_used`, `voice_search_used`,
-`toggle_info_language` (more are easy to add via `track()`). Not loaded on `/admin`. The privacy page
-has an honest GA section with how to opt out.
+Loaded on every page view — no cookie-consent gate and no cookie notice (product decision, 2026-10-22:
+so Google's tag detector and GA4 Realtime see the tag). `anonymize_ip`, `allow_google_signals:false`,
+`allow_ad_personalization_signals:false`, automatic page_view off — we send `page_view` ourselves with
+the **path only**, never `?q=` or any query string (`lib/analytics.ts#pageViewParams`). Events:
+`search_used`, `voice_search_used`, `toggle_info_language` (more are easy to add via `track()`). Not
+loaded on `/admin`, and not loaded at all when the GA4 id is left empty. The privacy page has an honest
+GA section with how to opt out (browser settings or Google's opt-out add-on).
 
 > **Required user action in GA4:** turn OFF enhanced measurement "Site search" in the GA4 property —
 > Google can otherwise capture `q=` server-side, which code here cannot prevent.
@@ -58,8 +58,8 @@ has an honest GA section with how to opt out.
 ## Verify
 
 - `scripts/admin-verify.mjs` (login → each section → live checks): SEO title reflected on the live home
-  with no redeploy; favicon changes after upload; verification meta tags on home; cookie notice shown
-  and **GA not loaded before consent**, loads after موافق, stays off after رفض; audit records changes.
+  with no redeploy; favicon changes after upload; verification meta tags on home; **GA loads on the
+  first visit with no click and no cookie notice**; audit records changes.
   Screenshots in `screenshots/`, final home `<head>` in `home-head.html`.
 - `tests/settings.test.ts`: verification-token parsing (bare + pasted `<meta>`), GA id / WhatsApp
   validation, **no query string in the GA page_view**, favicon validation (rejects SVG / non-square /
@@ -79,9 +79,10 @@ is unaffected; only cache lifetime.
 | `/` | 90 → 90 | 0 → **0** | 3576 → 3620 |
 | `/dawa/alerid-10mg-30-f-c-tabs` | 89 → 89 | 0 → **0** | 3757 → 3751 |
 
-Scores unchanged, CLS stayed 0. GA is loaded only after consent and `afterInteractive` (non-blocking),
-so a consent-less visit (what Lighthouse and crawlers see) adds only the small consent/notice bundle;
-the cookie notice is `position: fixed`, so it causes no layout shift. Runs in `lighthouse/`.
+Scores held at 90/89 with CLS 0 for the admin brief (table above). GA now loads on every visit via
+`afterInteractive` (non-blocking and `send_page_view:false`, so no extra layout work), so expect at
+most a point of movement on performance now that the gtag script loads for every visitor. Runs in
+`lighthouse/`.
 
 > **Proof artifacts note:** `home-head.html` and `screenshots/` were captured mid-test, so they show
 > placeholder values — the verification tokens (`test_google_verification_token_123`, `BINGTOKEN123`)

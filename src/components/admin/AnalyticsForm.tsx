@@ -11,7 +11,7 @@ import type { AnalyticsSettings, VerificationSettings } from '@/lib/settings/con
 export function AnalyticsForm({ analytics, verification }: { analytics: AnalyticsSettings; verification: VerificationSettings }) {
   return (
     <>
-      <Card title="Google Analytics 4" description="عدّاد زيارات لا يُرسل ما يكتبه المستخدمون في البحث. يُحمَّل فقط بعد موافقة الزائر على الكوكيز، ولا يُحمَّل إطلاقًا إذا تُرك الحقل فارغًا.">
+      <Card title="Google Analytics 4" description="عدّاد زيارات لا يُرسل ما يكتبه المستخدمون في البحث. يُحمَّل في كل زيارة، ولا يُحمَّل إطلاقًا إذا تُرك الحقل فارغًا.">
         <SettingsForm action={saveAnalyticsAction}>
           <TextInput
             name="ga4MeasurementId"
