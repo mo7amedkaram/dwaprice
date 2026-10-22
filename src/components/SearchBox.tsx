@@ -18,20 +18,27 @@ import { SearchIcon } from './icons';
 import { tradeName } from '@/lib/format';
 import { routes } from '@/lib/site';
 import { cx } from './ui';
-import { getSearchClient } from '@/lib/search/client';
-import { matchedWords, MIN_QUERY_CHARS, TIER } from '@/lib/search/engine';
+import { MAX_QUERY_CHARS, MIN_QUERY_CHARS, PRESELECT_MAX_TIER } from '@/lib/search/constants';
 import type { Suggestion } from '@/lib/search/index-format';
 import { VoiceButton } from './search/VoiceButton';
 import { VOICE_MESSAGES, type VoiceEvent } from './search/voice-detect';
 
+// The suggestion engine and client load on the first focus/hover, never on the first page load.
+// One shared chunk and one shared client across every SearchBox instance on the page.
+type SuggestModule = typeof import('@/lib/search/suggest');
+let suggestModule: Promise<SuggestModule> | null = null;
+const loadSuggest = (): Promise<SuggestModule> => (suggestModule ??= import('@/lib/search/suggest'));
+
 const PLACEHOLDER = 'ابحث باسم الدواء أو المادة الفعالة';
 const LISTENING_PLACEHOLDER = 'اتكلم دلوقتي…';
-const MAX_LENGTH = 80;
+const MAX_LENGTH = MAX_QUERY_CHARS;
+type HighlightFn = (text: string, query: string) => boolean[];
 
 /** The display string with the words the query matches wrapped in <mark>. */
-function Highlight({ text, query }: { text: string; query: string }) {
+function Highlight({ text, query, highlight }: { text: string; query: string; highlight: HighlightFn | null }) {
+  if (!highlight) return <>{text}</>;
   const parts = text.split(/(\s+)/); // words at even positions, the separators between them
-  const flags = matchedWords(text, query);
+  const flags = highlight(text, query);
   let word = 0;
   return (
     <>
@@ -65,15 +72,27 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
   const [notice, setNotice] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const seq = useRef(0);
+  const mod = useRef<SuggestModule | null>(null);
+  const [highlight, setHighlight] = useState<HighlightFn | null>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const term = q.trim();
   // Options: the suggestions, then "all results for …".
   const optionCount = items.length > 0 ? items.length + 1 : 0;
 
+  // Load the suggestion engine + client (one shared chunk) on first need; cache it in the ref.
+  const ensure = useCallback(async (): Promise<SuggestModule> => {
+    if (!mod.current) {
+      mod.current = await loadSuggest();
+      setHighlight(() => mod.current!.matchedWords);
+    }
+    return mod.current;
+  }, []);
+
   useEffect(() => {
-    if (prefetch) getSearchClient().prefetchWhenIdle();
-  }, [prefetch]);
+    // Idle prefetch (home/search) happens after hydration, so the chunk is not on the first load.
+    if (prefetch) void ensure().then((m) => m.getSearchClient().prefetchWhenIdle());
+  }, [prefetch, ensure]);
   useEffect(() => () => clearTimeout(noticeTimer.current), []);
 
   const clear = useCallback(() => {
@@ -88,7 +107,7 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
     setItems(results);
     setShownFor(forTerm);
     setOpen(results.length > 0);
-    setActive(preselectStrong && results.length > 0 && results[0].tier >= 0 && results[0].tier <= TIER.alias ? 0 : -1);
+    setActive(preselectStrong && results.length > 0 && results[0].tier >= 0 && results[0].tier <= PRESELECT_MAX_TIER ? 0 : -1);
     setStatus(results.length > 0 ? `${results.length} اقتراحات متاحة، استخدم الأسهم للتنقل` : 'لا توجد اقتراحات');
   }, []);
 
@@ -101,12 +120,14 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
         clear();
         return [];
       }
-      const { items: results } = await getSearchClient().suggest(t);
+      const m = await ensure();
+      if (id !== seq.current) return null;
+      const { items: results } = await m.getSearchClient().suggest(t);
       if (id !== seq.current) return null;
       show(results, t, preselectStrong);
       return results;
     },
-    [clear, show],
+    [clear, show, ensure],
   );
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -173,7 +194,7 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
     }
   }
 
-  const warm = () => getSearchClient().warm();
+  const warm = () => void ensure().then((m) => m.getSearchClient().warm());
   const option = (selected: boolean) =>
     cx('flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 py-2', selected ? 'bg-primary-tint' : 'hover:bg-surface');
 
@@ -253,12 +274,12 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
           >
             <span className="min-w-0 flex-1">
               <span className="block truncate font-medium text-ink">
-                <Highlight text={item.ar} query={shownFor} />
+                <Highlight text={item.ar} query={shownFor} highlight={highlight} />
               </span>
               <span className="type-small block truncate text-text-2">
                 {item.en !== item.ar && (
                   <span dir="ltr" lang="en">
-                    <Highlight text={tradeName(item.en)} query={shownFor} />
+                    <Highlight text={tradeName(item.en)} query={shownFor} highlight={highlight} />
                   </span>
                 )}
                 {item.form && (

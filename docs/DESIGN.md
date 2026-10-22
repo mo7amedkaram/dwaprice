@@ -303,13 +303,18 @@ and are shared by `generateMetadata`, the page body (`src/lib/drug/model.ts`) an
 
 | page | first-load JS | framework part |
 | --- | ---: | --- |
-| `/dawa/{slug}` | 144.1 KB | React DOM 71.8 + Next router 44.1 + Turbopack runtime 4.3 |
-| `/dawa/{slug}/badael`, `/dawaei-estemal`, `/`, `/design` | 138.6 KB | same |
+| `/dawa/{slug}` | 151.6 KB | React DOM 71.8 + Next router 44.1 + Turbopack runtime 4.3 |
+| `/`, `/search`, listings | 146.1 KB | same |
 
-The ~70 KB target is **not reachable with the App Router**: the framework alone is ~120 KB. Our code is
-~19 KB (search suggestions ~9 KB, `next/image` 5.5 KB on drug pages, the rest shared). All main content
-is static HTML from ISR, with no client-side fetching of it (verified: 0 page-content fetches). The
-legacy-browser polyfills (38.7 KB) are `noModule` and never loaded by modern browsers.
+The ~70 KB target is **not reachable with the App Router**: the framework alone is ~120 KB. All main
+content is static HTML from ISR, with no client-side fetching of it (verified: 0 page-content fetches).
+The legacy-browser polyfills (38.7 KB) are `noModule` and never loaded by modern browsers.
+
+Instant search (part 6) added **~4 KB** to the first load (the combobox, the loader that owns the
+worker, highlighting, the voice button). The heavy parts stay off the first load on purpose: the
+search engine class is in the worker chunk, the ~379 KB index downloads only when the page is idle
+or the box is used, and the voice recognition code is imported on the first microphone tap. Measured
+with `scripts/first-load-js.mjs`; before/after and Lighthouse in `docs/search/README.md`.
 
 
 ## 9. Home, search and listing pages (part 4)
@@ -357,14 +362,43 @@ legacy-browser polyfills (38.7 KB) are `noModule` and never loaded by modern bro
 No listing component ships JavaScript (filters are a plain GET form): first-load JS is **139 KB gzip** on
 `/`, `/active-ingredient/*`, `/category/*`, `/last-prices`, `/about`, the same as the drug pages (framework + `SearchBox`).
 
-### Search box
+### Search box — instant suggestions (part 6) and voice
 
-`SearchBox` is a WAI-ARIA 1.2 combobox: debounced 200 ms, previous request aborted, answers cached
-per query in memory; ↓/↑ wrap, Enter opens the active option (or submits to `/search`), Escape
-closes then clears, Tab leaves; the last option is "كل النتائج عن «…»". The list is absolutely
-positioned and the count is announced in a visually hidden live region: **CLS 0.00** measured while
-typing (`scripts/part4-shots.mjs`). Display names drop availability markers ("(n/a)") via
-`tradeName()`.
+`SearchBox` is a WAI-ARIA 1.2 combobox; ↓/↑ wrap, Enter opens the active option (or submits to
+`/search`), Escape closes then clears, Tab leaves; the last option is "كل النتائج عن «…»". The list
+is absolutely positioned and the count is announced in a visually hidden live region: **CLS 0.00**
+measured while typing. Display names drop availability markers ("(n/a)") via `tradeName()`.
+
+Suggestions come from a **static index searched in a Web Worker**, so from the second character
+every keystroke is answered in a few milliseconds with no server round trip (desktop ~10 ms, 4×-CPU
+~45 ms, vs ~340 ms before). How it fits together (`src/lib/search/`, full write-up in
+`docs/search/README.md`):
+
+* **The index** (`build-search-index.mts`, run by `npm run build`): every indexable drug the sitemap
+  lists, with only its names, dosage form, ingredient names, alias/spelling tokens and a popularity
+  *bucket* (never prices, barcodes, companies or raw counters — `tests/search-index.test.ts` fails
+  the build otherwise). Columnar JSON with a content hash in the name, served immutable at
+  `/search-index/<hash>.json` with pre-compressed `.br`/`.gz` picked by `Accept-Encoding`
+  (`src/app/search-index/[file]/route.ts`). **~379 KB brotli for 13,106 drugs.**
+* **Loading** (`client.ts`, one shared client per page): never during the initial page load — on the
+  home and search pages after the page is idle (`requestIdleCallback`, skipped on Save-Data / 2G),
+  and on every page the moment the box is focused, hovered or touched. The worker keeps the file in
+  the Cache API keyed by the hashed URL (repeat visits: zero network), deletes old versions, and
+  retries once on failure.
+* **Matching** (`engine.ts`, in the worker; `engine-shared.ts` holds the light half the page needs
+  for highlighting so the class stays out of the first load): normalisation identical to the database
+  (`normalize.ts` == `web.search_normalize`, `tests/search-normalize.test.ts`); tiers exact → name
+  prefix → word prefix → alias → ingredient → substring → fuzzy (1 typo from 4 chars, 2 from 8);
+  unit/form synonyms (g = gm = جم, mg = مجم …) for mixed input; tie-break by popularity bucket then
+  shorter name.
+* **Fallback** while the index loads (or if it fails): `/api/search?q=…&limit=50` for the first two
+  characters, cached in memory and filtered locally for the following keystrokes; switches to the
+  index silently when ready. The `/search` results page still renders on the server.
+* **Voice** (`search/VoiceButton.tsx` + `voice.ts`): a microphone button shown only where the Web
+  Speech API exists (detected after hydration, faded in, no layout shift); `ar-EG`, interim text fed
+  into the box live, the recognition code imported lazily on the first tap. A strong top match is
+  pre-selected, never auto-navigated. `aria-label="بحث بالصوت"`, `aria-pressed` while listening,
+  keyboard operable. Needs `Permissions-Policy: microphone=(self)` (set in `next.config.ts`).
 
 ### Internal linking and click depth
 

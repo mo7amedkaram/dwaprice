@@ -1,5 +1,6 @@
-// In-browser suggestion engine over the static index (runs inside the search worker; pure, so
-// tests/search-engine.test.ts exercises it directly).
+// The heavy half of the search engine: the SearchEngine class that indexes the drugs and
+// answers queries. Imported only by the worker (lib/search/search.worker.ts) and the tests, so
+// it never reaches the first page load; the main thread uses lib/search/engine-shared.ts.
 //
 // Match tiers, best first (the order asked for by the brief, mirroring web.search_drugs):
 //   0 exact        the whole Arabic or English name equals the query
@@ -10,43 +11,11 @@
 //   5 substring    the query occurs inside a name (3+ characters)
 //   6 fuzzy        1 typo per word of 4+ characters, 2 per word of 8+ (prefix edit distance,
 //                  adjacent transposition = 1); only tried when tiers 0-5 found too few
-// Ties: popularity bucket (desc), shorter Arabic name, English name. Units are matched across
-// scripts and spellings (g = gm = جم, mg = مجم, ml = مل …) so mixed input works.
-// No file in this folder may import server-only code: it is bundled into the search worker.
+// Two characters match names only (as the server does). Ties: popularity bucket (desc), shorter
+// Arabic name, English name. Units match across scripts and spellings (g = gm = جم …).
 import type { SearchIndexFile, Suggestion } from './index-format';
-import { normalizeSearch, searchTokens } from './normalize';
-
-export const SUGGESTION_LIMIT = 8;
-export const MIN_QUERY_CHARS = 2;
-export const FUZZY_MIN_CHARS = 4;
-
-export const TIER = { exact: 0, namePrefix: 1, wordPrefix: 2, alias: 3, ingredient: 4, substring: 5, fuzzy: 6 } as const;
-
-// Tokens that mean the same thing (normalised spellings). A query word matches a drug word when
-// the drug word starts with the query word or with any token of its group.
-const SYNONYM_GROUPS: string[][] = [
-  ['g', 'gm', 'gram', 'grams', 'جم', 'جرام', 'غ'],
-  ['mg', 'milligram', 'milligrams', 'مجم', 'ملجم', 'مللجم', 'مليجرام', 'ملليجرام'],
-  ['mcg', 'ug', 'µg', 'microgram', 'ميكروجرام', 'مكجم'],
-  ['ml', 'milliliter', 'millilitre', 'مل', 'ملل', 'مللي'],
-  ['iu', 'unit', 'units', 'وحده', 'وحدات'],
-  ['tab', 'tabs', 'tablet', 'tablets', 'قرص', 'اقراص'],
-  ['cap', 'caps', 'capsule', 'capsules', 'كبسول', 'كبسوله', 'كبسولات'],
-  ['amp', 'amps', 'ampoule', 'ampoules', 'امبول', 'امبولات'],
-  ['vial', 'vials', 'فيال', 'فيالات'],
-  ['syrup', 'شراب'],
-  ['susp', 'suspension', 'معلق'],
-  ['supp', 'suppository', 'suppositories', 'لبوس'],
-  ['sachet', 'sachets', 'ساشيه', 'اكياس', 'كيس'],
-  ['cream', 'كريم'],
-  ['gel', 'جل'],
-  ['oint', 'ointment', 'مرهم'],
-  ['drops', 'نقط', 'قطره'],
-  ['spray', 'بخاخ', 'سبراي'],
-  ['inj', 'injection', 'حقن', 'حقنه'],
-];
-const SYNONYMS = new Map<string, string[]>();
-for (const group of SYNONYM_GROUPS) for (const t of group) SYNONYMS.set(t, group);
+import { normalizeSearch } from './normalize';
+import { allowedTypos, covered, expand, FUZZY_MIN_CHARS, MIN_QUERY_CHARS, startsWithAny, SUGGESTION_LIMIT, TIER } from './engine-shared';
 
 interface Doc {
   i: number;
@@ -56,8 +25,6 @@ interface Doc {
   words: string[];
   /** words + alias tokens (index.dt); same array as `words` when there are no aliases. */
   named: string[];
-  /** words of the ingredient names (index.di), flattened. */
-  ingWords: string[];
   /** words + alias + ingredient words. */
   all: string[];
   /** Ingredient ids (index.ing). */
@@ -73,28 +40,6 @@ interface Hit {
   ingredient: number;
   /** Fuzzy pass: total edit distance (lower first). */
   distance: number;
-}
-
-/** A query word expanded with its unit/form synonyms. */
-function expand(token: string): string[] {
-  const group = SYNONYMS.get(token);
-  return group ? [token, ...group.filter((t) => t !== token)] : [token];
-}
-
-function startsWithAny(word: string, prefixes: string[]): boolean {
-  for (let i = 0; i < prefixes.length; i++) if (word.startsWith(prefixes[i])) return true;
-  return false;
-}
-
-/** Every query word (already expanded) starts some word of `words`. */
-function covered(expanded: string[][], words: string[]): boolean {
-  for (let j = 0; j < expanded.length; j++) {
-    const prefixes = expanded[j];
-    let found = false;
-    for (let w = 0; w < words.length && !found; w++) found = startsWithAny(words[w], prefixes);
-    if (!found) return false;
-  }
-  return true;
 }
 
 /**
@@ -126,16 +71,7 @@ export function prefixDistance(q: string, t: string, k: number): number {
   return best;
 }
 
-/** Typos allowed for a query word of this length (the brief's rule). */
-export function allowedTypos(length: number): number {
-  return length >= 8 ? 2 : length >= FUZZY_MIN_CHARS ? 1 : 0;
-}
-
-/**
- * Cheap pre-filter before the edit distance: the two words share their first letter, or the
- * first two letters are swapped / one inserted, or only the first letter differs (b/p for
- * Arabic speakers: "banadol").
- */
+/** Two words share their first letter, or the first two are swapped / one differs (b/p: "banadol"). */
 function fuzzyCandidate(q: string, w: string): boolean {
   return w[0] === q[0] || w[1] === q[0] || w[0] === q[1] || w[1] === q[1];
 }
@@ -157,7 +93,7 @@ export class SearchEngine {
       const alias = index.dt[i].map((t) => index.tok[t]);
       const named = alias.length ? words.concat(alias) : words;
       const ingWords = index.di[i].length ? [...new Set(index.di[i].flatMap((id) => this.ingWords[id]))] : [];
-      this.docs.push({ i, nar, nen, words, named, ingWords, all: ingWords.length ? named.concat(ingWords) : named, ings: index.di[i], pop: index.pop[i], len: nar.length || nen.length });
+      this.docs.push({ i, nar, nen, words, named, all: ingWords.length ? named.concat(ingWords) : named, ings: index.di[i], pop: index.pop[i], len: nar.length || nen.length });
     }
   }
 
@@ -176,7 +112,7 @@ export class SearchEngine {
       const doc = docs[d];
       // Quick reject: every tier needs the first query word (or the whole query) somewhere in the doc.
       if (!covered(expanded, namesOnly ? doc.words : doc.all) && !(nq.length >= 3 && (doc.nar.includes(nq) || doc.nen.includes(nq)))) continue;
-      const tier = this.strictTier(doc, nq, qt, expanded, namesOnly);
+      const tier = this.strictTier(doc, nq, expanded, namesOnly);
       if (tier.tier >= 0) hits.push({ doc, tier: tier.tier, ingredient: tier.ingredient, distance: 0 });
     }
     if (hits.length < limit && qt.some((t) => t.length >= FUZZY_MIN_CHARS)) {
@@ -192,7 +128,7 @@ export class SearchEngine {
     return hits.slice(0, limit).map((h) => this.suggestion(h));
   }
 
-  private strictTier(doc: Doc, nq: string, qt: string[], expanded: string[][], namesOnly: boolean): { tier: number; ingredient: number } {
+  private strictTier(doc: Doc, nq: string, expanded: string[][], namesOnly: boolean): { tier: number; ingredient: number } {
     if (doc.nar === nq || doc.nen === nq) return { tier: TIER.exact, ingredient: -1 };
     if (doc.nar.startsWith(nq) || doc.nen.startsWith(nq)) return { tier: TIER.namePrefix, ingredient: -1 };
     if (covered(expanded, doc.words)) return { tier: TIER.wordPrefix, ingredient: -1 };
@@ -246,22 +182,5 @@ export class SearchEngine {
   }
 }
 
-/**
- * Words of a display string that a query matches (for highlighting): every whitespace-separated
- * word that starts with a query word (or a synonym of it); when nothing starts with it and the
- * whole query occurs inside the normalised string, the words that contain query words.
- */
-export function matchedWords(display: string, query: string): boolean[] {
-  const nq = normalizeSearch(query);
-  const qWords = nq ? nq.split(' ') : [];
-  const expanded = qWords.map(expand);
-  const words = display.split(/\s+/);
-  const normalized = words.map((w) => normalizeSearch(w));
-  const flags = normalized.map((n) => n.length > 0 && expanded.some((prefixes) => startsWithAny(n, prefixes)));
-  if (!flags.some(Boolean) && nq.length >= 3 && normalizeSearch(display).includes(nq)) {
-    return normalized.map((nw) => nw.length > 0 && (qWords.some((q) => nw.includes(q)) || nq.includes(nw)));
-  }
-  return flags;
-}
-
-export { searchTokens };
+export { allowedTypos, matchedWords, MIN_QUERY_CHARS, SUGGESTION_LIMIT, TIER } from './engine-shared';
+export { searchTokens } from './normalize';

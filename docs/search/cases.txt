@@ -1,0 +1,54 @@
+
+### two Arabic letters — «بن»  (8 results, 6.5 ms)
+  [name-prefix] بنوسينس جل 50 مل | Benosense gel 50 ml • جل
+  [name-prefix] بنتافيتون 30 قرص | Pentaviton 30 film-coated tablets • أقراص مغلفة
+  [name-prefix] بنتولات قطرة عين | Pentolate 1% eye drops • قطرة عين
+  [name-prefix] بنسيكلوفير 1% كريم | Penciclovir 1% cream 30 gm • كريم
+  [name-prefix] بنتولجيك قطرة عين | Pentolegic 1% eye drops (single-dose units) • قطرة عين في عبوات أحادية الجرعة
+
+### ى instead of ي — «مستشفى»  (8 results, 8.1 ms)
+  [word-prefix] فليكس بيومين 20% وريد 50 مل مستشفيات | Flexbumin 20% i.v. inf. bag 50 ml (hospitals only) • محلول للتسريب الوريدي (كيس مرن)
+  [word-prefix] بريسيديكس 200مكجم 2مل فيال (مستشفيات) | Precedex 200 mcg/2 ml
+  [word-prefix] البيومين بشري 20% (50 مل) محلول وريدي مستشفيات فقط | Human albumin 20% (50ml) i.v. inf. (hospitals only) • محلول للتسريب الوريدي
+  [word-prefix] البيومين بشري اوكتافارما 20% محلول وريدي سعر مستشفيات | Human albumin octapharma 20% i.v.infusion (hospitals price) • محلول للتسريب الوريدي
+  [word-prefix] دوبوتامين هاملن 12.5 مجم/مل 20 مل فيال للتسريب الوريدي (سعر مستشفيات) | Dobutamine hameln 12.5mg/ml 20 ml vial i.v. inf. (hospital price) • محلول للتسريب (فيال)
+
+### ه instead of ة (form word) — «كبسوله»  (8 results, 16.3 ms)
+  [word-prefix] انتينال 200مجم 24 كبسولة | Antinal 200 mg 24 capsules • كبسولات
+  [word-prefix] سيمباتكس 60 مجم 30 كبسولة | Cymbatex 60 mg 30 caps. • كبسولات
+  [word-prefix] دايجست 365 مستخدم يومي 30 كبسولة | Adrien Gagnon Digest 365 daily use 30 caps • كبسولات
+  [word-prefix] ادم 90 كبسولة | Adam 90 veg. caps. (NOW) • كبسولات نباتية
+  [word-prefix] ادو جي 30 كبسولة | Addo-g 30 hard gelatin capsules • كبسولات جيلاتينية صلبة
+
+### one-letter typo — «اوجمنتن»  (8 results, 31.1 ms)
+  [fuzzy] اوجمنتين 1جم 14 قرص | Augmentin 1 g film-coated tablets (14 tablets) • أقراص مغلفة
+  [fuzzy] اوجمنتين 1.2 جم 1فيال | Augmentin 1.2 g vial for intravenous injection/infusion • مسحوق لمحلول للحقن/التسريب الوريدي (فيال)
+  [fuzzy] اوجمنتين 375 مجم 10 اقراص | Augmentin 375 mg tablets (10 tablets) • أقراص
+  [fuzzy] اوجمنتين 625 مجم 10 اقراص | Augmentin 625 mg 10 film-coated tablets • أقراص مغلفة
+  [fuzzy] اوجمنتين اي اس-600 معلق 75 مل | Augmentin ES-600 powder for oral suspension 75 ml • بودرة لتحضير معلق فموي
+
+### English brand name — «augmentin»  (8 results, 4.6 ms)
+  [name-prefix] اوجمنتين 1جم 14 قرص | Augmentin 1 g film-coated tablets (14 tablets) • أقراص مغلفة
+  [name-prefix] اوجمنتين 1.2 جم 1فيال | Augmentin 1.2 g vial for intravenous injection/infusion • مسحوق لمحلول للحقن/التسريب الوريدي (فيال)
+  [name-prefix] اوجمنتين 375 مجم 10 اقراص | Augmentin 375 mg tablets (10 tablets) • أقراص
+  [name-prefix] اوجمنتين 625 مجم 10 اقراص | Augmentin 625 mg 10 film-coated tablets • أقراص مغلفة
+  [name-prefix] اوجمنتين اي اس-600 معلق 75 مل | Augmentin ES-600 powder for oral suspension 75 ml • بودرة لتحضير معلق فموي
+
+### ingredient name — «amoxicillin»  (8 results, 5.2 ms)
+  [name-prefix] اموكسيسيللين 500 مجم 12 كبسولة | Amoxicillin 500 mg 12 capsules (October Pharma) • كبسولات
+  [name-prefix] اموكسيسيللين ستادا 1000مجم 12 قرص | Amoxicillin Stada 1000 mg 12 film-coated tablets • أقراص مغلفة
+  [ingredient] اموكلاوين 1 جرام 7 اقراص | Amoclawin 1 g 7 tablets • أقراص • Amoxicillin
+  [ingredient] فلوموكس 500مجم 16 كبسولة | Flumox 500 mg 16 capsules • كبسولات • Amoxicillin
+  [ingredient] اموكلوكس 500 مجم 16 كبسولة | Amoclox 500 mg 16 capsules • كبسولات • Amoxicillin
+
+### mixed Arabic + Latin strength — «اوجمنتين 1g»  (3 results, 19.6 ms)
+  [word-prefix] اوجمنتين 1جم 14 قرص | Augmentin 1 g film-coated tablets (14 tablets) • أقراص مغلفة
+  [word-prefix] اوجمنتين 1.2 جم 1فيال | Augmentin 1.2 g vial for intravenous injection/infusion • مسحوق لمحلول للحقن/التسريب الوريدي (فيال)
+  [word-prefix] اوجمنتين 1125مجم 1جم/125مجم 12 كيس لعمل معلق شرب كبار | Augmentin adults 1 g/125 mg powder for oral suspension 12 sachets • بودرة لتحضير معلق فموي في أكياس أحادية الجرعة
+
+### English typo — «zithromx»  (8 results, 14.0 ms)
+  [fuzzy] ازيثرومايسين -ايه يو جي 500 مجم 3 قرص | Azithromycin-AUG 500 mg 3 film-coated tablets • أقراص مغلفة
+  [fuzzy] ازيثروتريت 2 جم / 60 مل | Azithrotreat 2 g/60 ml powder for oral suspension • مسحوق لتحضير معلق فموي
+  [fuzzy] جلوزيثرو 500 مجم فيال | Glozithro 500mg vial • مسحوق لمحلول للتسريب (فيال)
+  [fuzzy] نيوزوليد 600مجم 3 قرص | Neozolid 600 mg film-coated tablets • قرص مغلف
+  [fuzzy] ازرولانتا 500 مجم فيال | Azrolanta 500 mg vial • فيال للحقن

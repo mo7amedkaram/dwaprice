@@ -12,7 +12,7 @@
 // Fallback while loading: GET /api/search for the first 2 characters (50 results), cached in
 // memory by those 2 characters, then filtered locally for the following keystrokes; a request
 // still in flight is aborted when the first 2 characters change.
-import { MIN_QUERY_CHARS, SUGGESTION_LIMIT } from './engine';
+import { MIN_QUERY_CHARS, SUGGESTION_LIMIT } from './engine-shared';
 import { SEARCH_INDEX_PATH, type Suggestion } from './index-format';
 import { normalizeSearch } from './normalize';
 import type { WorkerRequest, WorkerResponse } from './search.worker';
@@ -77,7 +77,7 @@ export function toSuggestion(hit: ServerHit): Suggestion {
   return { slug: hit.slug, ar: hit.name_ar ?? hit.name_en, en: hit.name_en, form: hit.dosage_form_ar, ingredient: null, tier: -1 };
 }
 
-class SearchClient {
+export class SearchClient {
   status: SearchStatus = INDEX_URL ? 'idle' : 'unavailable';
   private worker: Worker | null = null;
   private seq = 0;
