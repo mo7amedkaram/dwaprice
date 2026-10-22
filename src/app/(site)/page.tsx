@@ -3,10 +3,9 @@ import { Container, Ltr, SectionTitle, buttonClass } from '@/components/ui';
 import { ChevronEndIcon, ClockIcon, ShieldIcon, PillIcon } from '@/components/icons';
 import { JsonLd } from '@/components/JsonLd';
 import { SearchBox } from '@/components/SearchBox';
-import { DrugList } from '@/components/listing/DrugList';
 import { LetterNav } from '@/components/listing/LetterNav';
 import { PriceChangesTable } from '@/components/listing/PriceChangesTable';
-import { getAtcRoots, getHubIndex, getLatestChanges, getLetterCounts, getPopularDrugs } from '@/lib/data/listings';
+import { getAtcRoots, getHubIndex, getLatestChanges, getLetterCounts } from '@/lib/data/listings';
 import { formatCount, orderLetters } from '@/lib/listing/logic';
 import { buildMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd, websiteJsonLd } from '@/lib/seo/jsonld';
@@ -21,7 +20,7 @@ export const metadata = buildMetadata({
   title: `أسعار الأدوية في مصر محدثة يومياً | ${SITE.name}`,
   absoluteTitle: true,
   description:
-    'اعرف سعر أي دواء في مصر بآخر تحديث، مع البدائل الأرخص بنفس المادة الفعالة، وأحدث تغييرات الأسعار، والأدوية حسب الشركة والتصنيف.',
+    'اعرف سعر أي دواء في مصر بآخر تحديث، مع المثائل الأرخص بنفس المادة الفعالة والبدائل من نفس المجموعة العلاجية، وأحدث تغييرات الأسعار، والأدوية حسب الشركة والتصنيف.',
 });
 
 function MoreLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -34,30 +33,28 @@ function MoreLink({ href, children }: { href: string; children: React.ReactNode 
 }
 
 export default async function HomePage() {
-  const [popular, changes, letterCounts, categories, atcRoots] = await Promise.all([
-    getPopularDrugs(8),
+  const [changes, letterCounts, categories, atcRoots] = await Promise.all([
     getLatestChanges(null, 5, 0),
     getLetterCounts(),
     getHubIndex('category'),
     getAtcRoots(),
   ]);
   const letters = orderLetters(letterCounts);
-  // "Most searched" needs search counts; until the app records them the list is ranked by visits: say so.
-  const bySearches = popular.some((d) => Number(d.search_count) > 0);
-  const popularTitle = bySearches ? 'الأكثر بحثًا' : 'الأكثر زيارة';
 
   return (
     <>
       <JsonLd data={[websiteJsonLd(), organizationJsonLd()]} />
 
+      {/* Mobile (part 2): search sits right under the header — a compact H1 above it, the description below.
+          CSS `order` keeps the H1 first in the HTML (one logical H1); desktop keeps H1, description, then search. */}
       <section className="border-b border-border bg-surface">
-        <Container className="py-10 md:py-16">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="type-h1 text-ink">أسعار الأدوية في مصر محدثة يومياً</h1>
-            <p className="mt-3 text-text-2">
-              ابحث باسم الدواء بالعربي أو الإنجليزي أو بالمادة الفعالة، ولو كتبته بشكل غير دقيق. لكل دواء سعره الحالي وبدائله الأرخص.
+        <Container className="py-6 md:py-16">
+          <div className="mx-auto flex max-w-2xl flex-col text-center">
+            <h1 className="type-h1 order-1 text-ink">أسعار الأدوية في مصر محدثة يومياً</h1>
+            <p className="order-3 mt-4 text-text-2 md:order-2 md:mt-3">
+              ابحث باسم الدواء بالعربي أو الإنجليزي أو بالمادة الفعالة، ولو كتبته بشكل غير دقيق. لكل دواء سعره الحالي ومثائله الأرخص وبدائله.
             </p>
-            <div className="mt-6 text-start">
+            <div className="order-2 mt-4 text-start md:order-3 md:mt-6">
               <SearchBox id="home-search" size="lg" prefetch />
             </div>
           </div>
@@ -65,15 +62,6 @@ export default async function HomePage() {
       </section>
 
       <Container className="space-y-12 py-10 md:space-y-16 md:py-14">
-        {popular.length > 0 && (
-          <section aria-labelledby="popular">
-            <SectionTitle id="popular" end={<MoreLink href={routes.letters()}>كل الأدوية</MoreLink>}>
-              {popularTitle}
-            </SectionTitle>
-            <DrugList rows={popular} label={`الأدوية ${popularTitle}`} />
-          </section>
-        )}
-
         <section aria-labelledby="latest-prices">
           <SectionTitle id="latest-prices" end={<MoreLink href={routes.lastPrices()}>كل التغييرات</MoreLink>}>
             أحدث تغييرات الأسعار
@@ -151,9 +139,9 @@ export default async function HomePage() {
             <li className="flex gap-3">
               <PillIcon size={22} className="mt-0.5 shrink-0 text-primary" />
               <span>
-                <span className="block font-semibold text-ink">كل دواء بسعره وبدائله</span>
+                <span className="block font-semibold text-ink">كل دواء بسعره ومثائله وبدائله</span>
                 <span className="type-small text-text-2">
-                  لكل دواء السعر الحالي والسابق وتاريخ التغيير، والبدائل بنفس المادة الفعالة والتركيز مرتبة من الأرخص.
+                  لكل دواء السعر الحالي والسابق وتاريخ التغيير، والمثائل بنفس المادة الفعالة والتركيز مرتبة من الأرخص، والبدائل من نفس المجموعة العلاجية.
                 </span>
               </span>
             </li>

@@ -5,9 +5,9 @@ import { AlternativesTable } from '@/components/AlternativesTable';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { EmptyState } from '@/components/EmptyState';
 import { Container, Ltr, Price, SectionTitle, buttonClass } from '@/components/ui';
-import { AlternativesExplainer, MedicalDisclaimer } from '@/components/drug/Blocks';
+import { AlternativesExplainer, MedicalDisclaimer, SafetyNote } from '@/components/drug/Blocks';
 import { getDrugPageData } from '@/lib/data/drug-page';
-import { alternativesDescription, alternativesH1, alternativesTitle, displayName } from '@/lib/drug/logic';
+import { alternativesDescription, alternativesH1, alternativesTitle, displayName, SIMILARS_NOTE, SUBSTITUTES_NOTE } from '@/lib/drug/logic';
 import { drugModel } from '@/lib/drug/model';
 import { buildMetadata } from '@/lib/seo/metadata';
 import { routes } from '@/lib/site';
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     absoluteTitle: true,
     description: alternativesDescription(
       { ...m.names, ingredients: m.ingredients },
-      m.alternatives.same.filter((r) => !r.sibling).length,
+      { similars: m.alternatives.same.filter((r) => !r.sibling).length, substitutes: m.substitutes.length },
       cheapest ? { name: cheapest.nameAr ?? cheapest.nameEn, price: cheapest.price } : null,
     ),
     indexable: m.robots.index,
@@ -51,12 +51,14 @@ export default async function AlternativesPage({ params }: Props) {
   const m = drugModel(data, '/badael');
   const { page } = data;
   const { same, different } = m.alternatives;
-  if (same.length + different.length === 0) notFound();
+  const similars = same.filter((r) => !r.sibling);
+  const substitutes = m.substitutes;
+  if (similars.length + different.length + substitutes.length === 0) notFound();
   const name = displayName(m.names);
 
   return (
     <Container className="py-4 md:py-8">
-      <Breadcrumbs items={m.crumbs('البدائل')} />
+      <Breadcrumbs items={m.crumbs('بدائل ومثائل')} />
       <header className="mt-4 space-y-2">
         <h1 className="type-h1 text-ink">{alternativesH1(m.names)}</h1>
         <p className="text-text-2">
@@ -75,19 +77,29 @@ export default async function AlternativesPage({ params }: Props) {
       <div className="mt-6 space-y-10">
         <AlternativesExplainer />
 
-        <section aria-labelledby="same">
-          <SectionTitle id="same">بنفس المادة الفعالة والتركيز ({same.length})</SectionTitle>
-          {same.length > 0 ? (
-            <AlternativesTable rows={same} caption={`بدائل ${name} بنفس المادة الفعالة والتركيز، مرتبة من الأرخص`} />
+        {/* المثائل: same active ingredient. Same strength first, then a "different strength" sub-section. */}
+        <section aria-labelledby="similars">
+          <SectionTitle id="similars">المثائل — نفس المادة الفعالة ({similars.length})</SectionTitle>
+          <SafetyNote>{SIMILARS_NOTE}</SafetyNote>
+          {similars.length > 0 ? (
+            <AlternativesTable rows={similars} caption={`مثائل ${name} بنفس المادة الفعالة والتركيز، مرتبة من الأرخص`} />
           ) : (
-            <EmptyState title="لا يوجد بديل بنفس التركيز" description="لكن توجد أدوية بنفس المادة الفعالة بتركيز آخر بالأسفل." />
+            <EmptyState title="لا يوجد مثيل بنفس التركيز" description="لكن توجد أدوية بنفس المادة الفعالة بتركيز آخر بالأسفل." />
+          )}
+          {different.length > 0 && (
+            <div className="mt-8">
+              <h3 className="type-h2 mb-3 text-ink">نفس المادة الفعالة بتركيز مختلف ({different.length})</h3>
+              <AlternativesTable rows={different} caption={`أدوية بنفس المادة الفعالة لـ ${name} بتركيز مختلف`} />
+            </div>
           )}
         </section>
 
-        {different.length > 0 && (
-          <section aria-labelledby="different">
-            <SectionTitle id="different">نفس المادة الفعالة بتركيز مختلف ({different.length})</SectionTitle>
-            <AlternativesTable rows={different} caption={`أدوية بنفس المادة الفعالة لـ ${name} بتركيز مختلف`} />
+        {/* البدائل: same therapeutic class, different active ingredient. No savings badge. */}
+        {substitutes.length > 0 && (
+          <section aria-labelledby="substitutes">
+            <SectionTitle id="substitutes">البدائل — مادة فعالة مختلفة من نفس المجموعة العلاجية ({substitutes.length})</SectionTitle>
+            <SafetyNote tone="strong">{SUBSTITUTES_NOTE}</SafetyNote>
+            <AlternativesTable substitute showDiff={false} rows={substitutes} caption={`بدائل ${name} من نفس المجموعة العلاجية بمادة فعالة مختلفة، مرتبة من الأرخص`} />
           </section>
         )}
 

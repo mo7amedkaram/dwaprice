@@ -75,6 +75,10 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
   const mod = useRef<SuggestModule | null>(null);
   const [highlight, setHighlight] = useState<HighlightFn | null>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Part 2: on phones, keep the suggestions in the space between the input and the keyboard.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [focused, setFocused] = useState(false);
+  const [listMaxH, setListMaxH] = useState<number | null>(null);
 
   const term = q.trim();
   // Options: the suggestions, then "all results for …".
@@ -94,6 +98,34 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
     if (prefetch) void ensure().then((m) => m.getSearchClient().prefetchWhenIdle());
   }, [prefetch, ensure]);
   useEffect(() => () => clearTimeout(noticeTimer.current), []);
+
+  const isMobile = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+
+  // Size the dropdown to the space above the on-screen keyboard (visualViewport), its own scroll.
+  const syncViewport = useCallback(() => {
+    const vv = typeof window !== 'undefined' ? window.visualViewport : null;
+    const box = boxRef.current;
+    if (!vv || !box || !isMobile()) {
+      setListMaxH(null);
+      return;
+    }
+    const bottom = box.getBoundingClientRect().bottom; // layout-viewport relative
+    const available = vv.offsetTop + vv.height - bottom - 12; // offsetTop corrects for the visual viewport
+    setListMaxH(Math.max(140, Math.round(available)));
+  }, []);
+
+  useEffect(() => {
+    const vv = typeof window !== 'undefined' ? window.visualViewport : null;
+    if (!focused || !vv || !isMobile()) return;
+    const raf = requestAnimationFrame(syncViewport); // first measure off the effect body
+    vv.addEventListener('resize', syncViewport);
+    vv.addEventListener('scroll', syncViewport);
+    return () => {
+      cancelAnimationFrame(raf);
+      vv.removeEventListener('resize', syncViewport);
+      vv.removeEventListener('scroll', syncViewport);
+    };
+  }, [focused, syncViewport]);
 
   const clear = useCallback(() => {
     seq.current++;
@@ -204,6 +236,7 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
         ابحث عن دواء بالاسم التجاري أو المادة الفعالة
       </label>
       <div
+        ref={boxRef}
         onPointerEnter={warm}
         onTouchStart={warm}
         className={cx(
@@ -220,10 +253,24 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
           value={q}
           onChange={onChange}
           onKeyDown={onKeyDown}
-          onBlur={() => setTimeout(() => setOpen(false), 120)}
+          onBlur={() =>
+            setTimeout(() => {
+              setOpen(false);
+              setFocused(false);
+              setListMaxH(null);
+            }, 120)
+          }
           onFocus={() => {
             warm();
+            setFocused(true);
             if (items.length > 0) setOpen(true);
+            // On phones, bring the input just under the top so the suggestions have room above the keyboard.
+            if (isMobile()) {
+              requestAnimationFrame(() => {
+                const top = (boxRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - 8;
+                window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+              });
+            }
           }}
           placeholder={listening ? LISTENING_PLACEHOLDER : PLACEHOLDER}
           autoComplete="off"
@@ -237,7 +284,7 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
           aria-expanded={open}
           aria-controls={listId}
           aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
-          className="min-h-11 min-w-0 flex-1 self-stretch bg-transparent py-2 text-ink outline-none placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
+          className="min-h-11 min-w-0 flex-1 self-stretch bg-transparent py-2 text-base text-ink outline-none placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
         />
         <VoiceButton onEvent={onVoice} onListeningChange={setListening} size={size} />
         <button type="submit" className="tap shrink-0 rounded-control-sm bg-primary px-3 font-medium text-on-primary hover:bg-primary-hover">
@@ -257,7 +304,8 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
         role="listbox"
         aria-label="اقتراحات البحث"
         hidden={!open}
-        className="absolute inset-x-0 top-full z-40 mt-1 max-h-[min(28rem,70vh)] overflow-y-auto rounded-card border border-border bg-bg py-1 shadow-lg"
+        style={listMaxH !== null ? { maxHeight: `${listMaxH}px` } : undefined}
+        className="absolute inset-x-0 top-full z-40 mt-1 max-h-[min(28rem,70vh)] overflow-y-auto overscroll-contain rounded-card border border-border bg-bg py-1 shadow-lg"
       >
         {items.map((item, i) => (
           <li

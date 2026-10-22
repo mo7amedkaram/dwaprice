@@ -17,7 +17,7 @@ function DiffBadge({ row }: { row: AlternativeRowOut }) {
   );
 }
 
-function NameCell({ row, details }: { row: AlternativeRowOut; details: boolean }) {
+function NameCell({ row, details, substitute = false }: { row: AlternativeRowOut; details: boolean; substitute?: boolean }) {
   const strength = row.strength?.split('(')[0].trim();
   return (
     <>
@@ -41,11 +41,12 @@ function NameCell({ row, details }: { row: AlternativeRowOut; details: boolean }
             ))}
         </span>
       )}
-      {(row.cheapest || row.unavailable || row.sibling || !row.sameForm) && (
+      {/* البدائل are a different ingredient, so "cheapest" / "different form" / "same drug" badges don't apply. */}
+      {(substitute ? row.unavailable : row.cheapest || row.unavailable || row.sibling || !row.sameForm) && (
         <span className="mt-1 flex flex-wrap gap-1">
-          {row.cheapest && <Badge tone="down">الأرخص</Badge>}
-          {row.sibling && <Badge tone="neutral">عبوة أخرى من نفس الدواء</Badge>}
-          {!row.sameForm && <Badge tone="neutral">شكل مختلف</Badge>}
+          {!substitute && row.cheapest && <Badge tone="down">الأرخص</Badge>}
+          {!substitute && row.sibling && <Badge tone="neutral">عبوة أخرى من نفس الدواء</Badge>}
+          {!substitute && !row.sameForm && <Badge tone="neutral">شكل مختلف</Badge>}
           {row.unavailable && <Badge tone="rx">غير متوفر</Badge>}
         </span>
       )}
@@ -66,11 +67,14 @@ export function AlternativesTable({
   caption,
   variant = 'full',
   showDiff = true,
+  substitute = false,
 }: {
   rows: AlternativeRowOut[];
   caption: string;
   variant?: 'full' | 'compact';
   showDiff?: boolean;
+  /** البدائل: a different active ingredient — hide the savings badge and the cheapest/form/sibling badges. */
+  substitute?: boolean;
 }) {
   const full = variant === 'full';
   // Breakpoint where the card layout becomes a table.
@@ -104,7 +108,7 @@ export function AlternativesTable({
           {rows.map((r) => (
             <tr role="row" key={r.slug} className={cx('block border-t border-border py-2 first:border-t-0', bp.row, r.cheapest && 'bg-down-bg/60')}>
               <td role="cell" className={cx('block px-4 py-1', bp.cell)}>
-                <NameCell row={r} details={!full} />
+                <NameCell row={r} details={!full} substitute={substitute} />
               </td>
               {full && (
                 <>

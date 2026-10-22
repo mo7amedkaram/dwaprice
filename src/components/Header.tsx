@@ -3,6 +3,7 @@ import { SearchBox } from './SearchBox';
 import { Container } from './ui';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
+import { HeaderMobileSearch } from './HeaderMobileSearch';
 import { routes } from '@/lib/site';
 
 // "التصنيفات" is hidden below sm (the logo needs the room); the footer links it on every page.
@@ -46,11 +47,7 @@ export function Header() {
           </div>
         </Container>
       </header>
-      <div className="sticky top-0 z-30 border-b border-border bg-bg/95 py-2 backdrop-blur md:hidden">
-        <Container>
-          <SearchBox id="site-search-mobile" />
-        </Container>
-      </div>
+      <HeaderMobileSearch />
     </>
   );
 }

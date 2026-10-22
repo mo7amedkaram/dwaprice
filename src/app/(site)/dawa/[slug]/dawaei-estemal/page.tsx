@@ -66,9 +66,9 @@ export default async function UsesPage({ params }: Props) {
           <Link prefetch={false} href={routes.drug(slug)} className={buttonClass('secondary')}>
             سعر {name}
           </Link>
-          {m.alternatives.same.length + m.alternatives.different.length > 0 && (
+          {m.alternatives.same.length + m.alternatives.different.length + m.substitutes.length > 0 && (
             <Link prefetch={false} href={routes.alternatives(slug)} className={buttonClass('secondary')}>
-              بدائل {name}
+              المثائل والبدائل
             </Link>
           )}
         </div>

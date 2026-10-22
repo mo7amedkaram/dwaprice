@@ -45,6 +45,18 @@
     color: var(--color-muted);
   }
 
+  /* Drug-information language toggle (components/drug/InfoLangToggle): both languages are in the
+     HTML; show one. Arabic is the default (also when the attribute is absent, for no-JS / SEO). */
+  .info-en {
+    display: none;
+  }
+  html[data-info-lang='en'] .info-ar {
+    display: none;
+  }
+  html[data-info-lang='en'] .info-en {
+    display: revert;
+  }
+
   /* Theme changes animate through the existing transition-colors utilities; keep them still here. */
   @media (prefers-reduced-motion: reduce) {
     *,

@@ -12,6 +12,9 @@ import {
   drugRobots,
   drugTitle,
   groupAlternatives,
+  groupSubstitutes,
+  hasEnglishInfo,
+  isSubstitute,
   hasUsesPage,
   latestChange,
   nameWithStrength,
@@ -157,9 +160,63 @@ describe('Arabic title, H1 and description builders', () => {
     expect(d).not.toMatch(/ج\.م/);
   });
 
-  it('builds the alternatives H1 and title', () => {
-    expect(alternativesH1({ nameAr: 'بروفين أقراص', nameEn: 'Brufen', strength: '400 mg' })).toBe('بدائل بروفين أقراص 400 مجم');
-    expect(alternativesTitle(augmentin, 2026)).toBe('بدائل اوجمنتين 1جم 14 قرص وأسعارها 2026');
+  it('builds the alternatives H1 and title (بدائل ومثائل)', () => {
+    expect(alternativesH1({ nameAr: 'بروفين أقراص', nameEn: 'Brufen', strength: '400 mg' })).toBe('بدائل ومثائل بروفين أقراص 400 مجم');
+    expect(alternativesTitle(augmentin, 2026)).toBe('بدائل ومثائل اوجمنتين 1جم 14 قرص وأسعارها 2026');
+  });
+});
+
+describe('البدائل selection rule (isSubstitute)', () => {
+  // ATC: level-4 = 5 chars (C07AB), level-5 = 7 chars (C07AB07). atcLevel() reads them from the
+  // prefix arrays web.products stores (lengths 1/3/4/5/7).
+  const bisoprolol = { atcPrefixes: ['C', 'C07', 'C07A', 'C07AB', 'C07AB07'], routeClass: 'oral', ingredientCount: 1 };
+  const atenolol = { atcPrefixes: ['C', 'C07', 'C07A', 'C07AB', 'C07AB03'], routeClass: 'oral', ingredientCount: 1 };
+  const atenololTopical = { ...atenolol, routeClass: 'topical' };
+  const anotherBisoprolol = { ...bisoprolol };
+  const amlodipine = { atcPrefixes: ['C', 'C08', 'C08C', 'C08CA', 'C08CA01'], routeClass: 'oral', ingredientCount: 1 }; // different level-4
+  const combo = { atcPrefixes: ['C', 'C09', 'C09B', 'C09BB', 'C09BB04'], routeClass: 'oral', ingredientCount: 2 };
+  const noAtc = { atcPrefixes: [], routeClass: 'oral', ingredientCount: 1 };
+
+  it('accepts same ATC level-4 + different level-5 + same route', () => {
+    expect(isSubstitute(bisoprolol, atenolol)).toBe(true);
+    expect(isSubstitute(atenolol, bisoprolol)).toBe(true);
+  });
+  it('rejects a different ATC level-4 (never falls back to the broad category)', () => {
+    expect(isSubstitute(bisoprolol, amlodipine)).toBe(false);
+    expect(isSubstitute(noAtc, atenolol)).toBe(false); // no ATC on the source => no substitutes
+  });
+  it('rejects the same ATC level-5 (that is a مثيل, same ingredient)', () => {
+    expect(isSubstitute(bisoprolol, anotherBisoprolol)).toBe(false);
+  });
+  it('rejects a different route of administration', () => {
+    expect(isSubstitute(bisoprolol, atenololTopical)).toBe(false);
+  });
+  it('does not offer a combination as a substitute for a single-ingredient drug, but allows it for a combination', () => {
+    const comboSameL4 = { ...combo, atcPrefixes: ['C09BB', 'C09BB07'], ingredientCount: 2 };
+    const single = { atcPrefixes: ['C09BB', 'C09BB01'], routeClass: 'oral', ingredientCount: 1 };
+    expect(isSubstitute(single, comboSameL4)).toBe(false); // single original -> no combo substitute
+    expect(isSubstitute(combo, { ...comboSameL4, atcPrefixes: ['C09BB', 'C09BB09'] })).toBe(true); // combo original -> combo ok
+    expect(isSubstitute(combo, single)).toBe(true); // combo original -> single is allowed
+  });
+  it('English toggle shows only when some English text exists (hasEnglishInfo)', () => {
+    expect(hasEnglishInfo({})).toBe(false);
+    expect(hasEnglishInfo({ uses: [{ indication_en: '' }], side_effects: [{ en: ' ' }] })).toBe(false);
+    expect(hasEnglishInfo({ description_en: 'An antihistamine.' })).toBe(true);
+    expect(hasEnglishInfo({ description_en: 'x', description_needs_review: true })).toBe(false); // directory note: not shown
+    expect(hasEnglishInfo({ uses: [{ indication_en: 'Allergic rhinitis' }] })).toBe(true);
+    expect(hasEnglishInfo({ warnings: [{ en: 'Use with caution.' }] })).toBe(true);
+    expect(hasEnglishInfo({ ingredient_details: [{ mechanism_en: 'Blocks H1 receptors' }] })).toBe(true);
+    expect(hasEnglishInfo({ pregnancy: { breastfeeding: [{ en: 'Avoid.' }] } })).toBe(true);
+  });
+
+  it('groupSubstitutes sorts by price, carries no savings difference', () => {
+    const row = (slug: string, price: number | null) => ({
+      alt_slug: slug, name_ar: slug, name_en: slug, strength: null, dosage_form_ar: null, form_class: null,
+      company: null, units_per_package: null, current_price: price, unit_price: null, alt_listing_status: null,
+    });
+    const g = groupSubstitutes([row('b', 30), row('a', 10), row('c', null)]);
+    expect(g.map((r) => r.slug)).toEqual(['a', 'b', 'c']);
+    expect(g.every((r) => r.diffAbs === null && r.diffPct === null && !r.cheapest)).toBe(true);
   });
 });
 

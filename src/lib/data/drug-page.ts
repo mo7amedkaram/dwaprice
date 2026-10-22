@@ -2,7 +2,7 @@ import 'server-only';
 import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
 import { REVALIDATE_SECONDS, tags } from '@/lib/cache';
-import { chooseGroupCanonical, hasUsesPage, type AlternativeInput } from '@/lib/drug/logic';
+import { chooseGroupCanonical, hasUsesPage, type AlternativeInput, type SubstituteInput } from '@/lib/drug/logic';
 import type { DosingRule, DrugCard, DrugPage, GroupMemberRow } from './types';
 
 export interface RelatedCard {
@@ -24,6 +24,8 @@ export interface DrugPageData {
   /** Whether the group canonical has a uses page (for the canonical of a duplicate's uses page). */
   canonicalHasUsesPage: boolean;
   alternatives: AlternativeInput[];
+  /** البدائل: same therapeutic class, different active ingredient (web.drug_substitutes). */
+  substitutes: SubstituteInput[];
   sameCompany: RelatedCard[];
   sameCategory: RelatedCard[];
   /** APPROVED rules only (web.dosing_rules_public). */
@@ -49,13 +51,19 @@ async function load(slug: string): Promise<DrugPageData | null> {
   const [card] = await query<DrugCard>('select * from web.drug_cards where slug = $1', [slug]);
   if (!card) return null;
 
-  const [[page], group, alternatives, sameCompany, sameCategory] = await Promise.all([
+  const [[page], group, alternatives, substitutes, sameCompany, sameCategory] = await Promise.all([
     query<DrugPage>('select * from web.drug_pages where slug = $1', [slug]),
     query<GroupMemberRow>('select * from web.drug_group_members where slug = $1', [slug]),
     query<AlternativeInput>(
       `select alt_slug, name_ar, name_en, strength, dosage_form_ar, company, units_per_package,
               current_price, unit_price, match_type, alt_listing_status, same_form
        from web.drug_alternatives where slug = $1 limit 300`,
+      [slug],
+    ),
+    query<SubstituteInput>(
+      `select alt_slug, name_ar, name_en, strength, dosage_form_ar, form_class, company, units_per_package,
+              current_price, unit_price, alt_listing_status
+       from web.drug_substitutes where slug = $1 order by current_price limit 200`,
       [slug],
     ),
     card.company_keys.length
@@ -95,12 +103,13 @@ async function load(slug: string): Promise<DrugPageData | null> {
     ? await query<DosingRule>('select * from web.dosing_rules_public where ingredient_key = any($1::text[]) order by ingredient_key, version desc', [keys])
     : [];
 
-  return { card, page, group, groupCanonicalSlug, canonicalHasUsesPage, alternatives, sameCompany, sameCategory, dosingRules };
+  return { card, page, group, groupCanonicalSlug, canonicalHasUsesPage, alternatives, substitutes, sameCompany, sameCategory, dosingRules };
 }
 
 /** Everything a drug template needs, cached for a day (tags: catalog, drug:<slug>). */
 export function getDrugPageData(slug: string): Promise<DrugPageData | null> {
-  return unstable_cache(() => load(slug), ['drug-page-data-v3', slug], {
+  // v4: added `substitutes` (البدائل). The bump prevents a crash on cached v3 entries without it.
+  return unstable_cache(() => load(slug), ['drug-page-data-v4', slug], {
     revalidate: REVALIDATE_SECONDS,
     tags: [tags.catalog, tags.drug(slug)],
   })();

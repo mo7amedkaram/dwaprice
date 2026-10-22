@@ -9,11 +9,12 @@ import { PriceCard } from '@/components/PriceCard';
 import { Container, SectionTitle, buttonClass } from '@/components/ui';
 import { DrugHero } from '@/components/drug/DrugHero';
 import { PriceHistorySection } from '@/components/drug/PriceHistorySection';
-import { clinicalItems } from '@/components/drug/ClinicalSections';
-import { AlsoSearchedAs, IdentifiersBlock, MedicalDisclaimer, OtherPacks, RelatedLinks, SourcesBlock } from '@/components/drug/Blocks';
+import { bilingualClinicalItems } from '@/components/drug/ClinicalSections';
+import { InfoLangToggle } from '@/components/drug/InfoLangToggle';
+import { AlsoSearchedAs, IdentifiersBlock, MedicalDisclaimer, OtherPacks, RelatedLinks, SafetyNote, SourcesBlock } from '@/components/drug/Blocks';
 import { getTopDrugSlugs } from '@/lib/data/drugs';
 import { getDrugPageData } from '@/lib/data/drug-page';
-import { drugDescription, drugH1, drugTitle } from '@/lib/drug/logic';
+import { drugDescription, drugH1, drugTitle, SIMILARS_NOTE, SUBSTITUTES_NOTE } from '@/lib/drug/logic';
 import { drugModel } from '@/lib/drug/model';
 import { drugJsonLd } from '@/lib/seo/jsonld';
 import { buildMetadata } from '@/lib/seo/metadata';
@@ -54,13 +55,16 @@ export default async function DrugPage({ params }: Props) {
   if (!data) notFound();
   const m = drugModel(data, '');
   const { page } = data;
-  const sections = clinicalItems(page, {
+  const { items: sections, hasEnglish } = bilingualClinicalItems(page, {
     limit: m.usesPage ? 3 : undefined,
     usesHref: m.usesPage ? routes.uses(slug) : null,
     dosingRules: data.dosingRules,
     openFirst: true,
   });
-  const hasAlternatives = m.alternatives.same.length + m.alternatives.different.length > 0;
+  // المثائل: same active ingredient + same strength (siblings — other packs of this very drug — excluded).
+  const similars = m.alternatives.same.filter((r) => !r.sibling);
+  const substitutes = m.substitutes;
+  const hasAlternatives = similars.length + m.alternatives.different.length + substitutes.length > 0;
 
   return (
     <Container className="py-4 md:py-8">
@@ -84,7 +88,7 @@ export default async function DrugPage({ params }: Props) {
             footer={
               hasAlternatives ? (
                 <Link prefetch={false} href={routes.alternatives(slug)} className={buttonClass('primary', 'w-full')}>
-                  بدائل {page.name_ar ?? page.name_en}
+                  المثائل والبدائل
                 </Link>
               ) : null
             }
@@ -93,34 +97,20 @@ export default async function DrugPage({ params }: Props) {
         </aside>
 
         <div className="min-w-0 space-y-10">
-          <PriceHistorySection points={m.history} />
-
-          {m.alternatives.same.some((r) => !r.sibling) && (
-            <section aria-labelledby="alternatives">
-              <SectionTitle
-                id="alternatives"
-                end={
-                  <Link prefetch={false} href={routes.alternatives(slug)} className="inline-flex min-h-11 items-center font-medium text-primary hover:underline">
-                    كل البدائل ({m.alternatives.same.length + m.alternatives.different.length})
-                  </Link>
-                }
-              >
-                أرخص البدائل
-              </SectionTitle>
-              <AlternativesTable variant="compact" rows={m.alternatives.same.filter((r) => !r.sibling).slice(0, 5)} caption={`أرخص بدائل ${page.name_ar ?? page.name_en} بنفس التركيز`} />
-            </section>
-          )}
-
+          {/* 1. معلومات الدواء — directly under the price card (part 4), with the عربي|English toggle (part 1). */}
           {sections.length > 0 && (
             <section aria-labelledby="info">
               <SectionTitle
                 id="info"
                 end={
-                  m.usesPage ? (
-                    <Link prefetch={false} href={routes.uses(slug)} className="inline-flex min-h-11 items-center font-medium text-primary hover:underline">
-                      التفاصيل الكاملة
-                    </Link>
-                  ) : null
+                  <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    {hasEnglish && <InfoLangToggle />}
+                    {m.usesPage && (
+                      <Link prefetch={false} href={routes.uses(slug)} className="inline-flex min-h-11 items-center font-medium text-primary hover:underline">
+                        التفاصيل الكاملة
+                      </Link>
+                    )}
+                  </span>
                 }
               >
                 معلومات الدواء
@@ -128,6 +118,45 @@ export default async function DrugPage({ params }: Props) {
               <Accordion items={sections} />
             </section>
           )}
+
+          {/* 2. المثائل — same active ingredient and strength (part 5). */}
+          {similars.length > 0 && (
+            <section aria-labelledby="similars">
+              <SectionTitle
+                id="similars"
+                end={
+                  <Link prefetch={false} href={routes.alternatives(slug)} className="inline-flex min-h-11 items-center font-medium text-primary hover:underline">
+                    كل المثائل والبدائل
+                  </Link>
+                }
+              >
+                المثائل ({similars.length})
+              </SectionTitle>
+              <SafetyNote>{SIMILARS_NOTE}</SafetyNote>
+              <AlternativesTable variant="compact" rows={similars.slice(0, 5)} caption={`مثائل ${page.name_ar ?? page.name_en} بنفس المادة الفعالة والتركيز، مرتبة من الأرخص`} />
+            </section>
+          )}
+
+          {/* 3. البدائل — same therapeutic class, different active ingredient (part 5). No savings badge. */}
+          {substitutes.length > 0 && (
+            <section aria-labelledby="substitutes">
+              <SectionTitle
+                id="substitutes"
+                end={
+                  <Link prefetch={false} href={routes.alternatives(slug)} className="inline-flex min-h-11 items-center font-medium text-primary hover:underline">
+                    كل البدائل ({substitutes.length})
+                  </Link>
+                }
+              >
+                البدائل ({substitutes.length})
+              </SectionTitle>
+              <SafetyNote tone="strong">{SUBSTITUTES_NOTE}</SafetyNote>
+              <AlternativesTable variant="compact" substitute showDiff={false} rows={substitutes.slice(0, 10)} caption={`بدائل ${page.name_ar ?? page.name_en} من نفس المجموعة العلاجية بمادة فعالة مختلفة، مرتبة من الأرخص`} />
+            </section>
+          )}
+
+          {/* 4. تاريخ السعر */}
+          <PriceHistorySection points={m.history} />
 
           <AlsoSearchedAs names={m.alsoSearched} />
           <IdentifiersBlock page={page} />

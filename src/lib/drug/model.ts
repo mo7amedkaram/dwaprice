@@ -11,6 +11,7 @@ import {
   displayName,
   drugRobots,
   groupAlternatives,
+  groupSubstitutes,
   hasUsesPage,
   historyPoints,
   latestChange,
@@ -30,6 +31,8 @@ export function drugModel(data: DrugPageData, subPage: DrugSubPage) {
   const usesPage = hasUsesPage(card.clinical_sections);
   const siblings = new Set(data.group.map((m) => m.member_slug).filter((s) => s !== page.slug));
   const alternatives = groupAlternatives(data.alternatives, page.current_price, siblings);
+  // البدائل: different ingredient, same therapeutic class (web.drug_substitutes); never a sibling or a مثيل.
+  const substitutes = groupSubstitutes((data.substitutes ?? []).filter((r) => !siblings.has(r.alt_slug)));
   const robots = drugRobots({
     slug: page.slug,
     indexable: page.indexable,
@@ -78,6 +81,7 @@ export function drugModel(data: DrugPageData, subPage: DrugSubPage) {
     year,
     usesPage,
     alternatives,
+    substitutes,
     robots,
     ingredients,
     company,

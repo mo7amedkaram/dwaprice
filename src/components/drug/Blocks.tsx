@@ -21,13 +21,32 @@ export function MedicalDisclaimer() {
 }
 
 /** What an alternative is — written once, used on every alternatives view. */
+/** A short safety note above a list. `strong` is more visible (for البدائل: a different ingredient). */
+export function SafetyNote({ children, tone = 'normal' }: { children: React.ReactNode; tone?: 'normal' | 'strong' }) {
+  return (
+    <p
+      className={
+        tone === 'strong'
+          ? 'mb-3 flex items-start gap-2 rounded-card border border-rx/40 bg-rx-bg px-4 py-3 font-medium text-ink'
+          : 'mb-3 rounded-card border border-border bg-surface px-4 py-3 text-text-2'
+      }
+    >
+      {tone === 'strong' && <InfoIcon size={20} className="mt-0.5 shrink-0 text-rx" />}
+      <span>{children}</span>
+    </p>
+  );
+}
+
 export function AlternativesExplainer() {
   return (
-    <p className="type-small rounded-card border border-border bg-primary-tint/50 p-4 text-text-2">
-      <strong className="text-ink">ما هو البديل؟</strong> دواء من شركة أخرى بنفس المادة الفعالة ونفس التركيز، ويُسمّى
-      أيضًا «البديل المثيل» أو «الجنيس». قد يختلف في السعر والشكل والمواد غير الفعالة. لا تغيّر دواءك قبل سؤال الطبيب أو
-      الصيدلي.
-    </p>
+    <div className="type-small space-y-2 rounded-card border border-border bg-primary-tint/50 p-4 text-text-2">
+      <p>
+        <strong className="text-ink">المثائل:</strong> أدوية بنفس المادة الفعالة ونفس التركيز (الجنيس)، تختلف غالبًا في السعر والشركة. اسأل الصيدلي قبل الاستبدال.
+      </p>
+      <p>
+        <strong className="text-ink">البدائل:</strong> أدوية من نفس المجموعة العلاجية بمادة فعالة مختلفة. لا تستبدل دواءك ببديل إلا بأمر الطبيب.
+      </p>
+    </div>
   );
 }
 

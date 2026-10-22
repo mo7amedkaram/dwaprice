@@ -1,0 +1,42 @@
+# البدائل (therapeutic substitutes) — rule validation (2026-10-22)
+
+Rule: same ATC level-4, different ATC level-5, same route_class, single->single (combos only for combo originals), indexable + priced. No ATC => no section.
+Coverage: 6,073 of 13,228 indexable drugs are eligible (indexable, priced, known route, has ATC level-4); ~86% of those have >=1 بديل (600-drug sample: 519).
+EXPLAIN ANALYZE through the view as web_reader: cold 50 ms (first run), warm 1-16 ms; uses products_atc_gin, no seq scan.
+
+## بيسوبرول (bisoprolol, C07AB beta-blocker)  →  البدائل (cheapest first)
+name_ar | strength | current_price
+اموتينولول 50 مجم 10 أقراص | 50 mg | 3.00
+اموتينولول 100 مجم 10 اقراص | 100 mg | 5.00
+اتيلول 50مجم 20 قرص | 50 mg | 7.50
+لو بريس 100مجم 20 قرص | 100 mg | 9.50
+اتينولول 100مجم 20 قرص | 100 mg | 9.75
+
+## أوجمنتين (amox+clav, J01CR combination)  →  البدائل (cheapest first)
+name_ar | strength | current_price
+ميكلوكس 500 مجم 10 كبسولات | 500 mg (total; split between components not stated) | 13.50
+
+## أليريد (cetirizine, R06AE antihistamine)  →  البدائل (cheapest first)
+name_ar | strength | current_price
+ليرجوبان 5 مجم 10 اقراص | 5 mg | 7.50
+ميرفوزا 2.5مجم/5مل شراب 120مل | 2.5 mg/5 ml | 8.00
+ليفوهيستام نقط فم 10 مل | 5 mg/ml | 13.25
+ليناهيزين 2.5 مجم / 5 مل شراب 120 مل | 2.5 mg/5 ml | 15.00
+اورجيتريزين 2.5مجم/5مل شراب 120مل | 2.5 mg/5 ml | 15.00
+
+## رابيبرازول (PPI, A02BC)  →  البدائل (cheapest first)
+name_ar | strength | current_price
+ديكسولانت 30 مجم 7 كبسولات | 30 mg | 13.00
+ريسيك 10مجم 7 كبسولة | 10 mg | 13.20
+اوميباك 10مجم | 10 mg | 14.40
+اوميباك 40مجم | 40 mg | 15.00
+استوهالت 10 مجم 14 كبسولة | 10 mg | 16.50
+
+## دولوكيت (ketoprofen, M01AE NSAID oral)  →  البدائل (cheapest first)
+name_ar | strength | current_price
+نوفا بروفين 100مجم/5مل شراب معلق 100مل | 100 mg/5 ml | 2.25
+نابروفين 250مجم 10 اقراص | 250 mg | 3.65
+داجوانوفين 200 مجم 20 كبسولة | 200 mg | 4.00
+ايبوفين 2% معلق 60 مل | 2% | 4.50
+ماكسي بروفين 600مجم 10 قرص | 600 mg | 4.75
+

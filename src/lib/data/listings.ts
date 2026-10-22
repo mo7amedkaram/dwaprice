@@ -48,27 +48,6 @@ export const getDuplicateSlugs = unstable_cache(
 
 // ---------------------------------------------------------------- site-wide
 
-/**
- * Most searched products. search_count is still 0 everywhere (the app does not
- * record searches yet), so ties fall back to visit_count, then name; the home
- * page titles the section by what actually ranked it.
- */
-export const getPopularDrugs = unstable_cache(
-  async (limit: number): Promise<Array<HubDrug & { search_count: string }>> =>
-    query<HubDrug & { search_count: string }>(
-      `with top as (
-         select slug, search_count, visit_count from web.popular_drugs
-         where indexable and not (slug = any($1::text[])) and (search_count > 0 or visit_count > 0)
-         order by search_count desc, visit_count desc, slug
-         limit $2
-       )
-       select ${LIST_COLUMNS}, top.search_count from top join web.drug_cards c using (slug)
-       order by top.search_count desc, top.visit_count desc, c.slug`,
-      [await getDuplicateSlugs(), limit],
-    ),
-  ['popular-drugs-v3'],
-  cache,
-);
 
 // ---------------------------------------------------------------- latest price changes
 

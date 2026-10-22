@@ -207,26 +207,30 @@ export function drugDescription(d: DescriptionInput): string {
     amount ? `سعر ${name} في مصر ${amount} ${CURRENCY_AR}${d.updated ? ` (آخر تحديث ${formatDate(d.updated)})` : ''}.` : `${name} في مصر.`,
     d.ingredients.length ? `المادة الفعالة: ${d.ingredients.slice(0, 2).join(' + ')}.` : null,
     d.formAr ? `${d.formAr}${d.company ? ` من ${d.company}` : ''}.` : d.company ? `إنتاج ${d.company}.` : null,
-    'مع البدائل الأرخص وتاريخ السعر.',
+    'مع المثائل الأرخص بنفس المادة الفعالة والبدائل وتاريخ السعر.',
   ]);
 }
 
 export function alternativesH1(d: DrugNames): string {
-  return `بدائل ${nameWithStrength(displayName(d), d.strength)}`;
+  return `بدائل ومثائل ${nameWithStrength(displayName(d), d.strength)}`;
 }
 
 export function alternativesTitle(d: DrugNames, year: number): string {
-  return `بدائل ${displayName(d)} وأسعارها ${year}`;
+  return `بدائل ومثائل ${displayName(d)} وأسعارها ${year}`;
 }
 
-export function alternativesDescription(d: DrugNames & { ingredients: string[] }, sameCount: number, cheapest: { name: string; price: string | number | null } | null): string {
+export function alternativesDescription(
+  d: DrugNames & { ingredients: string[] },
+  counts: { similars: number; substitutes: number },
+  cheapest: { name: string; price: string | number | null } | null,
+): string {
   const name = displayName(d);
   const amount = cheapest ? formatAmount(cheapest.price) : null;
   return fit([
-    `${sameCount} بديل لـ ${name} بنفس المادة الفعالة والتركيز، مرتبة من الأرخص.`,
+    `مثائل ${name}: أدوية بنفس المادة الفعالة والتركيز${counts.similars ? ` (${counts.similars})` : ''} مرتبة من الأرخص.`,
     cheapest && amount ? `الأرخص: ${cheapest.name} بسعر ${amount} ${CURRENCY_AR}.` : null,
+    counts.substitutes ? `والبدائل: أدوية من نفس المجموعة العلاجية بمادة فعالة مختلفة (${counts.substitutes}).` : null,
     d.ingredients.length ? `المادة الفعالة: ${d.ingredients.slice(0, 2).join(' + ')}.` : null,
-    'مع سعر الوحدة والفرق في السعر.',
   ]);
 }
 
@@ -423,6 +427,121 @@ export function groupAlternatives(rows: AlternativeInput[], referencePrice: numb
   const cheapest = eligible.find((r) => r.sameForm) ?? [...eligible].sort((a, b) => a.price! - b.price!)[0];
   if (cheapest) cheapest.cheapest = true;
   return { same, different };
+}
+
+// ---------------------------------------------------------------- drug-info language (English toggle)
+
+/** The drug-page fields that can carry English clinical text. */
+export interface EnglishInfoSource {
+  uses?: Array<{ indication_en?: string }> | null;
+  side_effects?: Array<{ en?: string }> | null;
+  contraindications?: Array<{ en?: string }> | null;
+  warnings?: Array<{ en?: string }> | null;
+  interactions?: Array<{ description_en?: string }> | null;
+  monitoring?: Array<{ en?: string }> | null;
+  pregnancy?: { risk_summary?: Array<{ en?: string }>; breastfeeding?: Array<{ en?: string }> } | null;
+  ingredient_details?: Array<{ mechanism_en?: string | null }> | null;
+  storage?: { en?: string | null } | null;
+  description_en?: string | null;
+  description_needs_review?: boolean;
+}
+
+const anyEn = (items: Array<{ en?: string | null }> | null | undefined) => (items ?? []).some((s) => s.en?.trim());
+
+/**
+ * Whether the drug has any English clinical text at all. The drug page shows the عربي|English
+ * toggle only when this is true; otherwise the section stays Arabic with no switch. Same field
+ * rules the bilingual renderer uses (components/drug/ClinicalSections).
+ */
+export function hasEnglishInfo(page: EnglishInfoSource): boolean {
+  return !!(
+    (page.description_en?.trim() && !page.description_needs_review) ||
+    (page.uses ?? []).some((u) => u.indication_en?.trim()) ||
+    anyEn(page.side_effects) ||
+    anyEn(page.contraindications) ||
+    anyEn(page.warnings) ||
+    (page.interactions ?? []).some((it) => it.description_en?.trim()) ||
+    anyEn(page.monitoring) ||
+    anyEn([...(page.pregnancy?.risk_summary ?? []), ...(page.pregnancy?.breastfeeding ?? [])]) ||
+    (page.ingredient_details ?? []).some((m) => m.mechanism_en?.trim()) ||
+    page.storage?.en?.trim()
+  );
+}
+
+/** Short safety notes shown above each list (exact wording from the brief). */
+export const SIMILARS_NOTE = 'نفس المادة الفعالة والتركيز. اسأل الصيدلي قبل الاستبدال.';
+export const SUBSTITUTES_NOTE = 'مادة فعالة مختلفة من نفس المجموعة العلاجية. لا تستبدل دواءك ببديل إلا بأمر الطبيب.';
+
+// ---------------------------------------------------------------- البدائل (therapeutic substitutes)
+
+/** A row of web.drug_substitutes (different ingredient, same ATC level-4 and route). */
+export interface SubstituteInput {
+  alt_slug: string;
+  name_ar: string | null;
+  name_en: string;
+  strength: string | null;
+  dosage_form_ar: string | null;
+  form_class: string | null;
+  company: string | null;
+  units_per_package: number | null;
+  current_price: string | number | null;
+  unit_price: string | number | null;
+  alt_listing_status: string | null;
+}
+
+/** The exact ATC codes of each length, from web.products.atc_prefixes (lengths 1/3/4/5/7). */
+export function atcLevel(prefixes: string[] | null | undefined, len: 4 | 5): string[] {
+  const re = len === 4 ? /^[A-Z][0-9]{2}[A-Z]{2}$/ : /^[A-Z][0-9]{2}[A-Z]{2}[0-9]{2}$/;
+  return [...new Set((prefixes ?? []).filter((p) => re.test(p)))];
+}
+
+interface AtcDrug {
+  atcPrefixes: string[] | null;
+  routeClass: string | null;
+  ingredientCount: number;
+}
+
+/**
+ * The البدائل rule (mirror of web.drug_substitutes, kept pure for tests): `alt` is a
+ * substitute for `src` when they share an ATC level-4 code (same therapeutic subgroup),
+ * share NO ATC level-5 code (so the active ingredient differs), have the same route, and
+ * — unless `src` is itself a combination — `alt` is a single-ingredient drug. A drug with no
+ * ATC level-4 code never has substitutes (no fallback to the category field).
+ */
+export function isSubstitute(src: AtcDrug, alt: AtcDrug): boolean {
+  const srcL4 = atcLevel(src.atcPrefixes, 4);
+  if (srcL4.length === 0 || !src.routeClass) return false;
+  if (src.routeClass !== alt.routeClass) return false;
+  const altL4 = atcLevel(alt.atcPrefixes, 4);
+  if (!srcL4.some((c) => altL4.includes(c))) return false; // same level-4 subgroup
+  const srcL5 = atcLevel(src.atcPrefixes, 5);
+  const altL5 = atcLevel(alt.atcPrefixes, 5);
+  if (altL5.some((c) => srcL5.includes(c))) return false; // different level-5 (different ingredient)
+  if (src.ingredientCount <= 1 && alt.ingredientCount > 1) return false; // no combination substitute for a single-ingredient drug
+  return true;
+}
+
+/** Substitute rows for display: price only (no savings badge — different ingredients aren't comparable), cheapest first. */
+export function groupSubstitutes(rows: SubstituteInput[]): AlternativeRowOut[] {
+  const UNAV = UNAVAILABLE;
+  return rows
+    .map((r) => ({
+      slug: r.alt_slug,
+      nameAr: r.name_ar,
+      nameEn: r.name_en,
+      strength: r.strength,
+      form: r.dosage_form_ar,
+      company: marketingCompany(r.company),
+      price: toNumber(r.current_price),
+      unitPrice: unitPrice(r.unit_price, r.current_price, r.units_per_package),
+      diffAbs: null,
+      diffPct: null,
+      unavailable: r.alt_listing_status !== null && UNAV.has(r.alt_listing_status),
+      cheapest: false,
+      sibling: false,
+      sameForm: false,
+    }))
+    .sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || (a.nameAr ?? a.nameEn).localeCompare(b.nameAr ?? b.nameEn, 'ar'));
 }
 
 /** "أرخص 174 ج.م (82.9%)" style parts for a difference. */

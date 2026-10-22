@@ -126,7 +126,8 @@ a static favicon file that cannot read CSS variables; it mirrors `primary`, `bg`
 | `PriceChangeBadge` | ↑ red / ↓ green percentage | `sr-only` "زيادة / انخفاض" |
 | `PriceHistoryChart` | step chart: SVG line + HTML labels (readable at any width), no chart library | text summary + full data table (`sr-only`), visual layer `aria-hidden` |
 | `DrugRow` | Arabic name, English name, ingredient, detail, price; whole row is the link (≥ 64 px) | one link per row, visible focus |
-| `AlternativesTable` | alternatives, **cheapest available highlighted** (`bg-down-bg`, "الأرخص"), same/different strength, unit price, difference vs the current drug | `<table>` with caption, `scope="col"`, roles kept in the mobile card layout |
+| `AlternativesTable` | المثائل (same ingredient: **cheapest highlighted**, same/different strength, difference vs the current drug) and, with `substitute` + `showDiff={false}`, البدائل (different ingredient: price + unit price, no savings badge) | `<table>` with caption, `scope="col"`, roles kept in the mobile card layout |
+| `InfoLangToggle` (client) | «عربي \| English» for the معلومات الدواء section only (part 1) | `role="group"` + `aria-pressed`; sets `html[data-info-lang]`, CSS shows `.info-ar`/`.info-en` |
 | `Accordion` | native `<details>/<summary>` | keyboard + screen reader native; content stays in HTML and works without JS |
 | `Badge` / `Tag` | status label (neutral, primary, down, up, rx, muted) / linked chip | `Tag` is a 44 px link |
 | `EmptyState` | icon, title, text, actions | heading level configurable |
@@ -271,7 +272,7 @@ and are shared by `generateMetadata`, the page body (`src/lib/drug/model.ts`) an
   so it reads in order in RTL; `{year}` = the year the price was verified.
 * **Title** `سعر … {year} | {English}` without the site suffix (`title.absolute`), ≤ 60 characters: tries
   the English trade name, then the shorter price-list name, else drops the English part (never cuts the
-  Arabic). Alternatives: `بدائل {name} وأسعارها {year}`.
+  Arabic). المثائل والبدائل page: `بدائل ومثائل {name} وأسعارها {year}`.
 * **Description** from real fields (price + date, ingredients, form + company); sentences are added while
   the text stays ≤ 155 characters; a missing price is never invented.
 * **Robots / canonical** (`drugRobots`): self-canonical with `indexable` from `web.drug_cards`; a
@@ -285,12 +286,35 @@ and are shared by `generateMetadata`, the page body (`src/lib/drug/model.ts`) an
   catalogue), unit price (`سعر القرص/الكبسولة/…`, stored or price ÷ units), last update, and
   "سعر موثّق" when `price_verified` (not "official": most prices come from published directories). History chart + changes table only with ≥ 1 change
   (`historyPoints` merges the payload history with old → current).
-* **Alternatives**: `groupAlternatives` → same ingredients + strength first, then other strengths; within
-  each, the same dosage form first, then by price. "الأرخص" goes to the cheapest available product that is
-  not another pack of the same drug (pack siblings are badged "عبوة أخرى من نفس الدواء" and left out of the
-  preview), preferring the same form; other forms are badged "شكل مختلف". Difference vs the original in EGP and %.
-  `AlternativesTable variant="compact"` beside the price card, `variant="full"` (7 columns, cards below
-  1024 px) on `/badael`. `AlternativesExplainer` is the one shared explanation.
+* **Section order (part 6)**: hero → price card → **معلومات الدواء** → **المثائل** → **البدائل** →
+  تاريخ السعر → identifiers, related, sources. One H1; the price-card button links to `/badael` labelled
+  «المثائل والبدائل».
+* **المثائل vs البدائل (part 6)** — two distinct ideas, exact UI wording:
+  * **المثائل**: the same active ingredient(s). `groupAlternatives` → same strength first (preview on the
+    drug page, and the first `/badael` section), then a "نفس المادة الفعالة بتركيز مختلف" sub-section.
+    "الأرخص" marks the cheapest available product that is not another pack of the same drug (siblings are
+    badged "عبوة أخرى من نفس الدواء"); other forms are badged "شكل مختلف"; shows the price difference vs the
+    original in EGP and %. Note above it: «نفس المادة الفعالة والتركيز. اسأل الصيدلي قبل الاستبدال.»
+  * **البدائل**: a **different** active ingredient from the same therapeutic class — `web.drug_substitutes`
+    (migration 0049): same ATC level-4 code, a different ATC level-5 code, same `route_class`, single→single
+    (a combination original may be matched by combinations), indexable with a price; **no ATC → no section**
+    (never the broad category field). `isSubstitute` in `logic.ts` is the pure mirror of the view
+    (unit-tested; a live test checks the view agrees). Sorted by price, **no savings badge** (different
+    ingredients aren't price-comparable) — only price and price-per-unit. Prominent note above it:
+    «مادة فعالة مختلفة من نفس المجموعة العلاجية. لا تستبدل دواءك ببديل إلا بأمر الطبيب.»
+  * `AlternativesTable variant="compact"` beside/under the content on the drug page, `variant="full"` on
+    `/badael`; `substitute` + `showDiff={false}` for البدائل. `AlternativesExplainer` explains both terms.
+    URL `/badael` is unchanged (indexed); the sitemap is unchanged, so a drug that has بدائل but no مثائل has
+    a `/badael` page that `web.sitemap_drugs.has_alternatives` (set_key based) does not list.
+* **Drug-info language toggle (part 1)**: the معلومات الدواء section gets a «عربي | English» switch
+  (`InfoLangToggle`). Both languages are in the server HTML — Arabic visible, English in a
+  `lang="en" dir="ltr"` container — toggled by CSS on `html[data-info-lang]`, applied before paint by the
+  `<head>` script (`lib/info-lang.ts`) and remembered in `localStorage`, so it carries to later drug pages
+  with no request and no layout shift. English uses only English text already in the data (DailyMed/EMA/eMC
+  …); blocks with no English show a "English text not available for this section" note; the dosing block
+  stays Arabic (pharmacist-reviewed, never machine-translated). No switch when the drug has no English
+  (`hasEnglishInfo`). Arabic stays the default for SEO; titles, meta, canonical and hreflang are unchanged.
+  The rest of the page and site stay Arabic.
 * **Images**: `next/image` (unoptimized, see `DrugImage`) only for `image_verified`; otherwise a placeholder icon.
 * **Links to drug and hub pages use `prefetch={false}`**: prefetching an ISR page that isn't cached
   renders it on the server; on this small database one page view would trigger several extra renders.
@@ -368,6 +392,13 @@ No listing component ships JavaScript (filters are a plain GET form): first-load
 `/search`), Escape closes then clears, Tab leaves; the last option is "كل النتائج عن «…»". The list
 is absolutely positioned and the count is announced in a visually hidden live region: **CLS 0.00**
 measured while typing. Display names drop availability markers ("(n/a)") via `tradeName()`.
+
+**On phones (part 2):** the home page shows the search box right under the header (a compact H1 above,
+the description below, via CSS `order` so the H1 stays first in the HTML); the header's sticky mobile
+search bar is hidden on `/` only (`HeaderMobileSearch`, so there are never two boxes). On focus the
+input scrolls just under the top and the suggestions list is sized to the space above the keyboard with
+`visualViewport` (its own scroll, updated on `resize`/`scroll`); the input is 16px so iOS Safari does not
+zoom.
 
 Suggestions come from a **static index searched in a Web Worker**, so from the second character
 every keystroke is answered in a few milliseconds with no server round trip (desktop ~10 ms, 4×-CPU
