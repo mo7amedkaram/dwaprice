@@ -36,7 +36,7 @@ export default async function SearchPage({ searchParams }: Props) {
       <Breadcrumbs items={[{ name: 'البحث' }]} jsonLd={false} />
       <h1 className="type-h1 mt-3 text-ink">{query ? `نتائج البحث عن «${query}»` : 'البحث عن دواء'}</h1>
       <div className="mt-4 max-w-2xl md:hidden">
-        <SearchBox id="search-page" />
+        <SearchBox id="search-page" prefetch />
       </div>
 
       {!query ? (

@@ -58,7 +58,7 @@ export default async function HomePage() {
               ابحث باسم الدواء بالعربي أو الإنجليزي أو بالمادة الفعالة، ولو كتبته بشكل غير دقيق. لكل دواء سعره الحالي وبدائله الأرخص.
             </p>
             <div className="mt-6 text-start">
-              <SearchBox id="home-search" size="lg" />
+              <SearchBox id="home-search" size="lg" prefetch />
             </div>
           </div>
         </Container>

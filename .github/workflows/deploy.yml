@@ -88,6 +88,10 @@ jobs:
           if [ -d public ]; then cp -a public release/public; fi
           cp openapi.yaml ecosystem.config.js release/
           cp scripts/server/deploy.sh release/scripts/server/
+          # The browser suggestion index (npm run build generated it; /search-index/<file> serves it).
+          test -f data/search-index/manifest.json || { echo "::error::data/search-index/manifest.json is missing: the search index was not generated"; exit 1; }
+          mkdir -p release/data
+          cp -a data/search-index release/data/
           rm -rf release/.next/cache
           if compgen -G 'release/.env*' >/dev/null; then echo "::error::.env file in the bundle"; exit 1; fi
           du -sh release

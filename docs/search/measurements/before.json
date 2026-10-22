@@ -1,0 +1,25 @@
+{
+  "label": "before",
+  "date": "2026-10-22",
+  "build": "vUPrVoXcX5Z2bnA9b3vAU (HEAD b4e9d2c + Server-Timing total;dur on /api/search)",
+  "keystroke_to_suggestions_ms": {
+    "method": "scripts/search-timing.mjs: t0 = input event, t1 = first animation frame after the suggestion rows changed; 6 queries, server warmed, fresh context per query; median",
+    "local_desktop": { "second_char": 343.8, "third_char": 484.7, "range_second_char": [313.6, 1420.2], "longest_input_event_ms": 16 },
+    "local_cpu4x": { "second_char": 723.5, "third_char": 555.3, "range_second_char": [436, 2578.9], "longest_input_event_ms": 32 },
+    "production_desktop": { "second_char": 275.0, "third_char": 275.7, "range_second_char": [270.8, 303.2], "longest_input_event_ms": 16 },
+    "production_cpu4x": { "second_char": 311.3, "third_char": 345.8, "range_second_char": [291.1, 332.5], "longest_input_event_ms": 40 },
+    "note": "200 ms debounce + one /api/search round trip per keystroke; locally the database (Supabase, remote) dominates and varies 80 ms – 2.7 s"
+  },
+  "api_search_server_ms": {
+    "method": "scripts/search-api-timing.mjs: 9 queries x 3 rounds; Server-Timing total/db from the route; round 1 cold, rounds 2-3 warm (median)",
+    "local": { "cold_round_trip": 169, "cold_db": 165, "warm_round_trip": 96, "warm_total": 93, "warm_db": 93 },
+    "production": { "cold_round_trip": 113, "cold_db": 91, "warm_round_trip": 87, "warm_db": 91, "note": "repeat queries return the same db;dur: an Nginx proxy cache answers them (Cache-Control s-maxage=300); the live build has no total;dur yet" }
+  },
+  "lighthouse_mobile": {
+    "method": "scripts/lighthouse-perf.mjs: Lighthouse 13.5.0 default mobile emulation, 3 runs, median run kept in docs/search/lighthouse/before-*.json; local server",
+    "home": { "score": 92, "lcp_ms": 3421, "cls": 0, "tbt_ms": 23, "fcp_ms": 913, "si_ms": 913, "tti_ms": 3654, "transfer_kb": 391, "js_kb": 146, "runs": [92, 92, 92] },
+    "drug": { "path": "/dawa/alerid-10mg-30-f-c-tabs", "score": 91, "lcp_ms": 3572, "cls": 0, "tbt_ms": 28, "fcp_ms": 918, "si_ms": 918, "tti_ms": 3654, "transfer_kb": 398, "js_kb": 152, "runs": [91, 91, 91] },
+    "inp_note": "lab Lighthouse has no INP; the longest input event while typing (Event Timing API) is in keystroke_to_suggestions_ms"
+  },
+  "first_load_js_kb_gzip": { "method": "scripts/first-load-js.mjs (modern browsers, noModule polyfills excluded)", "home": 141.8, "drug": 147.3 }
+}

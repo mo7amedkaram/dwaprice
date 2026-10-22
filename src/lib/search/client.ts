@@ -1,0 +1,223 @@
+// Main-thread side of the instant suggestions: one shared client per page that owns the search
+// worker, decides when the index loads, and answers `suggest()` from the index when it is ready
+// or from /api/search while it is not (lib/search/search.worker.ts does the heavy work).
+//
+// Loading (never during the initial page load):
+//   * `prefetchWhenIdle()` (home and search pages): after the load event, in an idle callback
+//     (4 s timeout); skipped when the browser asks to save data or reports a 2G connection.
+//   * `warm()` (every page): the moment the user focuses, hovers or touches the search box.
+//   * The worker keeps the file in the Cache API, keyed by its hashed URL: repeat visits use
+//     the cached copy with zero network; older versions are deleted. A failed load falls back
+//     to the server and is retried once, 5 s later.
+// Fallback while loading: GET /api/search for the first 2 characters (50 results), cached in
+// memory by those 2 characters, then filtered locally for the following keystrokes; a request
+// still in flight is aborted when the first 2 characters change.
+import { MIN_QUERY_CHARS, SUGGESTION_LIMIT } from './engine';
+import { SEARCH_INDEX_PATH, type Suggestion } from './index-format';
+import { normalizeSearch } from './normalize';
+import type { WorkerRequest, WorkerResponse } from './search.worker';
+
+export type SearchStatus = 'unavailable' | 'idle' | 'loading' | 'ready' | 'failed';
+export type SuggestionSource = 'index' | 'server';
+export interface SuggestResult {
+  items: Suggestion[];
+  source: SuggestionSource;
+}
+
+/** Hashed file name of the current index, inlined at build time (next.config.ts); '' = no index built. */
+const INDEX_FILE = process.env.NEXT_PUBLIC_SEARCH_INDEX || '';
+export const INDEX_URL = INDEX_FILE ? `${SEARCH_INDEX_PATH}/${INDEX_FILE}` : null;
+const FALLBACK_LIMIT = 50;
+const RETRY_MS = 5000;
+
+interface ServerHit {
+  slug: string;
+  name_ar: string | null;
+  name_en: string;
+  dosage_form_ar: string | null;
+}
+
+interface DebugInfo {
+  ready: boolean;
+  status: SearchStatus;
+  url: string | null;
+  from: 'cache' | 'network' | null;
+  bytes: number | null;
+  transferBytes: number | null;
+  loadMs: number | null;
+  buildMs: number | null;
+  startedBy: 'idle' | 'focus' | null;
+  readyAt: number | null;
+  error: string | null;
+}
+
+declare global {
+  interface Window {
+    /** Diagnostics for scripts/search-timing.mjs and friends (no personal data). */
+    __dwSearch?: DebugInfo;
+  }
+}
+
+/** Save-Data or a 2G connection: do not prefetch (the index still loads on focus). */
+export function shouldSkipPrefetch(nav: Navigator = navigator): boolean {
+  const c = (nav as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+  return !!c && (c.saveData === true || c.effectiveType === 'slow-2g' || c.effectiveType === '2g');
+}
+
+/** Tokens of the normalised query all start a word of the hit (or the query is inside a name). */
+export function matchesLocally(hit: Suggestion, normalizedQuery: string): boolean {
+  const nar = normalizeSearch(hit.ar);
+  const nen = normalizeSearch(hit.en);
+  const words = `${nar} ${nen}`.split(' ');
+  const ok = normalizedQuery.split(' ').every((q) => words.some((w) => w.startsWith(q)));
+  return ok || (normalizedQuery.length >= 3 && (nar.includes(normalizedQuery) || nen.includes(normalizedQuery)));
+}
+
+export function toSuggestion(hit: ServerHit): Suggestion {
+  return { slug: hit.slug, ar: hit.name_ar ?? hit.name_en, en: hit.name_en, form: hit.dosage_form_ar, ingredient: null, tier: -1 };
+}
+
+class SearchClient {
+  status: SearchStatus = INDEX_URL ? 'idle' : 'unavailable';
+  private worker: Worker | null = null;
+  private seq = 0;
+  private readonly pending = new Map<number, (items: Suggestion[]) => void>();
+  private retried = false;
+  private readonly listeners = new Set<(status: SearchStatus) => void>();
+  private readonly serverCache = new Map<string, Suggestion[]>();
+  private abort: AbortController | null = null;
+  private readonly debug: DebugInfo = { ready: false, status: this.status, url: INDEX_URL, from: null, bytes: null, transferBytes: null, loadMs: null, buildMs: null, startedBy: null, readyAt: null, error: null };
+
+  constructor() {
+    this.publish();
+  }
+
+  onStatus(fn: (status: SearchStatus) => void): () => void {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
+  }
+
+  /** Start loading now (user intent: focus, hover, touch). */
+  warm(): void {
+    if (this.status === 'idle') this.load('focus');
+  }
+
+  /** Load after the page is idle, unless the connection asks for restraint. */
+  prefetchWhenIdle(): void {
+    if (this.status !== 'idle' || shouldSkipPrefetch()) return;
+    const start = () => {
+      const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
+      if (w.requestIdleCallback) w.requestIdleCallback(() => this.status === 'idle' && this.load('idle'), { timeout: 4000 });
+      else setTimeout(() => this.status === 'idle' && this.load('idle'), 1500);
+    };
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start, { once: true });
+  }
+
+  /** Suggestions for the typed text: from the index when ready, else from the server. */
+  async suggest(raw: string): Promise<SuggestResult> {
+    const term = raw.trim();
+    if (term.length < MIN_QUERY_CHARS) return { items: [], source: this.status === 'ready' ? 'index' : 'server' };
+    if (this.status === 'ready' && this.worker) return { items: await this.query(term), source: 'index' };
+    return { items: await this.fromServer(term), source: 'server' };
+  }
+
+  private load(startedBy: 'idle' | 'focus'): void {
+    if (!INDEX_URL) return;
+    this.debug.startedBy = startedBy;
+    this.setStatus('loading');
+    try {
+      this.worker = new Worker(new URL('./search.worker.ts', import.meta.url));
+    } catch (err) {
+      this.fail(err instanceof Error ? err.message : 'worker');
+      return;
+    }
+    this.worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
+      const m = e.data;
+      if (m.t === 'ready') {
+        Object.assign(this.debug, { from: m.from, bytes: m.bytes, transferBytes: m.transferBytes, loadMs: m.loadMs, buildMs: m.buildMs, readyAt: Math.round(performance.now()), error: null });
+        this.setStatus('ready');
+      } else if (m.t === 'error') {
+        this.fail(m.message);
+      } else if (m.t === 'r') {
+        this.pending.get(m.id)?.(m.items);
+        this.pending.delete(m.id);
+      }
+    };
+    this.worker.onerror = () => this.fail('worker error');
+    this.post({ t: 'load', url: INDEX_URL });
+  }
+
+  private fail(message: string): void {
+    this.debug.error = message;
+    this.worker?.terminate();
+    this.worker = null;
+    for (const resolve of this.pending.values()) resolve([]);
+    this.pending.clear();
+    this.setStatus('failed');
+    if (!this.retried) {
+      this.retried = true;
+      setTimeout(() => {
+        if (this.status === 'failed') {
+          this.status = 'idle';
+          this.load(this.debug.startedBy ?? 'idle');
+        }
+      }, RETRY_MS);
+    }
+  }
+
+  private post(m: WorkerRequest): void {
+    this.worker?.postMessage(m);
+  }
+
+  private query(term: string): Promise<Suggestion[]> {
+    const id = ++this.seq;
+    return new Promise((resolve) => {
+      this.pending.set(id, resolve);
+      this.post({ t: 'q', id, q: term, limit: SUGGESTION_LIMIT });
+    });
+  }
+
+  private async fromServer(term: string): Promise<Suggestion[]> {
+    const nq = normalizeSearch(term);
+    if (nq.length < MIN_QUERY_CHARS) return [];
+    const key = nq.slice(0, 2).trim();
+    let list = this.serverCache.get(key);
+    if (!list) {
+      if (key.length < MIN_QUERY_CHARS) return [];
+      this.abort?.abort();
+      const controller = new AbortController();
+      this.abort = controller;
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(key)}&limit=${FALLBACK_LIMIT}`, { signal: controller.signal });
+        if (!res.ok) return [];
+        const data = (await res.json()) as { results: ServerHit[] };
+        list = data.results.map(toSuggestion);
+        this.serverCache.set(key, list);
+      } catch {
+        return []; // aborted (superseded) or offline
+      }
+    }
+    return list.filter((hit) => matchesLocally(hit, nq)).slice(0, SUGGESTION_LIMIT);
+  }
+
+  private setStatus(status: SearchStatus): void {
+    this.status = status;
+    this.publish();
+    for (const fn of this.listeners) fn(status);
+  }
+
+  private publish(): void {
+    this.debug.status = this.status;
+    this.debug.ready = this.status === 'ready';
+    if (typeof window !== 'undefined') window.__dwSearch = this.debug;
+  }
+}
+
+let client: SearchClient | null = null;
+
+/** The page's shared search client (browser only). */
+export function getSearchClient(): SearchClient {
+  client ??= new SearchClient();
+  return client;
+}

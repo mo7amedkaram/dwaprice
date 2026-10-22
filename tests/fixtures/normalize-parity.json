@@ -1,0 +1,2386 @@
+{
+ "generatedAt": "2026-10-22",
+ "source": "web.search_normalize (public.medicine_search_normalize)",
+ "cases": [
+  {
+   "in": "أوجمنتين",
+   "out": "اوجمنتين"
+  },
+  {
+   "in": "إيبوبروفين",
+   "out": "ايبوبروفين"
+  },
+  {
+   "in": "آيزوبتين",
+   "out": "ايزوبتين"
+  },
+  {
+   "in": "ٱسم",
+   "out": "اسم"
+  },
+  {
+   "in": "بنادول إكسترا",
+   "out": "بنادول اكسترا"
+  },
+  {
+   "in": "كونجستال",
+   "out": "كونجستال"
+  },
+  {
+   "in": "سيتال",
+   "out": "سيتال"
+  },
+  {
+   "in": "مضاد حيوى",
+   "out": "مضاد حيوي"
+  },
+  {
+   "in": "مضاد حيوي",
+   "out": "مضاد حيوي"
+  },
+  {
+   "in": "كبسولة",
+   "out": "كبسوله"
+  },
+  {
+   "in": "كبسوله",
+   "out": "كبسوله"
+  },
+  {
+   "in": "رؤوف",
+   "out": "رووف"
+  },
+  {
+   "in": "مسؤول",
+   "out": "مسوول"
+  },
+  {
+   "in": "هيئة",
+   "out": "هييه"
+  },
+  {
+   "in": "شئ",
+   "out": "شي"
+  },
+  {
+   "in": "بَنَادُول",
+   "out": "بنادول"
+  },
+  {
+   "in": "بـــنادول",
+   "out": "بنادول"
+  },
+  {
+   "in": "اوجمنتين 1g",
+   "out": "اوجمنتين 1 g"
+  },
+  {
+   "in": "اوجمنتين 1 جم",
+   "out": "اوجمنتين 1 جم"
+  },
+  {
+   "in": "أوجمنتين ١ جم",
+   "out": "اوجمنتين 1 جم"
+  },
+  {
+   "in": "بروفين ۴۰۰",
+   "out": "بروفين 400"
+  },
+  {
+   "in": "کبسول",
+   "out": "كبسول"
+  },
+  {
+   "in": "ایبوبروفین",
+   "out": "ايبوبروفين"
+  },
+  {
+   "in": "Augmentin 1gm 14 f.c. tabs",
+   "out": "augmentin 1 gm 14 f c tabs"
+  },
+  {
+   "in": "AUGMENTIN 1GM",
+   "out": "augmentin 1 gm"
+  },
+  {
+   "in": "Panadol®",
+   "out": "panadol r"
+  },
+  {
+   "in": "Panadol™",
+   "out": "panadol"
+  },
+  {
+   "in": "Co-Diovan 160/12.5mg",
+   "out": "co diovan 160 12 5 mg"
+  },
+  {
+   "in": "VITAMIN C 1000MG",
+   "out": "vitamin c 1000 mg"
+  },
+  {
+   "in": "Ibuprofen 400 mg (n/a)",
+   "out": "ibuprofen 400 mg n a"
+  },
+  {
+   "in": "Néo-Codion",
+   "out": "neo codion"
+  },
+  {
+   "in": "Çetirizine",
+   "out": "cetirizine"
+  },
+  {
+   "in": "ß-blocker",
+   "out": "ss blocker"
+  },
+  {
+   "in": "B12",
+   "out": "b 12"
+  },
+  {
+   "in": "vit.b12",
+   "out": "vit b 12"
+  },
+  {
+   "in": "omega-3",
+   "out": "omega 3"
+  },
+  {
+   "in": "½ tab",
+   "out": "1 2 tab"
+  },
+  {
+   "in": "x²",
+   "out": "x²"
+  },
+  {
+   "in": "Ⅷ",
+   "out": "viii"
+  },
+  {
+   "in": "Ａｂｃ",
+   "out": "abc"
+  },
+  {
+   "in": "  spaces   here ",
+   "out": "spaces here"
+  },
+  {
+   "in": "",
+   "out": ""
+  },
+  {
+   "in": "   ",
+   "out": ""
+  },
+  {
+   "in": "ـــ",
+   "out": ""
+  },
+  {
+   "in": "ًٌٍ",
+   "out": ""
+  },
+  {
+   "in": "ﺑﻨﺎﺩﻭﻝ",
+   "out": "ﺑﻨﺎﺩﻭﻝ"
+  },
+  {
+   "in": "Zyrtec 10mg/ml",
+   "out": "zyrtec 10 mg ml"
+  },
+  {
+   "in": "Al-Zaytoon oil",
+   "out": "al zaytoon oil"
+  },
+  {
+   "in": "Children's panadol",
+   "out": "children s panadol"
+  },
+  {
+   "in": "Amoxicillin + Clavulanic acid",
+   "out": "amoxicillin clavulanic acid"
+  },
+  {
+   "in": "Glaxo&Smith",
+   "out": "glaxo smith"
+  },
+  {
+   "in": "6221045011279",
+   "out": "6221045011279"
+  },
+  {
+   "in": "بنادول اكسترا",
+   "out": "بنادول اكسترا"
+  },
+  {
+   "in": "بنادول\tاكسترا",
+   "out": "بنادول اكسترا"
+  },
+  {
+   "in": "Ø",
+   "out": "o"
+  },
+  {
+   "in": "Łódź",
+   "out": "lodz"
+  },
+  {
+   "in": "æther",
+   "out": "aether"
+  },
+  {
+   "in": "œ",
+   "out": "oe"
+  },
+  {
+   "in": "ÀÉÎÕÜ",
+   "out": "aeiou"
+  },
+  {
+   "in": "ñandú",
+   "out": "nandu"
+  },
+  {
+   "in": "KALİUM",
+   "out": "kalium"
+  },
+  {
+   "in": "İstanbul",
+   "out": "istanbul"
+  },
+  {
+   "in": "ıi",
+   "out": "ii"
+  },
+  {
+   "in": "اوجمنتن",
+   "out": "اوجمنتن"
+  },
+  {
+   "in": "بانادول",
+   "out": "بانادول"
+  },
+  {
+   "in": "بروفن",
+   "out": "بروفن"
+  },
+  {
+   "in": "نكسيوم",
+   "out": "نكسيوم"
+  },
+  {
+   "in": "ابيمول",
+   "out": "ابيمول"
+  },
+  {
+   "in": "كتافاست",
+   "out": "كتافاست"
+  },
+  {
+   "in": "claritine",
+   "out": "claritine"
+  },
+  {
+   "in": "zithromax 500",
+   "out": "zithromax 500"
+  },
+  {
+   "in": "موتيليوم",
+   "out": "موتيليوم"
+  },
+  {
+   "in": "ديكلوفيناك",
+   "out": "ديكلوفيناك"
+  },
+  {
+   "in": "امبول",
+   "out": "امبول"
+  },
+  {
+   "in": "امبولات",
+   "out": "امبولات"
+  },
+  {
+   "in": "جليكودال-ام 480مجم/5مل معلق 100 مل",
+   "out": "جليكودال ام 480مجم 5مل معلق 100 مل"
+  },
+  {
+   "in": "اتكونافيل 50 مجم 12 قرص",
+   "out": "اتكونافيل 50 مجم 12 قرص"
+  },
+  {
+   "in": "لارينكلاف 125/31 مجم باودر لعمل معلق 70 مل",
+   "out": "لارينكلاف 125 31 مجم باودر لعمل معلق 70 مل"
+  },
+  {
+   "in": "مانيتول 10% اوتوسوكا محلول وريدي 250 مل بغطاء مطاطي",
+   "out": "مانيتول 10 اوتوسوكا محلول وريدي 250 مل بغطاء مطاطي"
+  },
+  {
+   "in": "ساتوسليم 30 كبسولة",
+   "out": "ساتوسليم 30 كبسوله"
+  },
+  {
+   "in": "ماكس بي صابونة 100 جرام",
+   "out": "ماكس بي صابونه 100 جرام"
+  },
+  {
+   "in": "موفيزي 5 مجم 20 قرص مغلف",
+   "out": "موفيزي 5 مجم 20 قرص مغلف"
+  },
+  {
+   "in": "ميكليزيجو 25مجم 30 فيلم ذائب بالفم",
+   "out": "ميكليزيجو 25مجم 30 فيلم ذايب بالفم"
+  },
+  {
+   "in": "كارديكت ريتارد 20 مجم 20 قرص",
+   "out": "كارديكت ريتارد 20 مجم 20 قرص"
+  },
+  {
+   "in": "ميوريلاكس 10 كبسولات",
+   "out": "ميوريلاكس 10 كبسولات"
+  },
+  {
+   "in": "ديرما ايد غسول 120 مل",
+   "out": "ديرما ايد غسول 120 مل"
+  },
+  {
+   "in": "انفلاكام 10مجم 20 كبسولة",
+   "out": "انفلاكام 10مجم 20 كبسوله"
+  },
+  {
+   "in": "سيتوكارب 150مجم/15مل (450مجم) فيال",
+   "out": "سيتوكارب 150مجم 15مل 450مجم فيال"
+  },
+  {
+   "in": "بيزلين جل لتفتيح البشرة عامل حماية 30 50 مل",
+   "out": "بيزلين جل لتفتيح البشره عامل حمايه 30 50 مل"
+  },
+  {
+   "in": "ايزو جل مطهر لليدين 60 مل",
+   "out": "ايزو جل مطهر لليدين 60 مل"
+  },
+  {
+   "in": "لوبريفيسك 0.1% نقط للعين 10 مل",
+   "out": "لوبريفيسك 0 1 نقط للعين 10 مل"
+  },
+  {
+   "in": "جانكا-زد شراب أطفال 120 مل",
+   "out": "جانكا زد شراب اطفال 120 مل"
+  },
+  {
+   "in": "ايزوبتو كاربين 1% قطرة 15 مل",
+   "out": "ايزوبتو كاربين 1 قطره 15 مل"
+  },
+  {
+   "in": "راديا روز كريم 50جم",
+   "out": "راديا روز كريم 50جم"
+  },
+  {
+   "in": "اورازون 0.5مجم 20 اقراص",
+   "out": "اورازون 0 5مجم 20 اقراص"
+  },
+  {
+   "in": "ريفاستينج10ملجرام/5مل شراب120مل",
+   "out": "ريفاستينج10ملجرام 5مل شراب120مل"
+  },
+  {
+   "in": "مكسيدرم كريم 15 جم",
+   "out": "مكسيدرم كريم 15 جم"
+  },
+  {
+   "in": "ان بي سبراي 50مل",
+   "out": "ان بي سبراي 50مل"
+  },
+  {
+   "in": "هيرو بيبي نيوتراديفينس بلس 1 لبن اطفال 400 جرام",
+   "out": "هيرو بيبي نيوتراديفينس بلس 1 لبن اطفال 400 جرام"
+  },
+  {
+   "in": "نوراسين 400 مجم 10 أقراص مغلفة",
+   "out": "نوراسين 400 مجم 10 اقراص مغلفه"
+  },
+  {
+   "in": "اكدستيرون 25مجم 20 قرص",
+   "out": "اكدستيرون 25مجم 20 قرص"
+  },
+  {
+   "in": "كارنيتين 30% نقط فم 60 مل",
+   "out": "كارنيتين 30 نقط فم 60 مل"
+  },
+  {
+   "in": "لا تري بيوتي اكني كريم لحب الشباب 40 جم",
+   "out": "لا تري بيوتي اكني كريم لحب الشباب 40 جم"
+  },
+  {
+   "in": "ريكو اكياس للانيميا والحمل بالحديد واللاكتوفيرين",
+   "out": "ريكو اكياس للانيميا والحمل بالحديد واللاكتوفيرين"
+  },
+  {
+   "in": "هيبانوكس 20 كبسولة",
+   "out": "هيبانوكس 20 كبسوله"
+  },
+  {
+   "in": "جراتسي 100 جم 1 كيس",
+   "out": "جراتسي 100 جم 1 كيس"
+  },
+  {
+   "in": "انتاكسيل 6 مجم / مل 30 مجم فيال",
+   "out": "انتاكسيل 6 مجم مل 30 مجم فيال"
+  },
+  {
+   "in": "فروست اكت 90 قرص",
+   "out": "فروست اكت 90 قرص"
+  },
+  {
+   "in": "بالينويد",
+   "out": "بالينويد"
+  },
+  {
+   "in": "جنتاميسين سلفات سيد 80 مجم 3 امبولات",
+   "out": "جنتاميسين سلفات سيد 80 مجم 3 امبولات"
+  },
+  {
+   "in": "باروكسيديب سي ار 37.5 مجم",
+   "out": "باروكسيديب سي ار 37 5 مجم"
+  },
+  {
+   "in": "ريسبيمير ادوات للانف الملتهب (جهاز الاستنشاق+6 اكياس)",
+   "out": "ريسبيمير ادوات للانف الملتهب جهاز الاستنشاق 6 اكياس"
+  },
+  {
+   "in": "اوميجا فورت 10 اكياس",
+   "out": "اوميجا فورت 10 اكياس"
+  },
+  {
+   "in": "باريصن اس بي اف 50+ كريم 50 مل",
+   "out": "باريصن اس بي اف 50 كريم 50 مل"
+  },
+  {
+   "in": "اوركازيد قطرة للعين 10 مل",
+   "out": "اوركازيد قطره للعين 10 مل"
+  },
+  {
+   "in": "نيو-ديجستين شراب 120 مل",
+   "out": "نيو ديجستين شراب 120 مل"
+  },
+  {
+   "in": "كوردو - سي سبراي 60 مل",
+   "out": "كوردو سي سبراي 60 مل"
+  },
+  {
+   "in": "لوجي ماكس 30 قرص",
+   "out": "لوجي ماكس 30 قرص"
+  },
+  {
+   "in": "فورتيكير (بطعم الكابتشينو) معلق 125 مل",
+   "out": "فورتيكير بطعم الكابتشينو معلق 125 مل"
+  },
+  {
+   "in": "انجي بروتيكت 20 مجم 20 قرص",
+   "out": "انجي بروتيكت 20 مجم 20 قرص"
+  },
+  {
+   "in": "جيلينوز جل مرطب 20 جم",
+   "out": "جيلينوز جل مرطب 20 جم"
+  },
+  {
+   "in": "راين جل 120 جم",
+   "out": "راين جل 120 جم"
+  },
+  {
+   "in": "اوستيونات",
+   "out": "اوستيونات"
+  },
+  {
+   "in": "اوكسيتيتراسيد",
+   "out": "اوكسيتيتراسيد"
+  },
+  {
+   "in": "ازيرا 10 اكياس",
+   "out": "ازيرا 10 اكياس"
+  },
+  {
+   "in": "جراتيسوفير 400 مجم 28 قرص",
+   "out": "جراتيسوفير 400 مجم 28 قرص"
+  },
+  {
+   "in": "اولازوريكس 20 مجم",
+   "out": "اولازوريكس 20 مجم"
+  },
+  {
+   "in": "كوتريموكسازول 200 / 40 مجم معلق 120 مل",
+   "out": "كوتريموكسازول 200 40 مجم معلق 120 مل"
+  },
+  {
+   "in": "كيتوريست 150 مجم اس ار 10 اقراص",
+   "out": "كيتوريست 150 مجم اس ار 10 اقراص"
+  },
+  {
+   "in": "هيبتا بانثينول كريم شعر 100 جم",
+   "out": "هيبتا بانثينول كريم شعر 100 جم"
+  },
+  {
+   "in": "بيرفاست مقوي للشعر 5 فيال 10 مل",
+   "out": "بيرفاست مقوي للشعر 5 فيال 10 مل"
+  },
+  {
+   "in": "بريما جروث بودرة 8 اكياس",
+   "out": "بريما جروث بودره 8 اكياس"
+  },
+  {
+   "in": "اوكت-ماكرو غسول مهبلي 120 مل",
+   "out": "اوكت ماكرو غسول مهبلي 120 مل"
+  },
+  {
+   "in": "نيفيونال 4% معلق 60 مل",
+   "out": "نيفيونال 4 معلق 60 مل"
+  },
+  {
+   "in": "اوتريفين بيبي سالين 15مل نقط للانف",
+   "out": "اوتريفين بيبي سالين 15مل نقط للانف"
+  },
+  {
+   "in": "ميجا كلينسر غسول مهبلي 120مل",
+   "out": "ميجا كلينسر غسول مهبلي 120مل"
+  },
+  {
+   "in": "برانداجليم بلس 25/30مجم 30 قرص",
+   "out": "برانداجليم بلس 25 30مجم 30 قرص"
+  },
+  {
+   "in": "ريدوكسون 1جم 15 قرص فوار",
+   "out": "ريدوكسون 1جم 15 قرص فوار"
+  },
+  {
+   "in": "ديبريتريف 30 مجم 20 كبسولة",
+   "out": "ديبريتريف 30 مجم 20 كبسوله"
+  },
+  {
+   "in": "اوميجا ايه اي تي 30 كبسولة",
+   "out": "اوميجا ايه اي تي 30 كبسوله"
+  },
+  {
+   "in": "بيتا-الانين بودر 500 جم",
+   "out": "بيتا الانين بودر 500 جم"
+  },
+  {
+   "in": "اميونو ماش دي (د3) 400 وحدة دولية نقط فم 30 مل",
+   "out": "اميونو ماش دي د3 400 وحده دوليه نقط فم 30 مل"
+  },
+  {
+   "in": "اترافنجكس 100 مجم/مل 100 مل سائل شراب",
+   "out": "اترافنجكس 100 مجم مل 100 مل سايل شراب"
+  },
+  {
+   "in": "موستلا غسول 200 مل",
+   "out": "موستلا غسول 200 مل"
+  },
+  {
+   "in": "كراما كريم 100 جم",
+   "out": "كراما كريم 100 جم"
+  },
+  {
+   "in": "اموسريبرال بلس اقراص 30 قرص",
+   "out": "اموسريبرال بلس اقراص 30 قرص"
+  },
+  {
+   "in": "افين تريكسيرا + بلسم مرطب سالينوز 200 مل",
+   "out": "افين تريكسيرا بلسم مرطب سالينوز 200 مل"
+  },
+  {
+   "in": "ساليستون 0.5مجخم 10 اقراص",
+   "out": "ساليستون 0 5مجخم 10 اقراص"
+  },
+  {
+   "in": "ايزو-بروتوكول 20 مجم 10 كبسولات",
+   "out": "ايزو بروتوكول 20 مجم 10 كبسولات"
+  },
+  {
+   "in": "جوسبرين 81مجم 60 قرص",
+   "out": "جوسبرين 81مجم 60 قرص"
+  },
+  {
+   "in": "ميفاك 20 اقراص",
+   "out": "ميفاك 20 اقراص"
+  },
+  {
+   "in": "ميربريشن 30 مجم 30 قرص",
+   "out": "ميربريشن 30 مجم 30 قرص"
+  },
+  {
+   "in": "ليتاك 10 مجم 5 فيال",
+   "out": "ليتاك 10 مجم 5 فيال"
+  },
+  {
+   "in": "بولي فريش 0.2% قطرة للعين 20*0.4مل",
+   "out": "بولي فريش 0 2 قطره للعين 20 0 4مل"
+  },
+  {
+   "in": "لوكسي بيوتي كولاجين امبولات للشرب 20 * 25 مل",
+   "out": "لوكسي بيوتي كولاجين امبولات للشرب 20 25 مل"
+  },
+  {
+   "in": "ابتاميل اتش ايه 2 لبن 400 جم",
+   "out": "ابتاميل اتش ايه 2 لبن 400 جم"
+  },
+  {
+   "in": "ميكسمازيل 14/10 مجم 28 كبسولة ممتدة المفعول",
+   "out": "ميكسمازيل 14 10 مجم 28 كبسوله ممتده المفعول"
+  },
+  {
+   "in": "اتميبرازول 40 مجم 20 كبسولة",
+   "out": "اتميبرازول 40 مجم 20 كبسوله"
+  },
+  {
+   "in": "سيدوريتك",
+   "out": "سيدوريتك"
+  },
+  {
+   "in": "جيو اورالوج معجون للفم 15 جرام",
+   "out": "جيو اورالوج معجون للفم 15 جرام"
+  },
+  {
+   "in": "اكسيلون 4.5 مجم 14 كبسولة",
+   "out": "اكسيلون 4 5 مجم 14 كبسوله"
+  },
+  {
+   "in": "اوراليكس جل للفم",
+   "out": "اوراليكس جل للفم"
+  },
+  {
+   "in": "ليبيكار سينديت كريم جل منظف 200 مل",
+   "out": "ليبيكار سينديت كريم جل منظف 200 مل"
+  },
+  {
+   "in": "بوتنزيم 20 قرص",
+   "out": "بوتنزيم 20 قرص"
+  },
+  {
+   "in": "ابيكافيت 10 مجم 3 امبولات",
+   "out": "ابيكافيت 10 مجم 3 امبولات"
+  },
+  {
+   "in": "بروستاكيور 50مجم 20 كبسولة",
+   "out": "بروستاكيور 50مجم 20 كبسوله"
+  },
+  {
+   "in": "ايبوسين 20 مجم / مل فيال",
+   "out": "ايبوسين 20 مجم مل فيال"
+  },
+  {
+   "in": "جويبوكس 60مجم 6 اقراص",
+   "out": "جويبوكس 60مجم 6 اقراص"
+  },
+  {
+   "in": "ايزوكيت 0.1% امبول وريد",
+   "out": "ايزوكيت 0 1 امبول وريد"
+  },
+  {
+   "in": "اريكتاويست 100مجم 3 قرص",
+   "out": "اريكتاويست 100مجم 3 قرص"
+  },
+  {
+   "in": "كيراكيت شامبو للشعر 250 مل",
+   "out": "كيراكيت شامبو للشعر 250 مل"
+  },
+  {
+   "in": "ديليب 60 مجم 6 أقراص مغلفة",
+   "out": "ديليب 60 مجم 6 اقراص مغلفه"
+  },
+  {
+   "in": "ريسفيوتال 5مجم 7 اقراص",
+   "out": "ريسفيوتال 5مجم 7 اقراص"
+  },
+  {
+   "in": "برولي 10 اكياس",
+   "out": "برولي 10 اكياس"
+  },
+  {
+   "in": "دياكيوريماب 10 مجم 30 قرص مغلف",
+   "out": "دياكيوريماب 10 مجم 30 قرص مغلف"
+  },
+  {
+   "in": "موسكو كريم مساج 100 جم",
+   "out": "موسكو كريم مساج 100 جم"
+  },
+  {
+   "in": "جليمبوزين 25 مجم 30 قرص مغلف",
+   "out": "جليمبوزين 25 مجم 30 قرص مغلف"
+  },
+  {
+   "in": "كرودو آيرون شراب 30 مل",
+   "out": "كرودو ايرون شراب 30 مل"
+  },
+  {
+   "in": "ديفيتون-دي فورت 10000 وحدة دولية/مل نقط فم 20 مل",
+   "out": "ديفيتون دي فورت 10000 وحده دوليه مل نقط فم 20 مل"
+  },
+  {
+   "in": "ميولجين 250/300مجم 20 كبسولة",
+   "out": "ميولجين 250 300مجم 20 كبسوله"
+  },
+  {
+   "in": "كيتي اس ار 200 مجم 10 كبسولات",
+   "out": "كيتي اس ار 200 مجم 10 كبسولات"
+  },
+  {
+   "in": "دنتوكالم مرهم فموي 5 جم",
+   "out": "دنتوكالم مرهم فموي 5 جم"
+  },
+  {
+   "in": "ايفرزين 6مجم 24 قرص",
+   "out": "ايفرزين 6مجم 24 قرص"
+  },
+  {
+   "in": "بروسيل سبورت spf 15 مرهم 4.25 جم",
+   "out": "بروسيل سبورت spf 15 مرهم 4 25 جم"
+  },
+  {
+   "in": "ساينو بيم كريم 50جم",
+   "out": "ساينو بيم كريم 50جم"
+  },
+  {
+   "in": "سيفوزون 500مجم فيال",
+   "out": "سيفوزون 500مجم فيال"
+  },
+  {
+   "in": "اترابيسيلات 50مجم 5 امبولات",
+   "out": "اترابيسيلات 50مجم 5 امبولات"
+  },
+  {
+   "in": "ريفيقوجين مضاد القشره شامبو 360مل",
+   "out": "ريفيقوجين مضاد القشره شامبو 360مل"
+  },
+  {
+   "in": "بروتيلوز 2جم 7 اكياس",
+   "out": "بروتيلوز 2جم 7 اكياس"
+  },
+  {
+   "in": "ايرو برايم 30 كبسولة",
+   "out": "ايرو برايم 30 كبسوله"
+  },
+  {
+   "in": "ايكساريتيك",
+   "out": "ايكساريتيك"
+  },
+  {
+   "in": "ارثا حديد 20 قطعة",
+   "out": "ارثا حديد 20 قطعه"
+  },
+  {
+   "in": "مادوفيت كومبيليت ا-زد 100 قرص",
+   "out": "مادوفيت كومبيليت ا زد 100 قرص"
+  },
+  {
+   "in": "ليبيكونترول 80/10مجم 20 قرص",
+   "out": "ليبيكونترول 80 10مجم 20 قرص"
+  },
+  {
+   "in": "سيكلور 250 مجم/5 مل معلق 75 مل",
+   "out": "سيكلور 250 مجم 5 مل معلق 75 مل"
+  },
+  {
+   "in": "فيبكودازول جل",
+   "out": "فيبكودازول جل"
+  },
+  {
+   "in": "ديستينا بيبي كريم 60 جم",
+   "out": "ديستينا بيبي كريم 60 جم"
+  },
+  {
+   "in": "كروز زار كريم حب الشباب 75 جم",
+   "out": "كروز زار كريم حب الشباب 75 جم"
+  },
+  {
+   "in": "بيبتامين ايه سي اي لبن",
+   "out": "بيبتامين ايه سي اي لبن"
+  },
+  {
+   "in": "كاندبرسين 32 مجم 20 قرص",
+   "out": "كاندبرسين 32 مجم 20 قرص"
+  },
+  {
+   "in": "باور اكت 10 اكياس 15 جرام",
+   "out": "باور اكت 10 اكياس 15 جرام"
+  },
+  {
+   "in": "سيلفورا هير لوشن 120 مل",
+   "out": "سيلفورا هير لوشن 120 مل"
+  },
+  {
+   "in": "هيبافينس 3جم/5جم حبيبات اكياس",
+   "out": "هيبافينس 3جم 5جم حبيبات اكياس"
+  },
+  {
+   "in": "دلفينا 100 مجم 10 أقراص",
+   "out": "دلفينا 100 مجم 10 اقراص"
+  },
+  {
+   "in": "ميبادرين 250مجم فيال",
+   "out": "ميبادرين 250مجم فيال"
+  },
+  {
+   "in": "روتيمو 10 اكياس",
+   "out": "روتيمو 10 اكياس"
+  },
+  {
+   "in": "نانوشيست شراب 100 مل",
+   "out": "نانوشيست شراب 100 مل"
+  },
+  {
+   "in": "رومافين 50مجم 20 اقراص",
+   "out": "رومافين 50مجم 20 اقراص"
+  },
+  {
+   "in": "فورتادا 20 مجم 4 قرص",
+   "out": "فورتادا 20 مجم 4 قرص"
+  },
+  {
+   "in": "ليبيتور 80 مجم 7 أقراص",
+   "out": "ليبيتور 80 مجم 7 اقراص"
+  },
+  {
+   "in": "ديبوفيت ب12 - 1000مكجم/مل 5 امبولات",
+   "out": "ديبوفيت ب12 1000مكجم مل 5 امبولات"
+  },
+  {
+   "in": "ديفينيو جل 30 جم",
+   "out": "ديفينيو جل 30 جم"
+  },
+  {
+   "in": "بيون جولد 10000 مكجم 30 قرص",
+   "out": "بيون جولد 10000 مكجم 30 قرص"
+  },
+  {
+   "in": "جورنيستا 8 مجم 28 قرص",
+   "out": "جورنيستا 8 مجم 28 قرص"
+  },
+  {
+   "in": "ارانيسب 40 مكجم 4 سرنجات معباة للحقن",
+   "out": "ارانيسب 40 مكجم 4 سرنجات معباه للحقن"
+  },
+  {
+   "in": "اندوفيت اميون فيتامين سي 500مجم 20 قرص",
+   "out": "اندوفيت اميون فيتامين سي 500مجم 20 قرص"
+  },
+  {
+   "in": "بوتاسبيرونو 25مجم 20 قرص",
+   "out": "بوتاسبيرونو 25مجم 20 قرص"
+  },
+  {
+   "in": "امبروناسين 5مجم 10 اقراص",
+   "out": "امبروناسين 5مجم 10 اقراص"
+  },
+  {
+   "in": "نيورازين 100 مجم 20 قرص",
+   "out": "نيورازين 100 مجم 20 قرص"
+  },
+  {
+   "in": "ميوتروكسين 30 قرص",
+   "out": "ميوتروكسين 30 قرص"
+  },
+  {
+   "in": "دياكالديرم مرهم موضعي 20 جم",
+   "out": "دياكالديرم مرهم موضعي 20 جم"
+  },
+  {
+   "in": "لاكساج مساج كريم 75 جم",
+   "out": "لاكساج مساج كريم 75 جم"
+  },
+  {
+   "in": "دولوكسبرين 30مجم 28 كبسولة",
+   "out": "دولوكسبرين 30مجم 28 كبسوله"
+  },
+  {
+   "in": "سيكتور مساج كريم 60 جرام",
+   "out": "سيكتور مساج كريم 60 جرام"
+  },
+  {
+   "in": "جينو دكتارين 2% كريم مهبلي 40 جم",
+   "out": "جينو دكتارين 2 كريم مهبلي 40 جم"
+  },
+  {
+   "in": "Miphenicol 125 mg/5 ml oral suspension 60 ml",
+   "out": "miphenicol 125 mg 5 ml oral suspension 60 ml"
+  },
+  {
+   "in": "Ceftidin 1 gm vial for im./iv. inj. or inf.",
+   "out": "ceftidin 1 gm vial for im iv inj or inf"
+  },
+  {
+   "in": "Mictonorm 15 mg 28 sugar-coated tablets",
+   "out": "mictonorm 15 mg 28 sugar coated tablets"
+  },
+  {
+   "in": "Pregadurff",
+   "out": "pregadurff"
+  },
+  {
+   "in": "Repo cream 50 gm",
+   "out": "repo cream 50 gm"
+  },
+  {
+   "in": "Floxia Protexio tinted emulsion SPF 50 - 50 ml",
+   "out": "floxia protexio tinted emulsion spf 50 50 ml"
+  },
+  {
+   "in": "Microgenest 30/150 mcg 21 tablets",
+   "out": "microgenest 30 150 mcg 21 tablets"
+  },
+  {
+   "in": "Atoderm cream 500ml",
+   "out": "atoderm cream 500 ml"
+  },
+  {
+   "in": "Fusiderm 2% cream 15 g",
+   "out": "fusiderm 2 cream 15 g"
+  },
+  {
+   "in": "Inzad",
+   "out": "inzad"
+  },
+  {
+   "in": "Randu 10 pills",
+   "out": "randu 10 pills"
+  },
+  {
+   "in": "Genica Ray sunscreen SPF 50+ cream 100 g",
+   "out": "genica ray sunscreen spf 50 cream 100 g"
+  },
+  {
+   "in": "Cefacet 10 caps.",
+   "out": "cefacet 10 caps"
+  },
+  {
+   "in": "Gold Standard 100% Casein 1.82 kg",
+   "out": "gold standard 100 casein 1 82 kg"
+  },
+  {
+   "in": "Riozid 150/300 mg 8 caps",
+   "out": "riozid 150 300 mg 8 caps"
+  },
+  {
+   "in": "Hepta panthenol kids hair cream 100 gm",
+   "out": "hepta panthenol kids hair cream 100 gm"
+  },
+  {
+   "in": "Decapeptyl 0.1mg/ml 7 prefilled syringe",
+   "out": "decapeptyl 0 1 mg ml 7 prefilled syringe"
+  },
+  {
+   "in": "Megatron Calcium tablets",
+   "out": "megatron calcium tablets"
+  },
+  {
+   "in": "Irbedrin 75mg 14 tab",
+   "out": "irbedrin 75 mg 14 tab"
+  },
+  {
+   "in": "Panadol Joint 24 ER tabs",
+   "out": "panadol joint 24 er tabs"
+  },
+  {
+   "in": "Joplex Gel",
+   "out": "joplex gel"
+  },
+  {
+   "in": "Osteocare",
+   "out": "osteocare"
+  },
+  {
+   "in": "Glucose 10% (fipco) i.v. inf. 500 ml",
+   "out": "glucose 10 fipco i v inf 500 ml"
+  },
+  {
+   "in": "Blendy 100 tab",
+   "out": "blendy 100 tab"
+  },
+  {
+   "in": "Depezac 90 mg 4 delayed release tab.",
+   "out": "depezac 90 mg 4 delayed release tab"
+  },
+  {
+   "in": "Pletaal 50 mg tablets",
+   "out": "pletaal 50 mg tablets"
+  },
+  {
+   "in": "Ivyntol syrup 120 ml",
+   "out": "ivyntol syrup 120 ml"
+  },
+  {
+   "in": "Rilastil Acnilaude C Gel 200 ml",
+   "out": "rilastil acnilaude c gel 200 ml"
+  },
+  {
+   "in": "Orgitrizine",
+   "out": "orgitrizine"
+  },
+  {
+   "in": "Prexal 10 mg",
+   "out": "prexal 10 mg"
+  },
+  {
+   "in": "Opicroceed 50 mg 10 f.c. tablets",
+   "out": "opicroceed 50 mg 10 f c tablets"
+  },
+  {
+   "in": "Quetiazic XR 150 mg 30 tabs",
+   "out": "quetiazic xr 150 mg 30 tabs"
+  },
+  {
+   "in": "Extra general protein",
+   "out": "extra general protein"
+  },
+  {
+   "in": "Concreta anti dandruff shampoo",
+   "out": "concreta anti dandruff shampoo"
+  },
+  {
+   "in": "Balanserc 16 mg 20 tablets",
+   "out": "balanserc 16 mg 20 tablets"
+  },
+  {
+   "in": "Ectomethrin 5% lotion 50 ml",
+   "out": "ectomethrin 5 lotion 50 ml"
+  },
+  {
+   "in": "Mothervit  28 f.c. tabs.",
+   "out": "mothervit 28 f c tabs"
+  },
+  {
+   "in": "Conistova 2 mg 14 f.c.tabs.",
+   "out": "conistova 2 mg 14 f c tabs"
+  },
+  {
+   "in": "Durazac weekly 90mg 4 delayed release caps",
+   "out": "durazac weekly 90 mg 4 delayed release caps"
+  },
+  {
+   "in": "Dulefer 100 mg",
+   "out": "dulefer 100 mg"
+  },
+  {
+   "in": "Anthrawest 1% cream 20 g",
+   "out": "anthrawest 1 cream 20 g"
+  },
+  {
+   "in": "Matrix 30 capsules",
+   "out": "matrix 30 capsules"
+  },
+  {
+   "in": "Expectyl",
+   "out": "expectyl"
+  },
+  {
+   "in": "Marnys Royal Jelly 1000 mg with Lecithin 30 capsules",
+   "out": "marnys royal jelly 1000 mg with lecithin 30 capsules"
+  },
+  {
+   "in": "Gold Standard 100% Whey protein 2.27 kg",
+   "out": "gold standard 100 whey protein 2 27 kg"
+  },
+  {
+   "in": "Azithroglob 500 mg vial for IV infusion",
+   "out": "azithroglob 500 mg vial for iv infusion"
+  },
+  {
+   "in": "Isis anise & lemon 25 filter bags",
+   "out": "isis anise lemon 25 filter bags"
+  },
+  {
+   "in": "Densyl mouth wash 250 ml",
+   "out": "densyl mouth wash 250 ml"
+  },
+  {
+   "in": "Diax 200mg 12 caps.",
+   "out": "diax 200 mg 12 caps"
+  },
+  {
+   "in": "Natrixam M.R. 1.5/10 mg 28 f.c. tablets",
+   "out": "natrixam m r 1 5 10 mg 28 f c tablets"
+  },
+  {
+   "in": "Rixathon 100 mg/10 ml",
+   "out": "rixathon 100 mg 10 ml"
+  },
+  {
+   "in": "Blockadipine 10 mg",
+   "out": "blockadipine 10 mg"
+  },
+  {
+   "in": "Risperdal Consta 37.5mg vial",
+   "out": "risperdal consta 37 5 mg vial"
+  },
+  {
+   "in": "Pevisone cream",
+   "out": "pevisone cream"
+  },
+  {
+   "in": "Mandsolex syrup 120 ml",
+   "out": "mandsolex syrup 120 ml"
+  },
+  {
+   "in": "Apic White Cream",
+   "out": "apic white cream"
+  },
+  {
+   "in": "Ducray keracnyl control cream 30 ml",
+   "out": "ducray keracnyl control cream 30 ml"
+  },
+  {
+   "in": "Firstvoc hair 5 amps. x 10 ml",
+   "out": "firstvoc hair 5 amps x 10 ml"
+  },
+  {
+   "in": "Danofran 8mg amp.",
+   "out": "danofran 8 mg amp"
+  },
+  {
+   "in": "Biomeb lotion spray 30 ml",
+   "out": "biomeb lotion spray 30 ml"
+  },
+  {
+   "in": "Mycutin D top. cream 15 gm",
+   "out": "mycutin d top cream 15 gm"
+  },
+  {
+   "in": "Methotrexate (Orion) 25 mg/mL 2 mL (50 mg) vial",
+   "out": "methotrexate orion 25 mg ml 2 ml 50 mg vial"
+  },
+  {
+   "in": "Cefaxotrez 500 mg i.m. vial",
+   "out": "cefaxotrez 500 mg i m vial"
+  },
+  {
+   "in": "Glutana",
+   "out": "glutana"
+  },
+  {
+   "in": "Covapravir 200 mg 40 caps.",
+   "out": "covapravir 200 mg 40 caps"
+  },
+  {
+   "in": "Dermacyclic 6% Topical Lotion 100 ml",
+   "out": "dermacyclic 6 topical lotion 100 ml"
+  },
+  {
+   "in": "Amoxilanic 228.5 mg/5 ml powder for oral suspension 60 ml",
+   "out": "amoxilanic 228 5 mg 5 ml powder for oral suspension 60 ml"
+  },
+  {
+   "in": "Moonshine facial cleanser liquid 250 ml",
+   "out": "moonshine facial cleanser liquid 250 ml"
+  },
+  {
+   "in": "Scar fx silicone 1 sheet 3.75x7.5 cm",
+   "out": "scar fx silicone 1 sheet 3 75 x 7 5 cm"
+  },
+  {
+   "in": "B-calm cream 50 gm",
+   "out": "b calm cream 50 gm"
+  },
+  {
+   "in": "Peripheba",
+   "out": "peripheba"
+  },
+  {
+   "in": "Clopexagrel 75mg 30 f.c.tab",
+   "out": "clopexagrel 75 mg 30 f c tab"
+  },
+  {
+   "in": "Panthydex cream 40 gm",
+   "out": "panthydex cream 40 gm"
+  },
+  {
+   "in": "Epinos pineapple 6 eff. salt 6sachet",
+   "out": "epinos pineapple 6 eff salt 6 sachet"
+  },
+  {
+   "in": "Okandab 75 mg 10 capsules",
+   "out": "okandab 75 mg 10 capsules"
+  },
+  {
+   "in": "Cholstop 10mg 30 tab",
+   "out": "cholstop 10 mg 30 tab"
+  },
+  {
+   "in": "Digeplore 10 sachets",
+   "out": "digeplore 10 sachets"
+  },
+  {
+   "in": "Racecasec 100 mg 10 caps",
+   "out": "racecasec 100 mg 10 caps"
+  },
+  {
+   "in": "Panvirin 200 mg capsules",
+   "out": "panvirin 200 mg capsules"
+  },
+  {
+   "in": "Methylprednisolone Mylan 1 g (10 vials) for IV injection/infusion",
+   "out": "methylprednisolone mylan 1 g 10 vials for iv injection infusion"
+  },
+  {
+   "in": "Citapronex 10mg 14 f.c.tab.",
+   "out": "citapronex 10 mg 14 f c tab"
+  },
+  {
+   "in": "Basebone 2 film-coated tablets",
+   "out": "basebone 2 film coated tablets"
+  },
+  {
+   "in": "Flamofenac 0.09% eye drops 5 ml",
+   "out": "flamofenac 0 09 eye drops 5 ml"
+  },
+  {
+   "in": "C-retard + zinc 20 caps.",
+   "out": "c retard zinc 20 caps"
+  },
+  {
+   "in": "Pedro whitening cream 60 gm",
+   "out": "pedro whitening cream 60 gm"
+  },
+  {
+   "in": "Dilozole susp. 120 ml",
+   "out": "dilozole susp 120 ml"
+  },
+  {
+   "in": "Lusigen topical lotion 120 ml",
+   "out": "lusigen topical lotion 120 ml"
+  },
+  {
+   "in": "Marcofen 300 mg 5 paediatric suppositories",
+   "out": "marcofen 300 mg 5 paediatric suppositories"
+  },
+  {
+   "in": "Fawar C 1 gm 6 eff. sachets",
+   "out": "fawar c 1 gm 6 eff sachets"
+  },
+  {
+   "in": "Roxamix gel 30 gm",
+   "out": "roxamix gel 30 gm"
+  },
+  {
+   "in": "Novacortin 1% ointment 15 gm",
+   "out": "novacortin 1 ointment 15 gm"
+  },
+  {
+   "in": "Gusto 30 tabs",
+   "out": "gusto 30 tabs"
+  },
+  {
+   "in": "Rotone complex 30 tablets",
+   "out": "rotone complex 30 tablets"
+  },
+  {
+   "in": "Dicloferaz 75mg/3ml 6 amp. i.m i.v inf.",
+   "out": "dicloferaz 75 mg 3 ml 6 amp i m i v inf"
+  },
+  {
+   "in": "Ivymedium",
+   "out": "ivymedium"
+  },
+  {
+   "in": "Seizocalm 50 mg capsules",
+   "out": "seizocalm 50 mg capsules"
+  },
+  {
+   "in": "Calmi mix syrup 120 ml",
+   "out": "calmi mix syrup 120 ml"
+  },
+  {
+   "in": "Gasiflatyl 30 chewable tablets",
+   "out": "gasiflatyl 30 chewable tablets"
+  },
+  {
+   "in": "Genove nail repair 10ml",
+   "out": "genove nail repair 10 ml"
+  },
+  {
+   "in": "Lamazi collagen 10 sachets",
+   "out": "lamazi collagen 10 sachets"
+  },
+  {
+   "in": "Mextra 20 pieces",
+   "out": "mextra 20 pieces"
+  },
+  {
+   "in": "Azura (Azora) topical cream 50 g",
+   "out": "azura azora topical cream 50 g"
+  },
+  {
+   "in": "Maddovit Complete A-Z 30 tablets",
+   "out": "maddovit complete a z 30 tablets"
+  },
+  {
+   "in": "Cerolav gel 60 gm",
+   "out": "cerolav gel 60 gm"
+  },
+  {
+   "in": "Char 500 mg 30 capsules",
+   "out": "char 500 mg 30 capsules"
+  },
+  {
+   "in": "Denrocef 300mg 10 caps.",
+   "out": "denrocef 300 mg 10 caps"
+  },
+  {
+   "in": "Keraflex gel 60 gm",
+   "out": "keraflex gel 60 gm"
+  },
+  {
+   "in": "Brexpiprazole Clavita Pharma 4 mg 30 f.c.tabs.",
+   "out": "brexpiprazole clavita pharma 4 mg 30 f c tabs"
+  },
+  {
+   "in": "Hemaltose 50 mg/5 ml syrup",
+   "out": "hemaltose 50 mg 5 ml syrup"
+  },
+  {
+   "in": "Empacoza 25 mg 30 f.c. tabs.",
+   "out": "empacoza 25 mg 30 f c tabs"
+  },
+  {
+   "in": "Gypravastin 40 mg 7 f.c. tabs",
+   "out": "gypravastin 40 mg 7 f c tabs"
+  },
+  {
+   "in": "Profinal paediatric 20 mg/ml suspension 110 ml",
+   "out": "profinal paediatric 20 mg ml suspension 110 ml"
+  },
+  {
+   "in": "Nuxe nuxuriance ultra fluid cream 50 ml",
+   "out": "nuxe nuxuriance ultra fluid cream 50 ml"
+  },
+  {
+   "in": "Marvitense 40/5/12.5mg 30 f.c. tabs",
+   "out": "marvitense 40 5 12 5 mg 30 f c tabs"
+  },
+  {
+   "in": "Asylon 20 tablets",
+   "out": "asylon 20 tablets"
+  },
+  {
+   "in": "Antodine 40 mg 30 film-coated tablets",
+   "out": "antodine 40 mg 30 film coated tablets"
+  },
+  {
+   "in": "Mucopect",
+   "out": "mucopect"
+  },
+  {
+   "in": "Dopaminect 1 mg 20 tabs.",
+   "out": "dopaminect 1 mg 20 tabs"
+  },
+  {
+   "in": "Mafo 400 mg 30 f.c.tablets",
+   "out": "mafo 400 mg 30 f c tablets"
+  },
+  {
+   "in": "Lyribalin 75 mg 10 capsules",
+   "out": "lyribalin 75 mg 10 capsules"
+  },
+  {
+   "in": "Cranby 20 caps.",
+   "out": "cranby 20 caps"
+  },
+  {
+   "in": "Hysartan 50/12.5 mg",
+   "out": "hysartan 50 12 5 mg"
+  },
+  {
+   "in": "Boilz shampoo 120 ml",
+   "out": "boilz shampoo 120 ml"
+  },
+  {
+   "in": "Gemcitabine actavis 1 gm i.v. vial(n/a)",
+   "out": "gemcitabine actavis 1 gm i v vial n a"
+  },
+  {
+   "in": "Furoretic 40 mg 30 tablets",
+   "out": "furoretic 40 mg 30 tablets"
+  },
+  {
+   "in": "Co-irbesartan 150/12.5 mg 14 f.c.tab.",
+   "out": "co irbesartan 150 12 5 mg 14 f c tab"
+  },
+  {
+   "in": "Atoderm pp baume 200 ml",
+   "out": "atoderm pp baume 200 ml"
+  },
+  {
+   "in": "Ginipin 60 caps.",
+   "out": "ginipin 60 caps"
+  },
+  {
+   "in": "Metroflag 500mg/100ml vial for i.v. inf.",
+   "out": "metroflag 500 mg 100 ml vial for i v inf"
+  },
+  {
+   "in": "Blemil plus 1 milk 400 gm",
+   "out": "blemil plus 1 milk 400 gm"
+  },
+  {
+   "in": "Ojera skin emollient cream 50 gm",
+   "out": "ojera skin emollient cream 50 gm"
+  },
+  {
+   "in": "Haemodialysis concentrate ck112",
+   "out": "haemodialysis concentrate ck 112"
+  },
+  {
+   "in": "Novoseven 1.2mg i.v. vial",
+   "out": "novoseven 1 2 mg i v vial"
+  },
+  {
+   "in": "Gonal-f 75 IU pen",
+   "out": "gonal f 75 iu pen"
+  },
+  {
+   "in": "Marivanil 1 mg",
+   "out": "marivanil 1 mg"
+  },
+  {
+   "in": "Penta vit 125 gm powder",
+   "out": "penta vit 125 gm powder"
+  },
+  {
+   "in": "Des up gel 60 gm",
+   "out": "des up gel 60 gm"
+  },
+  {
+   "in": "Mascglucom 5% eye drops 10 ml",
+   "out": "mascglucom 5 eye drops 10 ml"
+  },
+  {
+   "in": "Kyprolis 60 mg pd. iv inf. vial",
+   "out": "kyprolis 60 mg pd iv inf vial"
+  },
+  {
+   "in": "Dapaveldactin plus 5/1000 mg 28 f.c. tabs.",
+   "out": "dapaveldactin plus 5 1000 mg 28 f c tabs"
+  },
+  {
+   "in": "Salikita facial gel 50 gm",
+   "out": "salikita facial gel 50 gm"
+  },
+  {
+   "in": "Emax massage cream 50 gm",
+   "out": "emax massage cream 50 gm"
+  },
+  {
+   "in": "Omega 3 napco syrup 100 ml",
+   "out": "omega 3 napco syrup 100 ml"
+  },
+  {
+   "in": "Nuxe white brightening mask 6 sheets*21 ml",
+   "out": "nuxe white brightening mask 6 sheets 21 ml"
+  },
+  {
+   "in": "Clarimond whitening facial wash 200 ml",
+   "out": "clarimond whitening facial wash 200 ml"
+  },
+  {
+   "in": "Futacare 30 tablets",
+   "out": "futacare 30 tablets"
+  },
+  {
+   "in": "Epicopentin 300 mg 30 caps.",
+   "out": "epicopentin 300 mg 30 caps"
+  },
+  {
+   "in": "Fenolip 300 mg 30 cap",
+   "out": "fenolip 300 mg 30 cap"
+  },
+  {
+   "in": "Puredex whitening cream 60 gm",
+   "out": "puredex whitening cream 60 gm"
+  },
+  {
+   "in": "B12 Depot 1000 mcg 5 ampoules",
+   "out": "b 12 depot 1000 mcg 5 ampoules"
+  },
+  {
+   "in": "Kansartan plus 300/12.5mg 30 f.c. tabs.",
+   "out": "kansartan plus 300 12 5 mg 30 f c tabs"
+  },
+  {
+   "in": "Furfact 320 mg 7 f.c. tab.",
+   "out": "furfact 320 mg 7 f c tab"
+  },
+  {
+   "in": "Msm 1000 mg 120 veg. caps. (now)",
+   "out": "msm 1000 mg 120 veg caps now"
+  },
+  {
+   "in": "Nan optipro 1 milk powder 400 gm",
+   "out": "nan optipro 1 milk powder 400 gm"
+  },
+  {
+   "in": "Ophilocond forte 0.2% eye drops 5 ml",
+   "out": "ophilocond forte 0 2 eye drops 5 ml"
+  },
+  {
+   "in": "Care heav hair shampoo 250 ml",
+   "out": "care heav hair shampoo 250 ml"
+  },
+  {
+   "in": "Parox 200mg 10 f.c. tab.",
+   "out": "parox 200 mg 10 f c tab"
+  },
+  {
+   "in": "Rifampin 300mg 8 caps (misr)",
+   "out": "rifampin 300 mg 8 caps misr"
+  },
+  {
+   "in": "Heloris cream 100 gm",
+   "out": "heloris cream 100 gm"
+  },
+  {
+   "in": "Philozac 20mg 30 caps.",
+   "out": "philozac 20 mg 30 caps"
+  },
+  {
+   "in": "Falconacea plus 36 caps",
+   "out": "falconacea plus 36 caps"
+  },
+  {
+   "in": "Isoptofrin 0.12% eye drops 15 ml",
+   "out": "isoptofrin 0 12 eye drops 15 ml"
+  },
+  {
+   "in": "Cipro 500mg 20 f.c.tab.",
+   "out": "cipro 500 mg 20 f c tab"
+  },
+  {
+   "in": "Nan pre milk 400 gm",
+   "out": "nan pre milk 400 gm"
+  },
+  {
+   "in": "Lanaclor 250 mg/5ml susp. 60ml",
+   "out": "lanaclor 250 mg 5 ml susp 60 ml"
+  },
+  {
+   "in": "Hair mix hair mask 200 ml",
+   "out": "hair mix hair mask 200 ml"
+  },
+  {
+   "in": "Marocysteine 300mg 30 tablets",
+   "out": "marocysteine 300 mg 30 tablets"
+  },
+  {
+   "in": "Flixotide diskus 250 mcg/dose 60 doses",
+   "out": "flixotide diskus 250 mcg dose 60 doses"
+  },
+  {
+   "in": "Sansovit plus syrup 320 ml",
+   "out": "sansovit plus syrup 320 ml"
+  },
+  {
+   "in": "Mycoster 1% topical soln. 30 ml",
+   "out": "mycoster 1 topical soln 30 ml"
+  },
+  {
+   "in": "Azotec flex roll on 80 ml",
+   "out": "azotec flex roll on 80 ml"
+  },
+  {
+   "in": "Powerecta 20mg 4 f.c. tabs.",
+   "out": "powerecta 20 mg 4 f c tabs"
+  },
+  {
+   "in": "Rivaflowva 10mg 20 film coated tab",
+   "out": "rivaflowva 10 mg 20 film coated tab"
+  },
+  {
+   "in": "Alvital iron syrup 120 ml",
+   "out": "alvital iron syrup 120 ml"
+  },
+  {
+   "in": "Royalsteride 5 mg 30 f.c. tabs.",
+   "out": "royalsteride 5 mg 30 f c tabs"
+  },
+  {
+   "in": "Hydrensa lip balm 5 gm",
+   "out": "hydrensa lip balm 5 gm"
+  },
+  {
+   "in": "G.doux hair shampoo & balsam 200 ml",
+   "out": "g doux hair shampoo balsam 200 ml"
+  },
+  {
+   "in": "Menopur 600 i.u. vial",
+   "out": "menopur 600 i u vial"
+  },
+  {
+   "in": "Fortada 20 mg 4 f.c. tabs.",
+   "out": "fortada 20 mg 4 f c tabs"
+  },
+  {
+   "in": "Moranty lotion 60 ml",
+   "out": "moranty lotion 60 ml"
+  },
+  {
+   "in": "Erroti 10 pills",
+   "out": "erroti 10 pills"
+  },
+  {
+   "in": "Epinephrine-misr 1 mg/ml 100 amp.",
+   "out": "epinephrine misr 1 mg ml 100 amp"
+  },
+  {
+   "in": "Mr. bear lemon & honey 160 ml",
+   "out": "mr bear lemon honey 160 ml"
+  },
+  {
+   "in": "Brilique 60mg 56 f.c. tabs.",
+   "out": "brilique 60 mg 56 f c tabs"
+  },
+  {
+   "in": "Repaglinide 2mg 30 tab",
+   "out": "repaglinide 2 mg 30 tab"
+  },
+  {
+   "in": "Rota power omega 60 caps.",
+   "out": "rota power omega 60 caps"
+  },
+  {
+   "in": "Oxaliplatine mylan 50mg for infusion.",
+   "out": "oxaliplatine mylan 50 mg for infusion"
+  },
+  {
+   "in": "Normelan sunscreen spf +50 cream gel 50 ml",
+   "out": "normelan sunscreen spf 50 cream gel 50 ml"
+  },
+  {
+   "in": "Manovipercaine plus topical spray 15 ml",
+   "out": "manovipercaine plus topical spray 15 ml"
+  },
+  {
+   "in": "Farco-caine 5% oint. 20 gm",
+   "out": "farco caine 5 oint 20 gm"
+  },
+  {
+   "in": "Plavictonal 75mg 20 f.c. tab.",
+   "out": "plavictonal 75 mg 20 f c tab"
+  },
+  {
+   "in": "Mirtadepine 30 mg 10 tab.",
+   "out": "mirtadepine 30 mg 10 tab"
+  },
+  {
+   "in": "Nercafix 40 mg 20 oro-dispersible films (n/a)",
+   "out": "nercafix 40 mg 20 oro dispersible films n a"
+  },
+  {
+   "in": "Panthovera hair lotion spray 110 ml",
+   "out": "panthovera hair lotion spray 110 ml"
+  },
+  {
+   "in": "Frusetone 20/50mg 10 f.c. tabs.",
+   "out": "frusetone 20 50 mg 10 f c tabs"
+  },
+  {
+   "in": "Isotan 100% inhalation solution",
+   "out": "isotan 100 inhalation solution"
+  },
+  {
+   "in": "Plaquverazon topical oint. 15 gm",
+   "out": "plaquverazon topical oint 15 gm"
+  },
+  {
+   "in": "Babyrhino syrup 100ml",
+   "out": "babyrhino syrup 100 ml"
+  },
+  {
+   "in": "Periocare mouth wash 120ml",
+   "out": "periocare mouth wash 120 ml"
+  },
+  {
+   "in": "Sanso b complex 20 caps.",
+   "out": "sanso b complex 20 caps"
+  },
+  {
+   "in": "Aphrofemine 100mg 30 f.c. tabs",
+   "out": "aphrofemine 100 mg 30 f c tabs"
+  },
+  {
+   "in": "Orchacortin 1% eye oint. 5 gm",
+   "out": "orchacortin 1 eye oint 5 gm"
+  },
+  {
+   "in": "Cefidime 500mg vial",
+   "out": "cefidime 500 mg vial"
+  },
+  {
+   "in": "Eimicamtin 1mg/ml 4mg vial(n/a yet)",
+   "out": "eimicamtin 1 mg ml 4 mg vial n a yet"
+  },
+  {
+   "in": "Herbaland kids immune 60 gummies",
+   "out": "herbaland kids immune 60 gummies"
+  },
+  {
+   "in": "Sedoter 2 mg 30 f.c. tabs.",
+   "out": "sedoter 2 mg 30 f c tabs"
+  },
+  {
+   "in": "Rozalia hair serum 120 ml",
+   "out": "rozalia hair serum 120 ml"
+  },
+  {
+   "in": "Musclazswab oint 80 gm",
+   "out": "musclazswab oint 80 gm"
+  },
+  {
+   "in": "Ophtamycetine 0.5% eye drops",
+   "out": "ophtamycetine 0 5 eye drops"
+  },
+  {
+   "in": "Royal tilia with guava leaves 20 filter bags",
+   "out": "royal tilia with guava leaves 20 filter bags"
+  },
+  {
+   "in": "Hemoxamine 500mg 20 f.c. tabs.",
+   "out": "hemoxamine 500 mg 20 f c tabs"
+  },
+  {
+   "in": "Freshme 50 ml spray",
+   "out": "freshme 50 ml spray"
+  },
+  {
+   "in": "Caldex powder 20 sachets",
+   "out": "caldex powder 20 sachets"
+  },
+  {
+   "in": "Girly hair shampoo 250 ml",
+   "out": "girly hair shampoo 250 ml"
+  },
+  {
+   "in": "Calamine baby pinny bunny",
+   "out": "calamine baby pinny bunny"
+  },
+  {
+   "in": "Proctolidosine cream 20 gm",
+   "out": "proctolidosine cream 20 gm"
+  },
+  {
+   "in": "Procto-glyvenol topical cream 15 gm",
+   "out": "procto glyvenol topical cream 15 gm"
+  },
+  {
+   "in": "Repatoxaban 2.5 mg 30 tabs.",
+   "out": "repatoxaban 2 5 mg 30 tabs"
+  },
+  {
+   "in": "Re iro 30 tablets",
+   "out": "re iro 30 tablets"
+  },
+  {
+   "in": "Farcophylline 125mg 5 paed.supp.",
+   "out": "farcophylline 125 mg 5 paed supp"
+  },
+  {
+   "in": "Orion multi contact lens solution 240 ml",
+   "out": "orion multi contact lens solution 240 ml"
+  },
+  {
+   "in": "Novex oral spray 10 ml",
+   "out": "novex oral spray 10 ml"
+  },
+  {
+   "in": "Prostasin 2mg 20 tab.",
+   "out": "prostasin 2 mg 20 tab"
+  },
+  {
+   "in": "Aptamil pre nutriprem milk 400 gm",
+   "out": "aptamil pre nutriprem milk 400 gm"
+  },
+  {
+   "in": "Sabotaz 0.1 % top. gel 15 gm",
+   "out": "sabotaz 0 1 top gel 15 gm"
+  },
+  {
+   "in": "Gypravastin 20 mg 7 f.c. tabs.",
+   "out": "gypravastin 20 mg 7 f c tabs"
+  },
+  {
+   "in": "Hopdetox 0.2 mg 20 f.c. tab.",
+   "out": "hopdetox 0 2 mg 20 f c tab"
+  },
+  {
+   "in": "Potaspirono 25 mg 20 tab.",
+   "out": "potaspirono 25 mg 20 tab"
+  },
+  {
+   "in": "Samonil topical cream 100 gm",
+   "out": "samonil topical cream 100 gm"
+  },
+  {
+   "in": "Rotahelex advance oral drops 15 ml",
+   "out": "rotahelex advance oral drops 15 ml"
+  },
+  {
+   "in": "Clausa plus 20 tabs.",
+   "out": "clausa plus 20 tabs"
+  },
+  {
+   "in": "Saizen liquid 6mg/1.03ml cartridge s.c. inj.",
+   "out": "saizen liquid 6 mg 1 03 ml cartridge s c inj"
+  },
+  {
+   "in": "Co vitamin b 15 sachets",
+   "out": "co vitamin b 15 sachets"
+  },
+  {
+   "in": "Salcodin 10mg/ml eye drops (susp.) 5 ml",
+   "out": "salcodin 10 mg ml eye drops susp 5 ml"
+  },
+  {
+   "in": "Kd intra-articular gel 2.2% 2ml prefilled syringe",
+   "out": "kd intra articular gel 2 2 2 ml prefilled syringe"
+  },
+  {
+   "in": "Sedoter 1 mg 30 f.c. tabs.",
+   "out": "sedoter 1 mg 30 f c tabs"
+  },
+  {
+   "in": "Rancycal syrup",
+   "out": "rancycal syrup"
+  },
+  {
+   "in": "Ascodal 45 eff. tabs.",
+   "out": "ascodal 45 eff tabs"
+  },
+  {
+   "in": "Rhinomol-s syrup 120ml",
+   "out": "rhinomol s syrup 120 ml"
+  },
+  {
+   "in": "Metoject 12.5 mg/0.25 ml i.m./i.v./s.c. prefilled syringe",
+   "out": "metoject 12 5 mg 0 25 ml i m i v s c prefilled syringe"
+  },
+  {
+   "in": "Polar frost cold gel 150 ml",
+   "out": "polar frost cold gel 150 ml"
+  },
+  {
+   "in": "Medivit syrup 100ml+1 ampoule(1ml)",
+   "out": "medivit syrup 100 ml 1 ampoule 1 ml"
+  },
+  {
+   "in": "Egyram 1gm/5ml syrup 120ml",
+   "out": "egyram 1 gm 5 ml syrup 120 ml"
+  },
+  {
+   "in": "Coffee zinc shampoo 200ml",
+   "out": "coffee zinc shampoo 200 ml"
+  },
+  {
+   "in": "Care heav face wash 250 ml",
+   "out": "care heav face wash 250 ml"
+  },
+  {
+   "in": "Opikast 4 mg 21 chew. tabs.",
+   "out": "opikast 4 mg 21 chew tabs"
+  },
+  {
+   "in": "Hillan massage cream 50 gm",
+   "out": "hillan massage cream 50 gm"
+  },
+  {
+   "in": "Newcid 1% 60ml shampoo",
+   "out": "newcid 1 60 ml shampoo"
+  },
+  {
+   "in": "Nuxe reve de miel ultra-comforting body cream 200 ml",
+   "out": "nuxe reve de miel ultra comforting body cream 200 ml"
+  },
+  {
+   "in": "Pharmaceris h-stimupurin hair shampoo 250 ml",
+   "out": "pharmaceris h stimupurin hair shampoo 250 ml"
+  },
+  {
+   "in": "ريزاتريبتان",
+   "out": "ريزاتريبتان"
+  },
+  {
+   "in": "Carbohydrates",
+   "out": "carbohydrates"
+  },
+  {
+   "in": "ألكافتادين",
+   "out": "الكافتادين"
+  },
+  {
+   "in": "جزر",
+   "out": "جزر"
+  },
+  {
+   "in": "فينبلاستين",
+   "out": "فينبلاستين"
+  },
+  {
+   "in": "ميسوبروستول",
+   "out": "ميسوبروستول"
+  },
+  {
+   "in": "مستخلص القراص",
+   "out": "مستخلص القراص"
+  },
+  {
+   "in": "فوسفوليبيدات أساسية",
+   "out": "فوسفوليبيدات اساسيه"
+  },
+  {
+   "in": "فينوباربيتال صوديوم",
+   "out": "فينوباربيتال صوديوم"
+  },
+  {
+   "in": "كاسيا أنجستيفوليا",
+   "out": "كاسيا انجستيفوليا"
+  },
+  {
+   "in": "بينوكسينات هيدروكلوريد",
+   "out": "بينوكسينات هيدروكلوريد"
+  },
+  {
+   "in": "فينوثرين",
+   "out": "فينوثرين"
+  },
+  {
+   "in": "فوسفات الكالسيوم",
+   "out": "فوسفات الكالسيوم"
+  },
+  {
+   "in": "أحماض أوميجا-9 الدهنية",
+   "out": "احماض اوميجا 9 الدهنيه"
+  },
+  {
+   "in": "بوسنتان",
+   "out": "بوسنتان"
+  },
+  {
+   "in": "Cetyl stearyl alcohol",
+   "out": "cetyl stearyl alcohol"
+  },
+  {
+   "in": "مالييات الديكسلورفينيرامين",
+   "out": "مالييات الديكسلورفينيرامين"
+  },
+  {
+   "in": "مياه يورياج الحرارية",
+   "out": "مياه يورياج الحراريه"
+  },
+  {
+   "in": "صبر الرأس",
+   "out": "صبر الراس"
+  },
+  {
+   "in": "أوليل بولي ببتيد",
+   "out": "اوليل بولي ببتيد"
+  },
+  {
+   "in": "عامل فون ويلبراند البشري",
+   "out": "عامل فون ويلبراند البشري"
+  },
+  {
+   "in": "دوكسيلامين سكسينات",
+   "out": "دوكسيلامين سكسينات"
+  },
+  {
+   "in": "هكسامين",
+   "out": "هكسامين"
+  },
+  {
+   "in": "بروتينات القمح",
+   "out": "بروتينات القمح"
+  },
+  {
+   "in": "Deferoxamine",
+   "out": "deferoxamine"
+  },
+  {
+   "in": "غليكيدون",
+   "out": "غليكيدون"
+  },
+  {
+   "in": "بروتين مصل اللبن المعزول المتحلل",
+   "out": "بروتين مصل اللبن المعزول المتحلل"
+  },
+  {
+   "in": "Coconut diethanolamine",
+   "out": "coconut diethanolamine"
+  },
+  {
+   "in": "الخرشوف",
+   "out": "الخرشوف"
+  },
+  {
+   "in": "مضاد سم الدفتيريا",
+   "out": "مضاد سم الدفتيريا"
+  },
+  {
+   "in": "لوفاستاتين",
+   "out": "لوفاستاتين"
+  },
+  {
+   "in": "سيليكا",
+   "out": "سيليكا"
+  },
+  {
+   "in": "روميبلوستيم",
+   "out": "روميبلوستيم"
+  },
+  {
+   "in": "فازلين",
+   "out": "فازلين"
+  },
+  {
+   "in": "مستخلص الترمس",
+   "out": "مستخلص الترمس"
+  },
+  {
+   "in": "أجار",
+   "out": "اجار"
+  },
+  {
+   "in": "إيفيدرين هيدروكلوريد",
+   "out": "ايفيدرين هيدروكلوريد"
+  },
+  {
+   "in": "مستخلص الأنجليكا",
+   "out": "مستخلص الانجليكا"
+  },
+  {
+   "in": "فازلين / بترولاتوم",
+   "out": "فازلين بترولاتوم"
+  },
+  {
+   "in": "تيركونازول",
+   "out": "تيركونازول"
+  },
+  {
+   "in": "أكاسيد الحديد",
+   "out": "اكاسيد الحديد"
+  },
+  {
+   "in": "مستخلص الشاي الأخضر",
+   "out": "مستخلص الشاي الاخضر"
+  },
+  {
+   "in": "القراص",
+   "out": "القراص"
+  },
+  {
+   "in": "جراميسيدين",
+   "out": "جراميسيدين"
+  },
+  {
+   "in": "هسبيريدين",
+   "out": "هسبيريدين"
+  },
+  {
+   "in": "سيتريميد",
+   "out": "سيتريميد"
+  },
+  {
+   "in": "ديميثيكون كوبوليول",
+   "out": "ديميثيكون كوبوليول"
+  },
+  {
+   "in": "ليفيولينات الكالسيوم",
+   "out": "ليفيولينات الكالسيوم"
+  },
+  {
+   "in": "مستخلص زهرة الآلام",
+   "out": "مستخلص زهره الالام"
+  },
+  {
+   "in": "Palmetto extract",
+   "out": "palmetto extract"
+  },
+  {
+   "in": "ديكستران 40",
+   "out": "ديكستران 40"
+  },
+  {
+   "in": "زيت الورد",
+   "out": "زيت الورد"
+  },
+  {
+   "in": "Lanovas",
+   "out": "lanovas"
+  },
+  {
+   "in": "ثلاثي سيليكات المغنيسيوم",
+   "out": "ثلاثي سيليكات المغنيسيوم"
+  },
+  {
+   "in": "بولي هيكساميثيلين جوانيدين",
+   "out": "بولي هيكساميثيلين جوانيدين"
+  },
+  {
+   "in": "إبليرينون",
+   "out": "ابليرينون"
+  },
+  {
+   "in": "فوسفاتيديل كولين",
+   "out": "فوسفاتيديل كولين"
+  },
+  {
+   "in": "خلاصة جذور العرقسوس",
+   "out": "خلاصه جذور العرقسوس"
+  },
+  {
+   "in": "مسحوق طحلب الكوندروس كريسبوس",
+   "out": "مسحوق طحلب الكوندروس كريسبوس"
+  },
+  {
+   "in": "إبتاكوغ ألفا",
+   "out": "ابتاكوغ الفا"
+  },
+  {
+   "in": "Whey protein concentrate",
+   "out": "whey protein concentrate"
+  },
+  {
+   "in": "Ivy leaf extract",
+   "out": "ivy leaf extract"
+  },
+  {
+   "in": "Paliperidone",
+   "out": "paliperidone"
+  },
+  {
+   "in": "Wheat grass",
+   "out": "wheat grass"
+  },
+  {
+   "in": "Organic acai fruit skin and pulp",
+   "out": "organic acai fruit skin and pulp"
+  },
+  {
+   "in": "Green coffee beans",
+   "out": "green coffee beans"
+  },
+  {
+   "in": "Trihydroxystearin",
+   "out": "trihydroxystearin"
+  },
+  {
+   "in": "Polatuzumab vedotin",
+   "out": "polatuzumab vedotin"
+  },
+  {
+   "in": "Palmitoylethanolamide",
+   "out": "palmitoylethanolamide"
+  },
+  {
+   "in": "Cysteine",
+   "out": "cysteine"
+  },
+  {
+   "in": "Horny goat weed",
+   "out": "horny goat weed"
+  },
+  {
+   "in": "Selectiose",
+   "out": "selectiose"
+  },
+  {
+   "in": "Arctium lappa",
+   "out": "arctium lappa"
+  },
+  {
+   "in": "Pancuronium bromide",
+   "out": "pancuronium bromide"
+  },
+  {
+   "in": "Biotinoyl tripeptide-1",
+   "out": "biotinoyl tripeptide 1"
+  },
+  {
+   "in": "Organic agave syrup",
+   "out": "organic agave syrup"
+  },
+  {
+   "in": "Bees wax",
+   "out": "bees wax"
+  },
+  {
+   "in": "Timolol",
+   "out": "timolol"
+  },
+  {
+   "in": "Uridine phosphates",
+   "out": "uridine phosphates"
+  },
+  {
+   "in": "Lithium carbonate",
+   "out": "lithium carbonate"
+  },
+  {
+   "in": "Garden cress oil",
+   "out": "garden cress oil"
+  },
+  {
+   "in": "Methionine",
+   "out": "methionine"
+  },
+  {
+   "in": "Heather extract",
+   "out": "heather extract"
+  },
+  {
+   "in": "Tranexamic acid",
+   "out": "tranexamic acid"
+  },
+  {
+   "in": "Propolis / tea tree oil / aloe vera / chamomile extracts",
+   "out": "propolis tea tree oil aloe vera chamomile extracts"
+  },
+  {
+   "in": "Tilia extract",
+   "out": "tilia extract"
+  },
+  {
+   "in": "Desonide",
+   "out": "desonide"
+  },
+  {
+   "in": "Linalool",
+   "out": "linalool"
+  },
+  {
+   "in": "Aloe barbadensis leaf juice",
+   "out": "aloe barbadensis leaf juice"
+  },
+  {
+   "in": "Daptomycin",
+   "out": "daptomycin"
+  },
+  {
+   "in": "Dexketoprofen",
+   "out": "dexketoprofen"
+  },
+  {
+   "in": "Secnidazole",
+   "out": "secnidazole"
+  },
+  {
+   "in": "Magnesium sulfate",
+   "out": "magnesium sulfate"
+  },
+  {
+   "in": "Methotrexate",
+   "out": "methotrexate"
+  },
+  {
+   "in": "Green tea leaves",
+   "out": "green tea leaves"
+  },
+  {
+   "in": "Thyme flower/leaf extract",
+   "out": "thyme flower leaf extract"
+  },
+  {
+   "in": "Nadroparin calcium",
+   "out": "nadroparin calcium"
+  },
+  {
+   "in": "Isotonic sea water",
+   "out": "isotonic sea water"
+  },
+  {
+   "in": "Artichoke leaf powder extract",
+   "out": "artichoke leaf powder extract"
+  },
+  {
+   "in": "Borax",
+   "out": "borax"
+  },
+  {
+   "in": "Isoconazole nitrate",
+   "out": "isoconazole nitrate"
+  },
+  {
+   "in": "Probiotic blend",
+   "out": "probiotic blend"
+  },
+  {
+   "in": "Tenoxicam",
+   "out": "tenoxicam"
+  },
+  {
+   "in": "Gelidiella acerosa extract",
+   "out": "gelidiella acerosa extract"
+  },
+  {
+   "in": "Atorvastatin",
+   "out": "atorvastatin"
+  },
+  {
+   "in": "Aluminum ammonium sulfate",
+   "out": "aluminum ammonium sulfate"
+  },
+  {
+   "in": "Multivitamins + minerals",
+   "out": "multivitamins minerals"
+  },
+  {
+   "in": "Vitamin E / antioxidant",
+   "out": "vitamin e antioxidant"
+  },
+  {
+   "in": "Avena sativa kernel flour",
+   "out": "avena sativa kernel flour"
+  },
+  {
+   "in": "Triacontanyl PVP",
+   "out": "triacontanyl pvp"
+  },
+  {
+   "in": "L-glutamine",
+   "out": "l glutamine"
+  },
+  {
+   "in": "Tropicamide",
+   "out": "tropicamide"
+  },
+  {
+   "in": "Dapoxetine",
+   "out": "dapoxetine"
+  },
+  {
+   "in": "Whey peptides",
+   "out": "whey peptides"
+  },
+  {
+   "in": "Maca extract",
+   "out": "maca extract"
+  },
+  {
+   "in": "Butylene glycol",
+   "out": "butylene glycol"
+  },
+  {
+   "in": "Avocado oil extract + soybean oil",
+   "out": "avocado oil extract soybean oil"
+  },
+  {
+   "in": "Licorice root",
+   "out": "licorice root"
+  },
+  {
+   "in": "Levocetirizine dihydrochloride",
+   "out": "levocetirizine dihydrochloride"
+  },
+  {
+   "in": "Omega-3 fish oil",
+   "out": "omega 3 fish oil"
+  }
+ ]
+}

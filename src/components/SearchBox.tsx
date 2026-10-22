@@ -1,77 +1,118 @@
 'use client';
 
-// Search field with suggestions (WAI-ARIA 1.2 combobox + listbox). Submitting
-// goes to /search?q=; suggestions come from the public endpoint /api/search,
-// the only database access reachable from the browser.
-// - debounced (200 ms), previous request aborted, answers cached per query;
-// - keyboard: ↓/↑ move (wrapping), Enter opens the active option (or submits),
-//   Escape closes then clears, Tab leaves; the last option is "all results";
-// - no layout shift: the list is absolutely positioned over the content and the
-//   result count is announced through a visually hidden live region.
-import { useEffect, useId, useRef, useState } from 'react';
+// Search field with instant suggestions (WAI-ARIA 1.2 combobox + listbox) and voice input.
+// Suggestions come from the local index inside a Web Worker once it is loaded (lib/search/client.ts:
+// no debounce, no server round trip; every keystroke is answered in a few milliseconds) and from
+// /api/search until then. Submitting goes to /search?q= (the results page keeps using the server).
+// - keyboard: ↓/↑ move (wrapping), Enter opens the active option (or submits), Escape closes
+//   then clears, Tab leaves; the last option is "all results";
+// - no layout shift: the list is absolutely positioned over the content and the result count is
+//   announced through a visually hidden live region;
+// - `prefetch`: load the index when the page is idle (home and search pages). Every box also
+//   loads it the moment the field is focused, hovered or touched.
+// - voice: the microphone button (components/search/VoiceButton) puts interim text in the field
+//   live, so suggestions follow the speech; a strong top match is pre-selected, never opened.
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SearchIcon } from './icons';
-import { CURRENCY_AR, formatAmount, tradeName } from '@/lib/format';
+import { tradeName } from '@/lib/format';
 import { routes } from '@/lib/site';
 import { cx } from './ui';
+import { getSearchClient } from '@/lib/search/client';
+import { matchedWords, MIN_QUERY_CHARS, TIER } from '@/lib/search/engine';
+import type { Suggestion } from '@/lib/search/index-format';
+import { VoiceButton } from './search/VoiceButton';
+import { VOICE_MESSAGES, type VoiceEvent } from './search/voice-detect';
 
-interface Suggestion {
-  slug: string;
-  name_ar: string | null;
-  name_en: string;
-  strength: string | null;
-  current_price: string | null;
+const PLACEHOLDER = 'ابحث باسم الدواء أو المادة الفعالة';
+const LISTENING_PLACEHOLDER = 'اتكلم دلوقتي…';
+const MAX_LENGTH = 80;
+
+/** The display string with the words the query matches wrapped in <mark>. */
+function Highlight({ text, query }: { text: string; query: string }) {
+  const parts = text.split(/(\s+)/); // words at even positions, the separators between them
+  const flags = matchedWords(text, query);
+  let word = 0;
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (i % 2 === 1) return part;
+        const hit = flags[word++];
+        return hit ? (
+          <mark key={i} className="rounded-sm bg-primary-tint text-inherit">
+            {part}
+          </mark>
+        ) : (
+          part
+        );
+      })}
+    </>
+  );
 }
 
-const MIN_CHARS = 2;
-const DEBOUNCE_MS = 200;
-
-export function SearchBox({ id, size = 'md', autoFocus = false }: { id?: string; size?: 'md' | 'lg'; autoFocus?: boolean }) {
+export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false }: { id?: string; size?: 'md' | 'lg'; autoFocus?: boolean; prefetch?: boolean }) {
   const reactId = useId();
   const inputId = id ?? `search-${reactId}`;
   const listId = `${inputId}-list`;
   const router = useRouter();
   const [q, setQ] = useState('');
   const [items, setItems] = useState<Suggestion[]>([]);
+  /** The term the shown items answer (highlighting follows it, not a newer keystroke). */
+  const [shownFor, setShownFor] = useState('');
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [status, setStatus] = useState('');
-  const abort = useRef<AbortController | null>(null);
-  const cache = useRef(new Map<string, Suggestion[]>());
+  const [notice, setNotice] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const seq = useRef(0);
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const term = q.trim();
   // Options: the suggestions, then "all results for …".
   const optionCount = items.length > 0 ? items.length + 1 : 0;
 
   useEffect(() => {
-    abort.current?.abort();
-    if (term.length < MIN_CHARS) return; // list cleared in onChange
-    const show = (results: Suggestion[]) => {
-      setItems(results);
-      setOpen(results.length > 0);
-      setActive(-1);
-      setStatus(results.length > 0 ? `${results.length} اقتراحات متاحة، استخدم الأسهم للتنقل` : 'لا توجد اقتراحات');
-    };
-    const cached = cache.current.get(term);
-    if (cached) {
-      show(cached);
-      return;
-    }
-    const timer = setTimeout(async () => {
-      const controller = new AbortController();
-      abort.current = controller;
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(term)}`, { signal: controller.signal });
-        if (!res.ok) return;
-        const data = (await res.json()) as { results: Suggestion[] };
-        cache.current.set(term, data.results);
-        if (!controller.signal.aborted) show(data.results);
-      } catch {
-        /* aborted or offline: keep the field usable */
+    if (prefetch) getSearchClient().prefetchWhenIdle();
+  }, [prefetch]);
+  useEffect(() => () => clearTimeout(noticeTimer.current), []);
+
+  const clear = useCallback(() => {
+    seq.current++;
+    setItems([]);
+    setOpen(false);
+    setActive(-1);
+    setStatus('');
+  }, []);
+
+  const show = useCallback((results: Suggestion[], forTerm: string, preselectStrong: boolean) => {
+    setItems(results);
+    setShownFor(forTerm);
+    setOpen(results.length > 0);
+    setActive(preselectStrong && results.length > 0 && results[0].tier >= 0 && results[0].tier <= TIER.alias ? 0 : -1);
+    setStatus(results.length > 0 ? `${results.length} اقتراحات متاحة، استخدم الأسهم للتنقل` : 'لا توجد اقتراحات');
+  }, []);
+
+  /** Suggestions for `value`; answers superseded by a newer keystroke are dropped. */
+  const runSearch = useCallback(
+    async (value: string, preselectStrong = false): Promise<Suggestion[] | null> => {
+      const t = value.trim();
+      const id = ++seq.current;
+      if (t.length < MIN_QUERY_CHARS) {
+        clear();
+        return [];
       }
-    }, DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [term]);
+      const { items: results } = await getSearchClient().suggest(t);
+      if (id !== seq.current) return null;
+      show(results, t, preselectStrong);
+      return results;
+    },
+    [clear, show],
+  );
+
+  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setQ(e.target.value);
+    void runSearch(e.target.value);
+  }
 
   function go(index: number) {
     setOpen(false);
@@ -99,13 +140,40 @@ export function SearchBox({ id, size = 'md', autoFocus = false }: { id?: string;
       } else if (q) {
         e.preventDefault();
         setQ('');
-        setItems([]);
+        clear();
       }
     } else if (e.key === 'Tab') {
       setOpen(false);
     }
   }
 
+  function showNotice(message: string) {
+    setNotice(message);
+    clearTimeout(noticeTimer.current);
+    noticeTimer.current = setTimeout(() => setNotice(null), 8000);
+  }
+
+  async function onVoice(e: VoiceEvent) {
+    if (e.type === 'interim') {
+      const value = e.text.slice(0, MAX_LENGTH);
+      setQ(value);
+      void runSearch(value);
+    } else if (e.type === 'final') {
+      // Names are often spoken in English or transliterated: take the first transcript
+      // (the best one, then the recogniser's alternatives) that has suggestions.
+      const candidates = [e.text, ...e.alternatives].map((t) => t.slice(0, MAX_LENGTH)).filter(Boolean);
+      for (const [i, candidate] of candidates.entries()) {
+        setQ(candidate);
+        const results = await runSearch(candidate, true);
+        if (results === null) return; // the user typed meanwhile
+        if (results.length > 0 || i === candidates.length - 1) return;
+      }
+    } else if (e.type === 'error') {
+      showNotice(VOICE_MESSAGES[e.code]);
+    }
+  }
+
+  const warm = () => getSearchClient().warm();
   const option = (selected: boolean) =>
     cx('flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 py-2', selected ? 'bg-primary-tint' : 'hover:bg-surface');
 
@@ -115,36 +183,34 @@ export function SearchBox({ id, size = 'md', autoFocus = false }: { id?: string;
         ابحث عن دواء بالاسم التجاري أو المادة الفعالة
       </label>
       <div
+        onPointerEnter={warm}
+        onTouchStart={warm}
         className={cx(
-          'flex items-center gap-2 rounded-control border border-border bg-bg ps-3 pe-1 transition-colors',
+          'flex items-center gap-1 rounded-control border border-border bg-bg ps-3 pe-1 transition-colors',
           'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-tint',
           size === 'lg' ? 'min-h-14' : 'min-h-11',
         )}
       >
-        <SearchIcon className="shrink-0 text-muted" />
+        <SearchIcon className="me-1 shrink-0 text-muted" />
         <input
           id={inputId}
           name="q"
           type="search"
           value={q}
-          onChange={(e) => {
-            setQ(e.target.value);
-            if (e.target.value.trim().length < MIN_CHARS) {
-              setItems([]);
-              setOpen(false);
-              setStatus('');
-            }
-          }}
+          onChange={onChange}
           onKeyDown={onKeyDown}
           onBlur={() => setTimeout(() => setOpen(false), 120)}
-          onFocus={() => items.length > 0 && setOpen(true)}
-          placeholder="ابحث باسم الدواء أو المادة الفعالة"
+          onFocus={() => {
+            warm();
+            if (items.length > 0) setOpen(true);
+          }}
+          placeholder={listening ? LISTENING_PLACEHOLDER : PLACEHOLDER}
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
           autoFocus={autoFocus}
           enterKeyHint="search"
-          maxLength={80}
+          maxLength={MAX_LENGTH}
           role="combobox"
           aria-autocomplete="list"
           aria-expanded={open}
@@ -152,6 +218,7 @@ export function SearchBox({ id, size = 'md', autoFocus = false }: { id?: string;
           aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
           className="min-h-11 min-w-0 flex-1 self-stretch bg-transparent py-2 text-ink outline-none placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
         />
+        <VoiceButton onEvent={onVoice} onListeningChange={setListening} size={size} />
         <button type="submit" className="tap shrink-0 rounded-control-sm bg-primary px-3 font-medium text-on-primary hover:bg-primary-hover">
           بحث
         </button>
@@ -159,6 +226,11 @@ export function SearchBox({ id, size = 'md', autoFocus = false }: { id?: string;
       <p role="status" aria-live="polite" className="sr-only">
         {status}
       </p>
+      {notice && (
+        <p role="alert" className="type-small mt-1.5 text-up">
+          {notice}
+        </p>
+      )}
       <ul
         id={listId}
         role="listbox"
@@ -179,19 +251,30 @@ export function SearchBox({ id, size = 'md', autoFocus = false }: { id?: string;
             onMouseEnter={() => setActive(i)}
             className={option(i === active)}
           >
-            <span className="min-w-0">
-              <span className="block truncate font-medium text-ink">{item.name_ar ?? tradeName(item.name_en)}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-medium text-ink">
+                <Highlight text={item.ar} query={shownFor} />
+              </span>
               <span className="type-small block truncate text-text-2">
-                <span dir="ltr" lang="en">
-                  {tradeName(item.name_en)}
-                </span>
+                {item.en !== item.ar && (
+                  <span dir="ltr" lang="en">
+                    <Highlight text={tradeName(item.en)} query={shownFor} />
+                  </span>
+                )}
+                {item.form && (
+                  <>
+                    {item.en !== item.ar && <span aria-hidden="true"> • </span>}
+                    {item.form}
+                  </>
+                )}
+                {item.ingredient && (
+                  <>
+                    <span aria-hidden="true"> • </span>
+                    <span className="text-muted">المادة الفعالة: {item.ingredient}</span>
+                  </>
+                )}
               </span>
             </span>
-            {formatAmount(item.current_price) && (
-              <span className="price shrink-0 font-medium text-ink">
-                {formatAmount(item.current_price)} <span className="type-small font-normal text-text-2">{CURRENCY_AR}</span>
-              </span>
-            )}
           </li>
         ))}
         {items.length > 0 && (
