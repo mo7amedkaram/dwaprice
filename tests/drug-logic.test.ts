@@ -129,11 +129,11 @@ describe('Arabic title, H1 and description builders', () => {
     expect(nameWithStrength('كونجستال 20 قرص', '650/4/60 mg')).toBe('كونجستال 20 قرص 650/4/60 مجم');
   });
 
-  it('builds the H1 with the verification year', () => {
+  it('builds the H1 with the price-update year', () => {
     expect(drugH1(augmentin, 2026)).toBe('سعر اوجمنتين 1جم 14 قرص 2026');
-    expect(priceYear('2026-09-27', '2022-12-03')).toBe(2026);
-    expect(priceYear(null, '2022-12-03')).toBe(2022);
-    expect(priceYear(null, null, new Date('2027-01-05'))).toBe(2027);
+    expect(priceYear('2026-09-27')).toBe(2026);
+    expect(priceYear('2022-12-03')).toBe(2022);
+    expect(priceYear(null, new Date('2027-01-05'))).toBe(2027);
   });
 
   it('keeps the title within ~60 characters by choosing the shorter English name', () => {

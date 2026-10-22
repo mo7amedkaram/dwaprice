@@ -14,7 +14,6 @@ import { brotliCompressSync, constants, gzipSync } from 'node:zlib';
 nextEnv.loadEnvConfig(process.cwd());
 
 const { pool, query } = await import('../src/lib/db/pool');
-const { nonCanonicalSlugs } = await import('../src/lib/drug/logic');
 const { buildSearchIndex, serializeSearchIndex } = await import('../src/lib/search/index-build');
 const { SEARCH_INDEX_VERSION } = await import('../src/lib/search/index-format');
 type DrugSource = import('../src/lib/search/index-build').DrugSource;
@@ -29,23 +28,16 @@ const started = performance.now();
 const log = (msg: string) => console.log(`[search-index] ${msg}`);
 
 try {
-  const [cards, groups, popular, ingredients] = await Promise.all([
-    query<{ slug: string; name_ar: string; name_en: string; price_list_name: string | null; dosage_form_ar: string | null; ingredient_keys: string[] | null }>(
-      'select slug, name_ar, name_en, price_list_name, dosage_form_ar, ingredient_keys from web.drug_cards where indexable and name_ar is not null',
+  // Every drug that has a public page — including non-canonical duplicates (a user may search for
+  // any of them) and drugs with no Arabic name. Same privacy rule: only names/form/ingredients.
+  const [drugs, popular, ingredients] = await Promise.all([
+    query<{ slug: string; name_ar: string | null; name_en: string; price_list_name: string | null; dosage_form_ar: string | null; ingredient_keys: string[] | null }>(
+      'select slug, name_ar, name_en, price_list_name, dosage_form_ar, ingredient_keys from web.drug_cards',
     ),
-    query<{ group_key: string; slug: string; indexable: boolean; is_rpi_canonical: boolean; visit_count: string | number }>(
-      'select group_key, slug, indexable, is_rpi_canonical, visit_count from web.product_group_members',
-    ),
-    query<{ slug: string; visit_count: string | number | null; search_count: string | number | null }>(
-      'select slug, visit_count, search_count from web.popular_drugs where indexable',
-    ),
+    query<{ slug: string; visit_count: string | number | null; search_count: string | number | null }>('select slug, visit_count, search_count from web.popular_drugs'),
     query<{ ingredient_key: string; name_en: string | null; name_ar: string | null }>('select ingredient_key, name_en, name_ar from web.ingredients'),
   ]);
-  const duplicates = nonCanonicalSlugs(
-    groups.map((g) => ({ groupKey: g.group_key, slug: g.slug, indexable: g.indexable, isRpiCanonical: g.is_rpi_canonical, visitCount: Number(g.visit_count) || 0 })),
-  );
-  const drugs = cards.filter((c) => !duplicates.has(c.slug));
-  log(`${cards.length} indexable cards, ${duplicates.size} group duplicates left out → ${drugs.length} drugs; ${ingredients.length} ingredients`);
+  log(`${drugs.length} drug pages (every page, duplicates included); ${ingredients.length} ingredients`);
 
   // Approved name aliases, in slug batches (the role's statement timeout is 5 s).
   const aliases = new Map<string, string[]>();

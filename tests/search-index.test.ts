@@ -115,6 +115,67 @@ const manifestPath = new URL('../data/search-index/manifest.json', import.meta.u
     expect(manifest.bytes.brotli).toBeLessThan(1_000_000);
     expect(manifest.bytes.gzip).toBeLessThan(1_000_000);
   });
+
+  it('finds the drugs that were missing before (Brufen, Congestal, Antinal) in the suggestions', async () => {
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as SearchIndexManifest;
+    const index = JSON.parse(readFileSync(new URL(`../data/search-index/${manifest.file}`, import.meta.url), 'utf8')) as SearchIndexFile;
+    const { SearchEngine } = await import('@/lib/search/engine');
+    const engine = new SearchEngine(index);
+    const finds = (q: string, slugPart: string) => engine.search(q).some((s) => s.slug.includes(slugPart));
+    expect(finds('بروفين 600', 'brufen-600mg-30-tab')).toBe(true);
+    expect(finds('brufen 600', 'brufen-600mg-30-tab')).toBe(true);
+    expect(finds('بروفين', 'brufen')).toBe(true);
+    expect(finds('كونجستال', 'congestal-20-tabs')).toBe(true);
+    expect(finds('انتنال', 'antinal-200mg-24-capsules')).toBe(true);
+    expect(index.slug.includes('brufen-600mg-30-tab')).toBe(true);
+  });
+
+  // Coverage: the index must contain every drug that has a public page. Needs the database.
+  const DB = process.env.WEB_DATABASE_URL || (() => { try { return readFileSync(new URL('../.env.local', import.meta.url), 'utf8').split('\n').find((l) => l.startsWith('WEB_DATABASE_URL='))?.slice('WEB_DATABASE_URL='.length).trim(); } catch { return undefined; } })();
+  (DB ? it : it.skip)('contains exactly the drugs with a public page', { timeout: 60_000 }, async () => {
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as SearchIndexManifest;
+    const { default: pg } = await import('pg');
+    const client = new pg.Client({ connectionString: DB, ssl: { rejectUnauthorized: false } });
+    await client.connect();
+    try {
+      const pages = Number((await client.query<{ n: string }>('select count(*) n from web.drug_cards')).rows[0].n);
+      expect(manifest.drugs).toBe(pages);
+    } finally {
+      await client.end();
+    }
+  });
+
+  (DB ? it : it.skip)('100 random drug names find their own drug (index mode and fallback mode)', { timeout: 120_000 }, async () => {
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as SearchIndexManifest;
+    const index = JSON.parse(readFileSync(new URL(`../data/search-index/${manifest.file}`, import.meta.url), 'utf8')) as SearchIndexFile;
+    const { SearchEngine } = await import('@/lib/search/engine');
+    const engine = new SearchEngine(index);
+    const { default: pg } = await import('pg');
+    const client = new pg.Client({ connectionString: DB, ssl: { rejectUnauthorized: false } });
+    await client.connect();
+    try {
+      const sample = (await client.query<{ slug: string; name_ar: string | null; name_en: string }>(
+        'select slug, name_ar, name_en from web.drug_cards order by md5(slug) limit 100',
+      )).rows;
+      // index mode: the engine (same code the worker runs) must find each drug by its own name.
+      const indexMiss: string[] = [];
+      for (const d of sample) {
+        const name = d.name_ar ?? d.name_en;
+        if (!engine.search(name, 20).some((s) => s.slug === d.slug)) indexMiss.push(`${d.slug} ("${name}")`);
+      }
+      expect(indexMiss, `index mode misses: ${indexMiss.slice(0, 5).join('; ')}`).toEqual([]);
+      // fallback mode: the server (= /api/search = web.search_drugs) must also return each drug for its name.
+      const fallbackMiss: string[] = [];
+      for (const d of sample.slice(0, 40)) {
+        const name = d.name_ar ?? d.name_en;
+        const hit = (await client.query<{ slug: string }>('select slug from web.search_drugs($1, 20)', [name])).rows.some((r) => r.slug === d.slug);
+        if (!hit) fallbackMiss.push(`${d.slug} ("${name}")`);
+      }
+      expect(fallbackMiss, `fallback misses: ${fallbackMiss.slice(0, 5).join('; ')}`).toEqual([]);
+    } finally {
+      await client.end();
+    }
+  });
 });
 
 describe('client helpers', () => {

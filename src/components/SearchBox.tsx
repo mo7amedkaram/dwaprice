@@ -80,16 +80,27 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
   const boxRef = useRef<HTMLDivElement>(null);
   const [focused, setFocused] = useState(false);
   const [listMaxH, setListMaxH] = useState<number | null>(null);
+  const termRef = useRef('');
+  const reRun = useRef<() => void>(() => {});
+  const subscribed = useRef(false);
 
   const term = q.trim();
   // Options: the suggestions, then "all results for …".
   const optionCount = items.length > 0 ? items.length + 1 : 0;
 
   // Load the suggestion engine + client (one shared chunk) on first need; cache it in the ref.
+  // When the index finishes loading, re-run the current query against it, so a drug that is in the
+  // index never stays showing "no results" from a stale fallback answer (Part B.3).
   const ensure = useCallback(async (): Promise<SuggestModule> => {
     if (!mod.current) {
       mod.current = await loadSuggest();
       setHighlight(() => mod.current!.matchedWords);
+      if (!subscribed.current) {
+        subscribed.current = true;
+        mod.current.getSearchClient().onStatus((status) => {
+          if (status === 'ready') reRun.current();
+        });
+      }
     }
     return mod.current;
   }, []);
@@ -162,6 +173,16 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
     },
     [clear, show, ensure],
   );
+
+  // Track the current query (any source) and the "re-run when the index becomes ready" callback.
+  useEffect(() => {
+    termRef.current = term;
+  }, [term]);
+  useEffect(() => {
+    reRun.current = () => {
+      if (focused && termRef.current.length >= MIN_QUERY_CHARS) void runSearch(termRef.current);
+    };
+  }, [focused, runSearch]);
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
     setQ(e.target.value);

@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { ExternalIcon, InfoIcon } from '../icons';
 import { Ltr, Price, SectionTitle } from '../ui';
 import { citableSources } from './Statements';
-import { formatDate, isoDate } from '@/lib/format';
 import { routes } from '@/lib/site';
 import type { DrugPage, GroupMemberRow } from '@/lib/data/types';
 import type { RelatedCard } from '@/lib/data/drug-page';
@@ -238,16 +237,7 @@ export function SourcesBlock({ page }: { page: DrugPage }) {
         المصادر
       </h2>
       <ul className="space-y-1">
-        <li>
-          السعر: قوائم أسعار الأدوية المنشورة في مصر
-          {page.price_verified_at && (
-            <>
-              {' '}
-              — تم التحقق في <time dateTime={isoDate(page.price_verified_at) ?? undefined}>{formatDate(page.price_verified_at)}</time>
-            </>
-          )}
-          .
-        </li>
+        <li>السعر: قوائم أسعار الأدوية المنشورة في مصر.</li>
         {sources.slice(0, 8).map((s) => (
           <li key={s.source_id}>
             {s.url ? (

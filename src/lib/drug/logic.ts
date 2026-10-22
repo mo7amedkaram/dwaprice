@@ -132,14 +132,10 @@ export function nameWithStrength(name: string, strength: string | null | undefin
 }
 
 /**
- * Year shown in titles: the year the price was last verified against the
- * official list (payload pricing_details.price_verified_at), else the price
- * date, else the current year. "سعر X 2026" is only claimed when the price
- * was checked in 2026.
+ * Year shown in titles: the year the price was last updated, else the current year.
  */
-export function priceYear(priceVerifiedAt: string | null | undefined, priceUpdatedDate: string | null | undefined, now = new Date()): number {
-  const pick = priceVerifiedAt || priceUpdatedDate;
-  const y = pick ? Number(pick.slice(0, 4)) : NaN;
+export function priceYear(priceUpdatedDate: string | null | undefined, now = new Date()): number {
+  const y = priceUpdatedDate ? Number(priceUpdatedDate.slice(0, 4)) : NaN;
   return Number.isFinite(y) && y > 2000 ? y : now.getUTCFullYear();
 }
 

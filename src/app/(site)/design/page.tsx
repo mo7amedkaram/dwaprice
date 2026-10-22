@@ -239,7 +239,7 @@ export default function DesignPage() {
       <Section id="price-cards" title="بطاقة السعر — حالات">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <PriceCard title="انخفض السعر" price={45} oldPrice={52} unitPrice={4.5} unitLabel="القرص" units={10} updated="2026-09-14" />
-          <PriceCard title="سعر غير مؤكد" price={64} updated={null} verified={false} />
+          <PriceCard title="السعر الحالي" price={64} updated="2026-10-01" />
           <PriceCard title="غير متوفر حاليًا" price={106} unitPrice={10.6} unitLabel="القرص" units={10} updated="2026-03-08" listingStatus="NOT_AVAILABLE" />
         </div>
       </Section>

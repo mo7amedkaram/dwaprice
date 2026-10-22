@@ -27,7 +27,7 @@ import {
 export function drugModel(data: DrugPageData, subPage: DrugSubPage) {
   const { card, page } = data;
   const names: DrugNames = { nameAr: page.name_ar, nameEn: page.name_en, priceListName: page.price_list_name, strength: page.strength };
-  const year = priceYear(page.price_verified_at, page.price_updated_date);
+  const year = priceYear(page.price_updated_date);
   const usesPage = hasUsesPage(card.clinical_sections);
   const siblings = new Set(data.group.map((m) => m.member_slug).filter((s) => s !== page.slug));
   const alternatives = groupAlternatives(data.alternatives, page.current_price, siblings);

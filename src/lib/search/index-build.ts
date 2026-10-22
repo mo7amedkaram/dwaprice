@@ -8,7 +8,8 @@ import { normalizeSearch, searchTokens } from './normalize';
 /** A drug the sitemap would list (web.drug_cards, indexable, group-canonical). */
 export interface DrugSource {
   slug: string;
-  name_ar: string;
+  /** Arabic trade name; null for the few drugs that have only an English name. */
+  name_ar: string | null;
   name_en: string;
   /** Price-list line ("Noracin 400mg 10 f.c.tab."): its spare words become alias tokens. */
   price_list_name: string | null;
@@ -90,7 +91,8 @@ export function buildSearchIndex(drugs: DrugSource[], ingredients: IngredientSou
     for (const key of d.ingredient_keys ?? []) for (const id of ingredientIds.get(key) ?? []) ingredientRefs.add(id);
 
     out.slug.push(d.slug);
-    out.ar.push(d.name_ar.trim());
+    // The suggestion row's primary name: the Arabic trade name, or the English name when there is none.
+    out.ar.push((d.name_ar ?? d.name_en).trim());
     out.en.push(d.name_en.trim());
     const form = d.dosage_form_ar?.trim();
     out.form.push(form ? forms.id(form) : -1);

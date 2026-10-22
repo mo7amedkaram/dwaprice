@@ -83,7 +83,6 @@ export default async function DrugPage({ params }: Props) {
             unitLabel={m.unit.label}
             units={page.units_per_package}
             updated={page.price_updated_date}
-            verified={page.price_verified}
             listingStatus={page.listing_status}
             footer={
               hasAlternatives ? (

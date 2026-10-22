@@ -86,6 +86,11 @@ export class SearchClient {
   private readonly listeners = new Set<(status: SearchStatus) => void>();
   private readonly serverCache = new Map<string, Suggestion[]>();
   private abort: AbortController | null = null;
+  // Full-text fallback (when the 2-char prefix response was truncated): debounced + aborted + cached.
+  private readonly fullCache = new Map<string, Suggestion[]>();
+  private fullTimer: ReturnType<typeof setTimeout> | undefined;
+  private fullAbort: AbortController | null = null;
+  private fullPending: ((items: Suggestion[]) => void) | null = null;
   private readonly debug: DebugInfo = { ready: false, status: this.status, url: INDEX_URL, from: null, bytes: null, transferBytes: null, loadMs: null, buildMs: null, startedBy: null, readyAt: null, error: null };
 
   constructor() {
@@ -182,23 +187,60 @@ export class SearchClient {
     const nq = normalizeSearch(term);
     if (nq.length < MIN_QUERY_CHARS) return [];
     const key = nq.slice(0, 2).trim();
-    let list = this.serverCache.get(key);
-    if (!list) {
-      if (key.length < MIN_QUERY_CHARS) return [];
-      this.abort?.abort();
-      const controller = new AbortController();
-      this.abort = controller;
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(key)}&limit=${FALLBACK_LIMIT}`, { signal: controller.signal });
-        if (!res.ok) return [];
-        const data = (await res.json()) as { results: ServerHit[] };
-        list = data.results.map(toSuggestion);
-        this.serverCache.set(key, list);
-      } catch {
-        return []; // aborted (superseded) or offline
-      }
+    if (key.length < MIN_QUERY_CHARS) return [];
+    const prefix = await this.prefixResults(key);
+    if (prefix === null) return []; // aborted or offline
+    // If the 2-char prefix response was capped at the limit, the cached list is incomplete, so
+    // filtering it locally for a longer query can wrongly return nothing (this is the "كونجستال"
+    // bug). Ask the server for the full text instead (Part B.2).
+    if (prefix.length >= FALLBACK_LIMIT && nq.length > key.length) return this.fullResults(nq);
+    return prefix.filter((hit) => matchesLocally(hit, nq)).slice(0, SUGGESTION_LIMIT);
+  }
+
+  /** Cached top-50 for a 2-character prefix; null on error/abort. */
+  private async prefixResults(key: string): Promise<Suggestion[] | null> {
+    const cached = this.serverCache.get(key);
+    if (cached) return cached;
+    this.abort?.abort();
+    const controller = new AbortController();
+    this.abort = controller;
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(key)}&limit=${FALLBACK_LIMIT}`, { signal: controller.signal });
+      if (!res.ok) return null;
+      const data = (await res.json()) as { results: ServerHit[] };
+      const list = data.results.map(toSuggestion);
+      this.serverCache.set(key, list);
+      return list;
+    } catch {
+      return null;
     }
-    return list.filter((hit) => matchesLocally(hit, nq)).slice(0, SUGGESTION_LIMIT);
+  }
+
+  /** Server results for the full query — debounced 100 ms, previous request aborted, cached per full query. */
+  private fullResults(nq: string): Promise<Suggestion[]> {
+    const cached = this.fullCache.get(nq);
+    if (cached) return Promise.resolve(cached);
+    this.fullPending?.([]); // resolve the superseded waiter so it never hangs
+    clearTimeout(this.fullTimer);
+    this.fullAbort?.abort();
+    return new Promise((resolve) => {
+      this.fullPending = resolve;
+      this.fullTimer = setTimeout(async () => {
+        this.fullPending = null;
+        const controller = new AbortController();
+        this.fullAbort = controller;
+        try {
+          const res = await fetch(`/api/search?q=${encodeURIComponent(nq)}&limit=${SUGGESTION_LIMIT}`, { signal: controller.signal });
+          if (!res.ok) return resolve([]);
+          const data = (await res.json()) as { results: ServerHit[] };
+          const items = data.results.map(toSuggestion);
+          this.fullCache.set(nq, items);
+          resolve(items);
+        } catch {
+          resolve([]); // aborted (superseded) or offline
+        }
+      }, 100);
+    });
   }
 
   private setStatus(status: SearchStatus): void {

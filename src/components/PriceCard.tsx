@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ArrowDownIcon, ArrowUpIcon, CheckIcon, ClockIcon } from './icons';
+import { ArrowDownIcon, ArrowUpIcon, ClockIcon } from './icons';
 import { Badge, Price, cx } from './ui';
 import { formatDate, formatPercent, isoDate, priceChange, toNumber } from '@/lib/format';
 import type { ListingStatus } from '@/lib/data/types';
@@ -19,7 +19,6 @@ export interface PriceCardProps {
   unitLabel?: string;
   units?: number | null;
   updated?: string | null;
-  verified?: boolean;
   listingStatus?: ListingStatus;
   title?: string;
   footer?: ReactNode;
@@ -48,7 +47,6 @@ export function PriceCard({
   unitLabel = 'الوحدة',
   units,
   updated,
-  verified = true,
   listingStatus = null,
   title = 'السعر الحالي',
   footer,
@@ -59,14 +57,11 @@ export function PriceCard({
     <section aria-label={title} className={cx('rounded-card border border-border bg-bg p-4 md:p-5', className)}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <h2 className="type-small font-medium text-text-2">{title}</h2>
-        <span className="flex flex-wrap gap-1">
-          {verified && (
-            <Badge tone="down" icon={<CheckIcon size={14} />}>
-              سعر موثّق
-            </Badge>
-          )}
-          {listingStatus && <Badge tone={listingStatus === 'NOT_AVAILABLE' || listingStatus === 'NOT_YET_AVAILABLE' ? 'rx' : 'up'}>{LISTING_LABEL[listingStatus]}</Badge>}
-        </span>
+        {listingStatus && (
+          <span className="flex flex-wrap gap-1">
+            <Badge tone={listingStatus === 'NOT_AVAILABLE' || listingStatus === 'NOT_YET_AVAILABLE' ? 'rx' : 'up'}>{LISTING_LABEL[listingStatus]}</Badge>
+          </span>
+        )}
       </div>
 
       <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -107,9 +102,6 @@ export function PriceCard({
           </div>
         )}
       </dl>
-      {!verified && (
-        <p className="type-small mt-3 rounded-control-sm bg-rx-bg px-3 py-2 text-rx">لم يتم تأكيد هذا السعر من مصدر رسمي بعد.</p>
-      )}
       {footer && <div className="mt-4">{footer}</div>}
     </section>
   );

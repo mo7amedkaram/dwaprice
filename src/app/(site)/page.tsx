@@ -193,7 +193,7 @@ export default async function HomePage() {
               </div>
             </div>
             <pre dir="ltr" className="overflow-x-auto rounded-card border border-border bg-bg p-4 font-mono text-sm leading-6 text-ink">
-              {`GET /api/v1/drugs/by-barcode/6221051011317\n\n{ "trade_name_ar": "كونجستال 20 قرص",\n  "price": { "current": 50, "previous": 31,\n             "currency": "EGP", "verified": true },\n  "company": { "name": "Sigma" } }`}
+              {`GET /api/v1/drugs/by-barcode/6221051011317\n\n{ "trade_name_ar": "كونجستال 20 قرص",\n  "price": { "current": 50, "previous": 31,\n             "currency": "EGP" },\n  "company": { "name": "Sigma" } }`}
             </pre>
           </div>
         </section>

@@ -82,3 +82,21 @@ run('drug page (live)', () => {
     }
   });
 });
+
+// Part A (indexability) + Part C (no "verified price" badge), against a running server.
+run('indexability and no verified-price badge (live)', () => {
+  const pages = ['/', '/last-prices', '/about', '/guide', `/dawa/${SLUG}`, `/dawa/${SLUG}/badael`];
+  it('no page shows the "سعر موثّق" badge', async () => {
+    for (const path of pages) {
+      const html = await (await fetch(`${BASE}${path}`)).text();
+      expect(html, `${path} must not contain "موثّق"`).not.toContain('موثّق');
+      expect(html, `${path} must not contain "سعر موثق"`).not.toContain('سعر موثق');
+    }
+  });
+  it('a formerly price-unverified drug is index,follow (not noindex)', async () => {
+    const slug = process.env.UNVERIFIED_SLUG || 'brufen-600mg-30-tab';
+    const html = await (await fetch(`${BASE}/dawa/${slug}`)).text();
+    const robots = /<meta name="robots" content="([^"]*)"/.exec(html)?.[1] ?? 'index,follow';
+    expect(robots).not.toContain('noindex');
+  });
+});
