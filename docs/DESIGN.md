@@ -457,3 +457,35 @@ BASE_URL=http://localhost:3100 node scripts/crawl.mjs --full     # fetch everyth
 | `/developer/*`, `/admin/api/*` | server components + server actions (`src/lib/api/*-actions.ts`); the key reveal, login and revoke-confirm forms are the only client parts; `AdminShell` frames the admin pages; everything noindex and `/admin/` disallowed in robots.txt; the developer pages are bilingual (`getLang()`), the admin pages Arabic with an e-mail + password login (`AdminLoginForm`, `admin-auth.ts`) |
 
 Shared pieces live in `src/components/api/`: `ApiNav` (section navigation, scrolls on phones), `CodeBlock` + `CopyButton`, `Blocks` (`StatsStrip`, `PlanCards` fed from `api.plans`, `FieldTable`, `Faq` with FAQPage JSON-LD, `UsageChart` SVG), `Forms`. New tokens: `--font-mono` (code, keys). Prose pages reuse the `prose-ar` utility.
+
+
+## 11. Site admin & editable settings
+
+A professional admin area at `/admin` (route group `(admin)`, its own sidebar shell, no public
+chrome, noindex, `/admin/` disallowed in robots.txt) changes the live site without a redeploy. It
+shares the API admin's auth (`/admin/api/login`, `api.admin_users`, the `dw_admin` session);
+`requireAdminSession` / `currentAdmin` re-check the admin server-side on every page and action, and
+admin sessions time out after 12 h (developer sessions stay 30 days). Full write-up: `docs/admin/README.md`.
+
+* **Storage** (migration `0050`, `api` schema): `api.site_settings` (key → jsonb), `api.site_settings_audit`,
+  `api.site_assets` (favicon bytes). Written by the admin actions with `api_app`; read by the public
+  site with `web_reader` through the `web.site_settings` / `web.site_assets` views. Reads are a tagged
+  cache (`site-settings`) merged over the code/env defaults (`lib/settings/config.ts`); saving calls
+  `revalidateTag('site-settings')`, so the live site updates in seconds. Favicon bytes live in the
+  database (not Supabase Storage — no service-role key in the env), behind a thin read/write boundary.
+* **Sections**: Dashboard (health, freshness, counts, index size, API counts, most-visited — cumulative,
+  no weekly/most-searched counter yet), Branding (favicon), Analytics & verification (GA4 + Google/Bing),
+  SEO defaults (title/description/suffix/OG with live counters + a Google preview), Contact (email,
+  WhatsApp, social — used by the footer), Audit log. Forms (`SettingsForm`) have inline validation, a
+  save toast, an unsaved-changes guard and a "last changed by X at Y" line.
+* **Favicon** (`lib/settings/favicon.ts`, `sharp`): an uploaded square PNG/JPG (≥512, ≤2 MB, validated
+  server-side by `sharp` metadata) becomes favicon.ico (16/32/48 packed by hand — sharp cannot write
+  ICO) + icon-48/96/192/512 + apple-touch-icon. Stable root route handlers serve them (cached,
+  `max-age=86400`, revalidated by the tag) or the built-in brand mark rendered to size; `<head>` carries
+  the icon/apple/manifest links. `metadata` in the root layout and home page is now `generateMetadata`
+  reading the settings (title suffix, description, icons, verification on home only).
+* **Google Analytics 4** (`SiteAnalytics`): loaded only after the Arabic cookie notice is accepted
+  (Consent Mode v2, denied by default; refusing loads nothing). IP anonymised, Google signals and ad
+  personalisation off, automatic page_view off — `page_view` is sent with the path only, never `?q=`
+  (`lib/analytics.ts`). Events via `track()`. Not loaded on `/admin`. Privacy page updated; the GA4
+  property's enhanced "Site search" must be turned off by hand (a user action).

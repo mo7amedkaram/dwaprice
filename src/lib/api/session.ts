@@ -17,6 +17,9 @@ export interface Session {
 
 const COOKIE: Record<SessionKind, string> = { client: 'dw_dev', admin: 'dw_admin' };
 export const SESSION_DAYS = 30;
+/** Admin sessions time out much sooner than developer sessions (they can change the live site). */
+export const ADMIN_SESSION_HOURS = 12;
+const sessionSeconds = (kind: SessionKind) => (kind === 'admin' ? ADMIN_SESSION_HOURS * 3600 : SESSION_DAYS * 86_400);
 
 function tag(secret: string, data: string): string {
   return createHmac('sha256', secret).update(`session:${data}`).digest('base64url').slice(0, 32);
@@ -51,13 +54,14 @@ export async function getSession(kind: SessionKind): Promise<Session | null> {
 
 export async function setSession(kind: SessionKind, id: string, email: string): Promise<void> {
   const jar = await cookies();
-  const session: Session = { kind, id, email, exp: Math.floor(Date.now() / 1000) + SESSION_DAYS * 86_400 };
+  const seconds = sessionSeconds(kind);
+  const session: Session = { kind, id, email, exp: Math.floor(Date.now() / 1000) + seconds };
   jar.set(COOKIE[kind], signSession(session, apiSecret()), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: SESSION_DAYS * 86_400,
+    maxAge: seconds,
   });
 }
 

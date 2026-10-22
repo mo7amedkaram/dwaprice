@@ -31,7 +31,7 @@ export function organizationJsonLd(): Json {
     name: SITE.name,
     alternateName: SITE.alternateNames,
     url: SITE.url,
-    logo: absoluteUrl('/icon.svg'),
+    logo: absoluteUrl('/icon-512.png'),
     description: SITE.description,
     areaServed: { '@type': 'Country', name: 'Egypt' },
     contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: SITE.contactEmail, availableLanguage: ['ar', 'en'] },

@@ -41,6 +41,8 @@ export interface PageMetaInput {
   absoluteTitle?: boolean;
   /** hreflang alternates, e.g. { ar: '/api', en: '/api/en' } (paths). */
   languages?: Record<string, string>;
+  /** Site-verification meta tags (home page only), from the editable settings. */
+  verification?: Metadata['verification'];
 }
 
 const NOINDEX_KINDS: ReadonlySet<PageKind> = new Set(['search', 'internal']);
@@ -71,6 +73,7 @@ export function buildMetadata(input: PageMetaInput): Metadata {
   return {
     title: absolute ? { absolute: title } : title,
     description,
+    ...(input.verification ? { verification: input.verification } : {}),
     alternates: {
       canonical,
       ...(input.languages ? { languages: Object.fromEntries([...Object.entries(input.languages).map(([l, p]) => [l, absoluteUrl(p)]), ['x-default', absoluteUrl(input.languages.ar ?? input.path)]]) } : {}),

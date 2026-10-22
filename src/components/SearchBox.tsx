@@ -16,6 +16,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SearchIcon } from './icons';
 import { tradeName } from '@/lib/format';
+import { track } from '@/lib/analytics';
 import { routes } from '@/lib/site';
 import { cx } from './ui';
 import { MAX_QUERY_CHARS, MIN_QUERY_CHARS, PRESELECT_MAX_TIER } from '@/lib/search/constants';
@@ -169,8 +170,13 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
 
   function go(index: number) {
     setOpen(false);
-    if (index < items.length) router.push(routes.drug(items[index].slug));
-    else router.push(routes.search(term));
+    if (index < items.length) {
+      track({ name: 'search_used', params: { method: 'suggestion_clicked' } });
+      router.push(routes.drug(items[index].slug));
+    } else {
+      track({ name: 'search_used', params: { method: 'full_search' } });
+      router.push(routes.search(term));
+    }
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -212,6 +218,7 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
       setQ(value);
       void runSearch(value);
     } else if (e.type === 'final') {
+      track({ name: 'voice_search_used' });
       // Names are often spoken in English or transliterated: take the first transcript
       // (the best one, then the recogniser's alternatives) that has suggestions.
       const candidates = [e.text, ...e.alternatives].map((t) => t.slice(0, MAX_LENGTH)).filter(Boolean);

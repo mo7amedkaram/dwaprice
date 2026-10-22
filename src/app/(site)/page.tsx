@@ -1,5 +1,7 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Container, Ltr, SectionTitle, buttonClass } from '@/components/ui';
+import { getSiteSettings } from '@/lib/settings/read';
 import { ChevronEndIcon, ClockIcon, ShieldIcon, PillIcon } from '@/components/icons';
 import { JsonLd } from '@/components/JsonLd';
 import { SearchBox } from '@/components/SearchBox';
@@ -14,14 +16,21 @@ import { SITE, routes } from '@/lib/site';
 // Hourly: the latest price changes and the trust counters stay fresh.
 export const revalidate = 3600;
 
-export const metadata = buildMetadata({
-  kind: 'home',
-  path: '/',
-  title: `أسعار الأدوية في مصر محدثة يومياً | ${SITE.name}`,
-  absoluteTitle: true,
-  description:
-    'اعرف سعر أي دواء في مصر بآخر تحديث، مع المثائل الأرخص بنفس المادة الفعالة والبدائل من نفس المجموعة العلاجية، وأحدث تغييرات الأسعار، والأدوية حسب الشركة والتصنيف.',
-});
+// Title, description and the verification meta tags come from the editable site settings
+// (admin area), so they change without a redeploy; verification tags are on the home page only.
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo, verification } = await getSiteSettings();
+  const google = verification.google.trim();
+  const bing = verification.bing.trim();
+  return buildMetadata({
+    kind: 'home',
+    path: '/',
+    title: seo.homeTitle,
+    absoluteTitle: true,
+    description: seo.homeDescription,
+    verification: google || bing ? { google: google || undefined, other: bing ? { 'msvalidate.01': bing } : undefined } : undefined,
+  });
+}
 
 function MoreLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (

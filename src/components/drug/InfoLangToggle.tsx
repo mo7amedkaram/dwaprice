@@ -7,6 +7,7 @@
 // later drug pages. All instances share the attribute via useSyncExternalStore.
 import { useCallback, useSyncExternalStore } from 'react';
 import { INFO_LANG_ATTR, INFO_LANG_KEY, isInfoLang, type InfoLang } from '@/lib/info-lang';
+import { track } from '@/lib/analytics';
 
 const listeners = new Set<() => void>();
 function notify() {
@@ -26,6 +27,7 @@ function set(lang: InfoLang) {
   } catch {
     /* private mode: the attribute still applies for this page */
   }
+  track({ name: 'toggle_info_language', params: { lang } });
   notify();
 }
 

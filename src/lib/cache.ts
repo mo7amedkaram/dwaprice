@@ -18,6 +18,8 @@ export const tags = {
   prices: 'prices',
   sitemap: 'sitemap',
   slugs: 'slugs',
+  /** Editable site settings + uploaded assets (admin area). Revalidated on save, so the live site updates in seconds. */
+  settings: 'site-settings',
 } as const;
 
 /** Tag names accepted by /api/revalidate. */

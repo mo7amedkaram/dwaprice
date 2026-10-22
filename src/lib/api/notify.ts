@@ -10,7 +10,11 @@ export interface Mail {
 export async function sendEmail(mail: Mail): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
-    console.warn(`[mail not sent: RESEND_API_KEY unset] to=${mail.to} subject=${mail.subject}\n${mail.text}`);
+    // Never write e-mail bodies or recipients to the server log in production: they contain
+    // one-time login links (magic-link tokens) and personal data. Log only that it was skipped.
+    // Locally, the full text is kept to make testing without an e-mail provider convenient.
+    if (process.env.NODE_ENV === 'production') console.warn(`[mail skipped: no RESEND_API_KEY] subject=${mail.subject}`);
+    else console.warn(`[mail not sent: RESEND_API_KEY unset] to=${mail.to} subject=${mail.subject}\n${mail.text}`);
     return false;
   }
   try {
@@ -31,7 +35,9 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
 export async function notifyAdmin(subject: string, text: string, replyTo?: string): Promise<boolean> {
   const to = process.env.ADMIN_EMAIL;
   if (!to) {
-    console.warn(`[admin alert] ${subject}\n${text}`);
+    // Production: subject only (the body may quote user data or links); locally keep the full text.
+    if (process.env.NODE_ENV === 'production') console.warn(`[admin alert skipped: no ADMIN_EMAIL] ${subject}`);
+    else console.warn(`[admin alert] ${subject}\n${text}`);
     return false;
   }
   return sendEmail({ to, subject: `[dwaprice API] ${subject}`, text, replyTo });

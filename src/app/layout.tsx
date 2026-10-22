@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { IBM_Plex_Sans_Arabic, Inter } from 'next/font/google';
-import { SITE, TITLE_SUFFIX } from '@/lib/site';
+import { SITE } from '@/lib/site';
 import { THEME_COLORS, THEME_SCRIPT } from '@/lib/theme';
 import { INFO_LANG_SCRIPT } from '@/lib/info-lang';
+import { getSiteSettings } from '@/lib/settings/read';
+import { SiteAnalytics } from '@/components/SiteAnalytics';
 import './globals.css';
 
 // Self-hosted by next/font at build time: only 400/500/600, swap, Arabic + Latin.
@@ -20,14 +22,28 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: { default: SITE.name, template: `%s${TITLE_SUFFIX}` },
-  description: SITE.description,
-  applicationName: SITE.name,
-  formatDetection: { telephone: false },
-  openGraph: { type: 'website', locale: SITE.locale, siteName: SITE.name },
-};
+// The title suffix, default description and icons come from the editable settings (admin area),
+// so they change without a redeploy. Icons point at the stable root route handlers, which serve the
+// uploaded favicon or the built-in brand mark.
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getSiteSettings();
+  return {
+    metadataBase: new URL(SITE.url),
+    title: { default: SITE.name, template: `%s${seo.titleSuffix}` },
+    description: seo.ogText,
+    applicationName: SITE.name,
+    formatDetection: { telephone: false },
+    openGraph: { type: 'website', locale: SITE.locale, siteName: SITE.name },
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: '48x48' },
+        { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      ],
+      apple: [{ url: '/apple-touch-icon.png' }],
+    },
+    manifest: '/site.webmanifest',
+  };
+}
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -38,7 +54,8 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const { analytics } = await getSiteSettings();
   return (
     // suppressHydrationWarning: the head scripts add data-theme and data-info-lang to <html> before React hydrates.
     <html lang="ar" dir="rtl" className={`${plexArabic.variable} ${inter.variable}`} suppressHydrationWarning>
@@ -48,7 +65,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: INFO_LANG_SCRIPT }} />
       </head>
       {/* Header, main and footer come from the route groups: (site) Arabic chrome, (en) English, (dev) by cookie. */}
-      <body className="flex min-h-dvh flex-col bg-bg font-sans text-ink antialiased">{children}</body>
+      <body className="flex min-h-dvh flex-col bg-bg font-sans text-ink antialiased">
+        {children}
+        <SiteAnalytics measurementId={analytics.ga4MeasurementId} />
+      </body>
     </html>
   );
 }

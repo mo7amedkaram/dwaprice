@@ -3,6 +3,9 @@ import { Container } from './ui';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 import { SITE, routes } from '@/lib/site';
+import { getSiteSettings } from '@/lib/settings/read';
+
+const SOCIAL_LABELS: Record<string, string> = { facebook: 'فيسبوك', x: 'X', instagram: 'إنستجرام', youtube: 'يوتيوب', telegram: 'تيليجرام' };
 
 const GROUPS = [
   {
@@ -31,7 +34,9 @@ const GROUPS = [
   },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const { contact } = await getSiteSettings();
+  const social = (Object.entries(contact.social) as Array<[keyof typeof SOCIAL_LABELS, string]>).filter(([, url]) => url);
   return (
     <footer className="mt-16 border-t border-border bg-surface">
       <Container className="grid gap-8 py-10 md:grid-cols-[2fr_1fr_1fr]">
@@ -42,6 +47,25 @@ export function Footer() {
             المعلومات هنا للاسترشاد فقط ولا تغني عن استشارة الطبيب أو الصيدلي. الأسعار هي أسعار البيع المعلنة
             للجمهور وقد تختلف في بعض الصيدليات.
           </p>
+          {(contact.email || contact.whatsapp || social.length > 0) && (
+            <div className="type-small flex flex-wrap items-center gap-x-4 gap-y-1 text-text-2">
+              {contact.email && (
+                <a href={`mailto:${contact.email}`} className="hover:text-primary" dir="ltr">
+                  {contact.email}
+                </a>
+              )}
+              {contact.whatsapp && (
+                <a href={`https://wa.me/${contact.whatsapp}`} rel="noopener noreferrer" target="_blank" className="hover:text-primary" dir="ltr">
+                  واتساب
+                </a>
+              )}
+              {social.map(([key, url]) => (
+                <a key={key} href={url} rel="noopener noreferrer me" target="_blank" className="hover:text-primary">
+                  {SOCIAL_LABELS[key]}
+                </a>
+              ))}
+            </div>
+          )}
           <ThemeToggle variant="group" className="mt-2" />
         </div>
         {GROUPS.map((group) => (
