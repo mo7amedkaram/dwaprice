@@ -3,7 +3,7 @@
 // a generated index is on disk (npm run build:index), on the real file too. Also the small pure
 // helpers of the client (fallback filter, prefetch skip) and of the index route (encoding).
 import { existsSync, readFileSync } from 'node:fs';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { buildSearchIndex, serializeSearchIndex, type DrugSource } from '@/lib/search/index-build';
 import { SEARCH_INDEX_FILE_RE, SEARCH_INDEX_KEYS, SEARCH_INDEX_VERSION, type SearchIndexFile, type SearchIndexManifest } from '@/lib/search/index-format';
 import { matchesLocally, SearchClient, shouldSkipPrefetch, toSuggestion } from '@/lib/search/client';
@@ -247,6 +247,75 @@ describe('client helpers', () => {
     } finally {
       globalThis.fetch = orig;
     }
+  });
+});
+
+describe('client: when the LIVE index fails, the retry takes the build-time file', () => {
+  // The worker cannot run in node, so a fake one stands in: loading the live current.json "fails"
+  // (as it does on a 503) and loading the static index.<hash>.json succeeds — the same messages the
+  // real worker posts, driving the client's real fail() → retry → resolveUrl() path.
+  class FakeWorker {
+    onmessage: ((e: { data: unknown }) => void) | null = null;
+    onerror: (() => void) | null = null;
+    postMessage(m: { t: string; url?: string }) {
+      if (m.t !== 'load') return;
+      const live = !!m.url?.includes('current.json');
+      queueMicrotask(() =>
+        this.onmessage?.({ data: live ? { t: 'error', message: 'index HTTP 503' } : { t: 'ready', from: 'network', bytes: 1, transferBytes: 1, loadMs: 1, buildMs: 1 } }),
+      );
+    }
+    terminate() {}
+  }
+  const flush = async () => {
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+  };
+
+  // A fresh client module with a build-time file inlined, a fake worker, and a version.json that is ok or not.
+  async function freshClient(versionOk: boolean) {
+    vi.resetModules();
+    vi.stubEnv('NEXT_PUBLIC_SEARCH_INDEX', 'index.testhash.json');
+    vi.stubGlobal('Worker', FakeWorker);
+    const urls: string[] = [];
+    vi.stubGlobal('fetch', async (input: string | URL | Request) => {
+      urls.push(String(input));
+      return { ok: versionOk, json: async () => ({ hash: 'a' }) } as unknown as Response;
+    });
+    const mod = await import('@/lib/search/client');
+    expect(mod.INDEX_URL).toBe('/search-index/index.testhash.json');
+    return { client: new mod.SearchClient(), urls };
+  }
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('retries with the static file (no second version.json fetch) and recovers to ready', async () => {
+    vi.useFakeTimers();
+    const { client, urls } = await freshClient(true);
+    const statuses: string[] = [];
+    client.onStatus((s) => statuses.push(s));
+    client.warm();
+    await flush();
+    // version.json said hash "a" → current.json?v=a → the worker could not load it → 'failed', one retry scheduled
+    expect(statuses).toEqual(['loading', 'failed']);
+    expect(urls).toEqual(['/search-index/version.json']);
+    // 5 s later the retry must NOT resolve to the live URL again: it loads the build-time file and comes up ready
+    await vi.advanceTimersByTimeAsync(5000);
+    await flush();
+    expect(client.status).toBe('ready');
+    expect(urls).toEqual(['/search-index/version.json']); // version.json was not asked again
+  });
+
+  it('falls back to the static file at once when version.json itself fails', async () => {
+    vi.useFakeTimers();
+    const { client, urls } = await freshClient(false);
+    client.warm();
+    await flush();
+    expect(client.status).toBe('ready');
+    expect(urls).toEqual(['/search-index/version.json']);
   });
 });
 
