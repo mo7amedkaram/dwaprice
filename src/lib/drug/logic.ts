@@ -2,7 +2,7 @@
 // whole module is unit-tested (tests/drug-logic.test.ts). Pages and sitemaps
 // both call these functions, so a rule exists in one place only.
 
-import { CURRENCY_AR, formatAmount, formatDate, formatPercent, toNumber } from '@/lib/format';
+import { CURRENCY_AR, compareNamesEn, formatAmount, formatDate, formatPercent, toNumber } from '@/lib/format';
 
 // ---------------------------------------------------------------- duplicates (recognition_product_index groups)
 
@@ -416,7 +416,7 @@ export function groupAlternatives(rows: AlternativeInput[], referencePrice: numb
   const byPrice = (a: AlternativeRowOut, b: AlternativeRowOut) =>
     Number(b.sameForm) - Number(a.sameForm) ||
     (a.price ?? Infinity) - (b.price ?? Infinity) ||
-    (a.nameAr ?? a.nameEn).localeCompare(b.nameAr ?? b.nameEn, 'ar');
+    compareNamesEn(a.nameEn, b.nameEn);
   const same = rows.filter((r) => r.match_type === 'SAME_INGREDIENTS_SAME_STRENGTH').map(map).sort(byPrice);
   const different = rows.filter((r) => r.match_type !== 'SAME_INGREDIENTS_SAME_STRENGTH').map(map).sort(byPrice);
   const eligible = same.filter((r) => !r.unavailable && !r.sibling && r.price !== null);
@@ -537,7 +537,7 @@ export function groupSubstitutes(rows: SubstituteInput[]): AlternativeRowOut[] {
       sibling: false,
       sameForm: false,
     }))
-    .sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || (a.nameAr ?? a.nameEn).localeCompare(b.nameAr ?? b.nameEn, 'ar'));
+    .sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || compareNamesEn(a.nameEn, b.nameEn));
 }
 
 /** "أرخص 174 ج.م (82.9%)" style parts for a difference. */

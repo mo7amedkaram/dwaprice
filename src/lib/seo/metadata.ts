@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE, TITLE_SUFFIX, TITLE_WITH_SUFFIX_MAX, absoluteUrl } from '@/lib/site';
+import { letterLabel } from '@/lib/listing/logic';
 
 /**
  * Page kinds and their default indexing rule (docs/DESIGN.md "SEO rules"):
@@ -123,13 +124,19 @@ export const pageText = {
     title: `${nameAr} (${code}): الأدوية وأسعارها`,
     description: `${n(count)} دواء في مصر مصنف تحت ${nameAr} (رمز ATC ${code})، مع الأسعار والمادة الفعالة.`,
   }),
-  letter: (letter: string, count: number) => ({
-    title: `أدوية تبدأ بحرف ${letter} وأسعارها`,
-    description: `${n(count)} دواء يبدأ اسمه بحرف ${letter} في مصر، مرتبة أبجديًا مع السعر الحالي.`,
-  }),
+  letter: (letter: string, count: number) =>
+    letter === '0-9'
+      ? {
+          title: 'أدوية يبدأ اسمها برقم',
+          description: `${n(count)} دواء يبدأ اسمه برقم في مصر، مرتبة أبجديًا مع السعر الحالي.`,
+        }
+      : {
+          title: `أدوية تبدأ بحرف ${letterLabel(letter)}`,
+          description: `${n(count)} دواء يبدأ اسمه بحرف ${letterLabel(letter)} في مصر، مرتبة أبجديًا مع السعر الحالي.`,
+        },
   letters: () => ({
-    title: 'دليل الأدوية من أ إلى ي',
-    description: 'كل الأدوية المتاحة في مصر مرتبة أبجديًا حسب الحرف الأول من الاسم العربي، مع الأسعار.',
+    title: 'دليل الأدوية من A إلى Z',
+    description: 'كل الأدوية المتاحة في مصر مرتبة أبجديًا حسب أول حرف في الاسم الإنجليزي، مع الأسعار.',
   }),
   ingredients: (count: number) => ({
     title: 'المواد الفعالة للأدوية في مصر',

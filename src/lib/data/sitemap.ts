@@ -5,6 +5,7 @@ import { SITEMAP_REVALIDATE_SECONDS, tags } from '@/lib/cache';
 import { isoDate } from '@/lib/format';
 import { routes } from '@/lib/site';
 import { hasUsesPage, nonCanonicalSlugs } from '@/lib/drug/logic';
+import { BROWSE_LETTERS, LETTER_EXPR } from '@/lib/listing/logic';
 import type { SitemapEntry } from './types';
 
 /** Google allows 50,000 URLs per file; stay below with margin. */
@@ -72,17 +73,19 @@ async function load(type: SitemapType): Promise<SitemapEntry[]> {
       return rows.map((r) => ({ path: routes.atc(r.atc_code, r.name_en), lastmod: isoDate(r.lastmod) }));
     }
     case 'letters': {
-      // Page 1 of each A-Z letter (drug counts per first letter, as in lib/data/listings.ts).
+      // Page 1 of every A-Z bucket: the fixed 27 (a–z and 0-9), each with the newest price date of
+      // the drugs in it. A bucket with no drugs still gets a URL (brief: 27 letter pages).
       const rows = await query<{ letter: string; lastmod: string | null }>(
-        `select translate(left(name_ar, 1), 'آأإٱى', 'ااااي') as letter, max(price_updated_date) as lastmod
-         from web.drug_cards where indexable and name_ar is not null group by 1 order by 1`,
+        `select ${LETTER_EXPR} as letter, max(price_updated_date) as lastmod
+         from web.drug_cards where indexable group by 1`,
       );
-      return rows.map((r) => ({ path: routes.letter(r.letter), lastmod: isoDate(r.lastmod) }));
+      const lastmod = new Map(rows.map((r) => [r.letter, r.lastmod]));
+      return BROWSE_LETTERS.map((letter) => ({ path: routes.letter(letter), lastmod: isoDate(lastmod.get(letter) ?? null) }));
     }
   }
 }
 
-export const getSitemapEntries = unstable_cache(load, ['sitemap-entries-v4'], {
+export const getSitemapEntries = unstable_cache(load, ['sitemap-entries-v5'], {
   revalidate: SITEMAP_REVALIDATE_SECONDS,
   tags: [tags.catalog, tags.sitemap],
 });

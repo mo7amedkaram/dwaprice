@@ -7,6 +7,15 @@ const dateFormat = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { day: 'numeric', 
 
 export const CURRENCY_AR = 'ج.م';
 
+// Case-insensitive English ordering for drug lists. Arabic names are still displayed, they are
+// just never sorted on (the site browses and sorts drugs by their English trade name).
+const nameCollator = new Intl.Collator('en', { sensitivity: 'base' });
+
+/** Compare two drug names by their English trade name, case-insensitive (Intl.Collator('en')). */
+export function compareNamesEn(a: string | null | undefined, b: string | null | undefined): number {
+  return nameCollator.compare(a ?? '', b ?? '');
+}
+
 /**
  * Price-list availability markers left in some trade names ("Congestal day 10
  * tabs.(n/a)"): the listing status is shown as a badge instead.

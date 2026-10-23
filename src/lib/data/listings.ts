@@ -3,6 +3,7 @@ import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
 import { REVALIDATE_SECONDS, tags } from '@/lib/cache';
 import { nonCanonicalSlugs } from '@/lib/drug/logic';
+import { LETTER_EXPR } from '@/lib/listing/logic';
 import type { HubDrug, HubRow, HubType, LatestChange, ListFilters } from './types';
 
 // Loaders of the listing pages (home, hubs, A-Z, last prices). Every one is
@@ -22,13 +23,6 @@ const LIST_COLUMNS = `slug, name_ar, name_en, strength, dosage_form_ar, form_cla
 
 /** A product shown in lists (with the duplicate slugs as $1). */
 const LISTED = 'indexable and not (slug = any($1::text[]))';
-
-/**
- * Arabic alphabetical order. The database collation (en_US) misplaces hamza
- * forms (إيجنير before ابسيموكس); folded to ا and compared by code point,
- * which follows the Arabic alphabet.
- */
-const AR_SORT = `translate(name_ar, 'آأإٱ', 'اااا') collate "C"`;
 
 /** Pack variants that are noindex because another member of their group is canonical. */
 export const getDuplicateSlugs = unstable_cache(
@@ -120,10 +114,13 @@ export const getAtcRoots = unstable_cache(
   cache,
 );
 
+// All drug lists are ordered by the English trade name: sort_name is lower(trade_name_en), and
+// the database default collation (en_US) is locale-aware and case-insensitive on the lowercased
+// value. Arabic names are shown but never sorted on. The (category_key, sort_name) index applies.
 const SORTS = {
-  name: `${AR_SORT} nulls last, sort_name, slug`,
-  'price-asc': `current_price nulls last, ${AR_SORT}, slug`,
-  'price-desc': `current_price desc nulls last, ${AR_SORT}, slug`,
+  name: `sort_name nulls last, slug`,
+  'price-asc': `current_price nulls last, sort_name, slug`,
+  'price-desc': `current_price desc nulls last, sort_name, slug`,
 } as const;
 
 /** A page of a hub's drugs with optional filters; `total` counts the filtered rows. */
@@ -157,7 +154,7 @@ export function getHubDrugs(type: HubType, hub: Pick<HubRow, 'slug' | 'key'>, f:
       );
       return { rows, total: Number(rows[0]?.total ?? 0) };
     },
-    ['hub-drugs-v2', type, hub.key, JSON.stringify(f), String(limit), String(offset)],
+    ['hub-drugs-v3', type, hub.key, JSON.stringify(f), String(limit), String(offset)],
     { revalidate: REVALIDATE_SECONDS, tags: [tags.catalog, tags.hub(type, hub.slug)] },
   )();
 }
@@ -184,28 +181,27 @@ export function getIngredientDrugs(key: string): Promise<HubDrug[]> {
       query<HubDrug>(
         `select ${LIST_COLUMNS} from web.drug_cards
          where ${HUBS.ingredient.filter} and ${LISTED}
-         order by current_price nulls last, ${AR_SORT}, slug`,
+         order by current_price nulls last, sort_name, slug`,
         [await getDuplicateSlugs(), key],
       ),
-    ['ingredient-drugs-v2', key],
+    ['ingredient-drugs-v3', key],
     cache,
   )();
 }
 
-// ---------------------------------------------------------------- A-Z
-
-/** First letter as used by the A-Z pages: hamza forms of alif fold into ا, ى into ي. */
-const FIRST_LETTER = `translate(left(name_ar, 1), 'آأإٱى', 'ااااي')`;
+// ---------------------------------------------------------------- A-Z (English)
+// Buckets and ordering use the English trade name; the bucket expression (LETTER_EXPR) and the
+// fixed 27 buckets live in lib/listing/logic.ts so the pages, the sitemap and the tests agree.
 
 export const getLetterCounts = unstable_cache(
   async (): Promise<Array<{ letter: string; n: number }>> =>
     query<{ letter: string; n: number }>(
-      `select ${FIRST_LETTER} as letter, count(*)::int as n
-       from web.drug_cards where ${LISTED} and name_ar is not null
+      `select ${LETTER_EXPR} as letter, count(*)::int as n
+       from web.drug_cards where ${LISTED}
        group by 1`,
       [await getDuplicateSlugs()],
     ),
-  ['letter-counts-v2'],
+  ['letter-counts-en-v1'],
   cache,
 );
 
@@ -214,12 +210,12 @@ export function getLetterDrugs(letter: string, limit: number, offset: number): P
     async () =>
       query<HubDrug>(
         `select ${LIST_COLUMNS} from web.drug_cards
-         where ${LISTED} and ${FIRST_LETTER} = $2
-         order by ${AR_SORT}, slug
+         where ${LISTED} and ${LETTER_EXPR} = $2
+         order by sort_name nulls last, slug
          limit $3 offset $4`,
         [await getDuplicateSlugs(), letter, limit, offset],
       ),
-    ['letter-drugs-v2', letter, String(limit), String(offset)],
+    ['letter-drugs-en-v1', letter, String(limit), String(offset)],
     cache,
   )();
 }

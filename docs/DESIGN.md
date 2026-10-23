@@ -349,7 +349,7 @@ with `scripts/first-load-js.mjs`; before/after and Lighthouse in `docs/search/RE
 | --- | --- | --- | --- |
 | home | `/` | yes | revalidate 1 h; WebSite + SearchAction + Organization JSON-LD |
 | search | `/search?q=` | **noindex,follow** | approximate-match notice when only tiers 4–5 matched |
-| drugs A–Z | `/adwiya`, `/adwiya/{letter}?page=N` | page 1 | 100 per page, **every page number linked** (click depth) |
+| drugs A–Z | `/adwiya`, `/adwiya/{letter}?page=N` ({letter} = `a`..`z` or `0-9`, English trade name) | page 1 | 100 per page, **every page number linked** (click depth); old Arabic-letter URLs 301 → `/adwiya` |
 | ingredients | `/active-ingredient`, `/active-ingredient/{slug}?page=N` | `ingredients.indexable`, page 1 | grouped by form + strength, cheapest per group |
 | companies | `/sharika`, `/sharika/{slug}` | `companies.indexable`, page 1, no filter | sortable, filterable |
 | categories | `/category`, `/category/{slug}` | `categories.indexable`, page 1, no filter | filterable |

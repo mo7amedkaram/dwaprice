@@ -49,9 +49,10 @@ export const routes = {
   drug: (slug: string) => `/dawa/${slug}`,
   alternatives: (slug: string) => `/dawa/${slug}/badael`,
   uses: (slug: string) => `/dawa/${slug}/dawaei-estemal`,
-  /** Drugs A-Z by first Arabic letter. */
+  /** Drugs A-Z by the first letter of the English trade name. */
   letters: () => '/adwiya',
-  letter: (letter: string) => `/adwiya/${encodeURIComponent(letter)}`,
+  /** A browse bucket page: "a".."z" or "0-9" (lower-case Latin, URL-safe as is). */
+  letter: (letter: string) => `/adwiya/${letter}`,
   ingredients: () => '/active-ingredient',
   ingredient: (slug: string) => `/active-ingredient/${slug}`,
   companies: () => '/sharika',

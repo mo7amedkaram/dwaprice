@@ -11,7 +11,7 @@ const GROUPS = [
   {
     title: 'تصفح',
     links: [
-      { href: routes.letters(), label: 'الأدوية من أ إلى ي' },
+      { href: routes.letters(), label: 'الأدوية من A إلى Z' },
       { href: routes.ingredients(), label: 'المواد الفعالة' },
       { href: routes.companies(), label: 'الشركات' },
       { href: routes.categories(), label: 'التصنيفات' },

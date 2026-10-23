@@ -161,7 +161,7 @@ URL map (as built in parts 3–4; types prefix the slug, so the same slug may ex
 | company | `/sharika/{slug}` (index: `/sharika`) | أدوية ومنتجات شركة {name_en} |
 | category | `/category/{slug}` (index: `/category`) | {category name_ar}: الأدوية وأسعارها |
 | ATC | `/atc/{code}-{name-slug}`, code only when unnamed (index: `/atc`) | {name_ar} ({code}) |
-| drugs A–Z | `/adwiya` and `/adwiya/{letter}` | أدوية تبدأ بحرف {letter} |
+| drugs A–Z | `/adwiya` and `/adwiya/{letter}` ({letter} = `a`..`z` or `0-9`, by the English trade name) | أدوية تبدأ بحرف {A..Z} / أدوية يبدأ اسمها برقم |
 | latest price changes | `/last-prices` (`?direction=increase` or `decrease` = noindex filter) | أحدث أسعار الأدوية في مصر |
 | static | `/about`, `/guide`, `/contact`, `/disclaimer`, `/privacy`, `/terms` | — |
 | search | `/search?q=` | noindex,follow |
@@ -478,7 +478,7 @@ such as "شراب كحه" (the catalogue writes "للكحة"; tier 5 then return
 | ingredient page | every listed product, single-ingredient first, grouped by form + strength (combinations by form), cheapest per group flagged when ≥ 2 are priced; 60 rows per page, groups continue across pages ("تابع"); PubChem (from the `cid:` key) and DrugBank (from the product payload) links |
 | company / category / ATC | 48 per page; filters `form`, `rx` (`rx`/`otc`), `min`, `max`, `sort` as GET parameters: any filter → `noindex,follow` + canonical to the clean URL; empty or default parameters → 307 to the clean URL |
 | ATC | `/atc/{code}-{name}`; a wrong or missing name suffix 308s to the canonical one; breadcrumb = the code's ancestors |
-| drugs A–Z (`/adwiya`) | 22 letters have drugs (ا: 2,900 → 29 pages of 100). `/adwiya` and every letter page link **every** page number, so each listed drug is ≤ 3 clicks from home (home → letter → page N → drug) |
+| drugs A–Z (`/adwiya`) | 27 buckets by the first letter of the **English** trade name: `a`..`z` plus `0-9` (names starting with a digit). All 27 pages and sitemap URLs exist; `w`,`x`,`y`,`z` currently have no drugs (shown as empty pages); the largest is `s` (≈ 2,027 → 21 pages of 100). Grouping is lossless over the indexable set (Σ = 16,509, the sitemap's filter); the letter **pages** apply the same `LISTED` filter as every other list, so their per-letter counts exclude the non-canonical pack-variant duplicates. 0 drugs need the slug fallback; the `0-9` bucket holds 1. `/adwiya` and every letter page link **every** page number, so each listed drug is ≤ 3 clicks from home. Sorting everywhere is by the English trade name (`sort_name`, case-insensitive en_US); Arabic names are shown but not sorted on. Old Arabic-letter URLs 301 to `/adwiya` (no 1:1 Arabic→English initial) |
 | last prices | 50 per page; `?direction=increase` or `decrease` is noindex; only dated changes up to today (27 undated rows skipped). 5,834 of 5,862 changes are increases |
 | "most searched" | `search_count` is **0 for every drug** (the app does not record searches yet), so the home section is ranked by `visit_count` and titled "الأكثر زيارة"; it switches to "الأكثر بحثًا" automatically once search counts exist. Only 147 drugs have visits (max 29) |
 | pagination | `?page=N`; page 1 has no parameter (`?page=1` → 307); pages ≥ 2 noindex,follow with a self canonical and their own title and description (" — صفحة N"); an invalid or out-of-range page → 404 |

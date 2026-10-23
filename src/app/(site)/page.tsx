@@ -80,7 +80,7 @@ export default async function HomePage() {
 
         <section aria-labelledby="az">
           <SectionTitle id="az" end={<MoreLink href={routes.letters()}>الفهرس الكامل</MoreLink>}>
-            الأدوية من أ إلى ي
+            الأدوية من A إلى Z
           </SectionTitle>
           <LetterNav letters={letters} />
         </section>

@@ -2,7 +2,7 @@
 // unit-tested in tests/listing-logic.test.ts.
 
 import { arabicUnits, shortStrength } from '@/lib/drug/logic';
-import { toNumber } from '@/lib/format';
+import { compareNamesEn, toNumber } from '@/lib/format';
 import type { HubDrug, ListFilters } from '@/lib/data/types';
 
 // ---------------------------------------------------------------- query params
@@ -173,7 +173,7 @@ export function groupByFormAndStrength(rows: HubDrug[]): DrugGroup[] {
   for (const g of groups.values()) formSize.set(`${g.single}|${g.form}`, (formSize.get(`${g.single}|${g.form}`) ?? 0) + g.rows.length);
 
   const byPrice = (a: HubDrug, b: HubDrug) =>
-    (toNumber(a.current_price) ?? Infinity) - (toNumber(b.current_price) ?? Infinity) || (a.name_ar ?? a.name_en).localeCompare(b.name_ar ?? b.name_en, 'ar');
+    (toNumber(a.current_price) ?? Infinity) - (toNumber(b.current_price) ?? Infinity) || compareNamesEn(a.name_en, b.name_en);
   const out = [...groups.values()];
   for (const g of out) {
     g.rows.sort(byPrice);
@@ -215,21 +215,48 @@ export function pageOfGroups(groups: DrugGroup[], page: number, pageSize: number
   return { slices, pages: pageCount(total, pageSize) };
 }
 
-// ---------------------------------------------------------------- A-Z
+// ---------------------------------------------------------------- A-Z (English)
 
-/** Drugs per A-Z page (the largest letter, ا, has ~29 pages). */
+/** Drugs per A-Z page. */
 export const LETTER_PAGE_SIZE = 100;
 
-/** Arabic letters in order; the A-Z pages exist for the ones that have drugs. */
-export const ARABIC_LETTERS = [...'ابتثجحخدذرزسشصضطظعغفقكلمنهوي'];
+/**
+ * The drug A-Z buckets: the 26 Latin letters, then one bucket ("0-9") for names that start with a
+ * digit. Drugs are grouped by the first character of their English trade name. The row of buttons
+ * always shows all 27, whatever the per-bucket counts, so the alphabet reads as a complete line.
+ */
+export const BROWSE_LETTERS = [...'abcdefghijklmnopqrstuvwxyz', '0-9'];
 
-/** Letters with their drug counts, in alphabetical order (letters outside the alphabet last). */
+/** True for a live A-Z bucket (lower-case a–z or "0-9"); the /adwiya URLs use these verbatim. */
+export function isBrowseLetter(letter: string): boolean {
+  return BROWSE_LETTERS.includes(letter);
+}
+
+/** Display label of a bucket: "A".."Z", or "0-9" as is. */
+export function letterLabel(letter: string): string {
+  return letter === '0-9' ? '0-9' : letter.toUpperCase();
+}
+
+/**
+ * SQL expression over web.drug_cards for a drug's A-Z bucket ('a'..'z' or '0-9'): the first
+ * character of the English trade name (sort_name is lower(trade_name_en)) after any leading
+ * spaces, quotes or punctuation; a name with no usable Latin initial (empty or non-Latin) falls
+ * back to the first Latin letter of the slug, and finally to "0-9". Kept here so the data layer
+ * (lib/data/listings.ts), the sitemap (lib/data/sitemap.ts) and the tests share one definition.
+ */
+export const LETTER_EXPR = `case
+  when left(regexp_replace(coalesce(sort_name, ''), '^[[:space:][:punct:]]+', ''), 1) ~ '[a-z]'
+    then left(regexp_replace(sort_name, '^[[:space:][:punct:]]+', ''), 1)
+  when left(regexp_replace(coalesce(sort_name, ''), '^[[:space:][:punct:]]+', ''), 1) ~ '[0-9]'
+    then '0-9'
+  when slug ~ '[a-z]' then substring(slug from '[a-z]')
+  else '0-9'
+end`;
+
+/** The 27 buckets with their drug counts, in order (a–z then 0-9); missing buckets get 0. */
 export function orderLetters(counts: Array<{ letter: string; n: number }>): Array<{ letter: string; n: number }> {
-  const rank = (l: string) => {
-    const i = ARABIC_LETTERS.indexOf(l);
-    return i === -1 ? 100 : i;
-  };
-  return counts.filter((c) => c.n > 0).sort((a, b) => rank(a.letter) - rank(b.letter) || a.letter.localeCompare(b.letter));
+  const byLetter = new Map(counts.map((c) => [c.letter, c.n]));
+  return BROWSE_LETTERS.map((letter) => ({ letter, n: byLetter.get(letter) ?? 0 }));
 }
 
 /** Grouping letter of a name in an index: hamza forms of alif -> ا, ى -> ي, Latin upper-case, digits -> "#". */

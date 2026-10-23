@@ -56,7 +56,7 @@ export default function GuidePage() {
       <h2>٤. تصفح بطرق أخرى</h2>
       <ul>
         <li>
-          <Link href={routes.letters()}>الأدوية من أ إلى ي</Link> حسب الحرف الأول من الاسم.
+          <Link href={routes.letters()}>الأدوية من A إلى Z</Link> حسب أول حرف في الاسم الإنجليزي.
         </li>
         <li>
           <Link href={routes.ingredients()}>المواد الفعالة</Link>: كل الأدوية التي تحتوي على مادة معينة مقسمة حسب الشكل والتركيز، مع الأرخص في كل

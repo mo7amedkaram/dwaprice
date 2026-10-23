@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  BROWSE_LETTERS,
   DEFAULT_FILTERS,
   filterQuery,
   groupByFormAndStrength,
   indexLetter,
+  isBrowseLetter,
+  letterLabel,
   orderLetters,
   pageCount,
   pageOfGroups,
@@ -13,6 +16,7 @@ import {
   sameQuery,
   strengthLabel,
 } from '@/lib/listing/logic';
+import { compareNamesEn } from '@/lib/format';
 import { atcName, routes, slugify } from '@/lib/site';
 import type { HubDrug } from '@/lib/data/types';
 
@@ -137,7 +141,7 @@ describe('strength labels', () => {
   });
 });
 
-describe('A-Z', () => {
+describe('hub index grouping (Arabic-aware, companies/ingredients/categories)', () => {
   it('folds hamza forms of alif and alif maqsura, upper-cases Latin', () => {
     expect(indexLetter('أموكسيسيلين')).toBe('ا');
     expect(indexLetter('إيبوبروفين')).toBe('ا');
@@ -146,13 +150,49 @@ describe('A-Z', () => {
     expect(indexLetter('eva pharma')).toBe('E');
     expect(indexLetter('3M')).toBe('#');
   });
+});
 
-  it('orders letters alphabetically and drops empty ones', () => {
-    expect(orderLetters([{ letter: 'ي', n: 3 }, { letter: 'ا', n: 9 }, { letter: 'چ', n: 1 }, { letter: 'ب', n: 0 }]).map((l) => l.letter)).toEqual(['ا', 'ي', 'چ']);
+describe('drug A-Z browsing (English)', () => {
+  it('has 27 buckets: a–z then 0-9', () => {
+    expect(BROWSE_LETTERS).toHaveLength(27);
+    expect(BROWSE_LETTERS[0]).toBe('a');
+    expect(BROWSE_LETTERS[25]).toBe('z');
+    expect(BROWSE_LETTERS[26]).toBe('0-9');
   });
 
-  it('builds encoded letter URLs', () => {
-    expect(routes.letter('ب')).toBe('/adwiya/%D8%A8');
+  it('recognises live buckets and labels them for display', () => {
+    expect(isBrowseLetter('b')).toBe(true);
+    expect(isBrowseLetter('0-9')).toBe(true);
+    expect(isBrowseLetter('B')).toBe(false); // the URLs are lower case; upper case 301s to it
+    expect(isBrowseLetter('ب')).toBe(false); // old Arabic letter: no live bucket
+    expect(letterLabel('b')).toBe('B');
+    expect(letterLabel('0-9')).toBe('0-9');
+  });
+
+  it('orders all 27 buckets, filling missing counts with 0', () => {
+    const ordered = orderLetters([
+      { letter: 'b', n: 5 },
+      { letter: '0-9', n: 2 },
+    ]);
+    expect(ordered).toHaveLength(27);
+    expect(ordered.map((l) => l.letter)).toEqual(BROWSE_LETTERS);
+    expect(ordered.find((l) => l.letter === 'b')!.n).toBe(5);
+    expect(ordered.find((l) => l.letter === '0-9')!.n).toBe(2);
+    expect(ordered.find((l) => l.letter === 'a')!.n).toBe(0);
+  });
+
+  it('builds lower-case Latin letter URLs', () => {
+    expect(routes.letter('b')).toBe('/adwiya/b');
+    expect(routes.letter('0-9')).toBe('/adwiya/0-9');
+  });
+});
+
+describe('English name ordering', () => {
+  it('is case-insensitive and English (Arabic names are not sorted on)', () => {
+    expect(compareNamesEn('brufen', 'Panadol')).toBeLessThan(0);
+    expect(compareNamesEn('Panadol', 'panadol')).toBe(0);
+    expect(compareNamesEn('Zyrtec', 'Adol')).toBeGreaterThan(0);
+    expect(['Zinc', 'adol', 'Brufen'].sort(compareNamesEn)).toEqual(['adol', 'Brufen', 'Zinc']);
   });
 });
 
