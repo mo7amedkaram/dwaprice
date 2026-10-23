@@ -87,3 +87,17 @@ export const CheckCircleIcon = (p: IconProps) => (
     <path d="m8.5 12 2.5 2.5 4.5-5" />
   </Svg>
 );
+
+export const CommentIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M21 12a8 8 0 0 1-8 8H6l-3 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" />
+    <path d="M8 11h8M8 15h5" />
+  </Svg>
+);
+
+export const FlagIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M5 21V4" />
+    <path d="M5 4h11l-1.5 4L16 12H5" />
+  </Svg>
+);

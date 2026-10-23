@@ -12,6 +12,8 @@ import { PriceHistorySection } from '@/components/drug/PriceHistorySection';
 import { bilingualClinicalItems } from '@/components/drug/ClinicalSections';
 import { InfoLangToggle } from '@/components/drug/InfoLangToggle';
 import { AlsoSearchedAs, IdentifiersBlock, MedicalDisclaimer, OtherPacks, RelatedLinks, SafetyNote, SourcesBlock } from '@/components/drug/Blocks';
+import { CommentsSection } from '@/components/feedback/CommentsSection';
+import { ReportProblem } from '@/components/feedback/ReportProblem';
 import { getTopDrugSlugs } from '@/lib/data/drugs';
 import { getDrugPageData } from '@/lib/data/drug-page';
 import { drugDescription, drugH1, drugTitle, SIMILARS_NOTE, SUBSTITUTES_NOTE } from '@/lib/drug/logic';
@@ -93,6 +95,8 @@ export default async function DrugPage({ params }: Props) {
             }
           />
           <OtherPacks members={data.group} current={slug} />
+          {/* بلّغنا — inline form; the aside grows downward only (part: report a problem). */}
+          <ReportProblem slug={slug} />
         </aside>
 
         <div className="min-w-0 space-y-10">
@@ -168,6 +172,9 @@ export default async function DrugPage({ params }: Props) {
           />
           <SourcesBlock page={page} />
           <MedicalDisclaimer />
+
+          {/* تعليقات — approved comments (server-rendered) + the moderated form. */}
+          <CommentsSection drugId={data.card.drug_id} slug={slug} />
         </div>
       </div>
       <JsonLd data={drugJsonLd(m.jsonLd)} />

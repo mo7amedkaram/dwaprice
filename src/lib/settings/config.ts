@@ -43,6 +43,8 @@ export interface ContactSettings {
   email: string;
   /** Digits only, international format without "+". "" = hidden. */
   whatsapp: string;
+  /** WhatsApp Channel URL (https://whatsapp.com/channel/…). "" = the channel button is hidden everywhere. */
+  whatsappChannelUrl: string;
   social: SocialLinks;
 }
 
@@ -72,6 +74,7 @@ export function defaultSettings(): SiteSettings {
     contact: {
       email: SITE.contactEmail,
       whatsapp: (process.env.WHATSAPP_NUMBER ?? '').replace(/\D/g, ''),
+      whatsappChannelUrl: '',
       social: { facebook: '', x: '', instagram: '', youtube: '', telegram: '' },
     },
   };
@@ -102,4 +105,11 @@ export function parseGa4Id(input: string): string {
 /** Digits only (WhatsApp / phone), max 15 (E.164). */
 export function parseWhatsapp(input: string): string {
   return (input ?? '').replace(/\D/g, '').slice(0, 15);
+}
+
+/** A WhatsApp Channel link: https://whatsapp.com/channel/<id> (www. allowed). Returns "" when not one. */
+export const WHATSAPP_CHANNEL_RE = /^https:\/\/(www\.)?whatsapp\.com\/channel\/[A-Za-z0-9_-]{6,}$/;
+export function parseWhatsappChannelUrl(input: string): string {
+  const v = (input ?? '').trim().replace(/\/+$/, '');
+  return WHATSAPP_CHANNEL_RE.test(v) ? v : '';
 }

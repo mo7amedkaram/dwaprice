@@ -88,3 +88,15 @@ most a point of movement on performance now that the gtag script loads for every
 > placeholder values — the verification tokens (`test_google_verification_token_123`, `BINGTOKEN123`)
 > and the pink test favicon are from `scripts/admin-verify.mjs`, not real settings. The database was
 > reset to empty afterwards, so the deployed site starts with the code defaults and no custom icon.
+
+## Comments and reports (2026-10-23)
+
+Two new sections, **التعليقات** and **البلاغات**, with live counts as sidebar badges and two cards on the
+dashboard. Visitor comments on drug pages start `PENDING` and are never shown until approved here;
+reports («في مشكلة في السعر أو البيانات؟ بلّغنا») are internal only. The lists show the drug (linked
+to its public page), the text, the sender's name / pharmacist flag, the HMAC of their address (never
+the address), and — for reports — our current price next to the suggested one, the type, the contact
+if given and the page URL. Actions: approve / reject / spam / delete / official reply (+ bulk
+approve/reject) and in-review / fixed / rejected + an internal note. A rejected comment still counts
+toward the sender's hourly limit; only *delete* frees it. Full design: `docs/DESIGN.md` §12.
+The WhatsApp channel URL lives in **التواصل والروابط** (empty = button hidden).

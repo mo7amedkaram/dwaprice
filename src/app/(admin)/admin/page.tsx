@@ -24,6 +24,11 @@ export default async function AdminDashboard() {
         <Stat label="واجهة الـ API" value={d.api ? `${d.api.activeClients} عميل` : '—'} hint={d.api ? `${d.api.activeKeys} مفتاح فعّال` : undefined} />
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <Stat label="تعليقات بانتظار المراجعة" value={num(d.feedback.pendingComments)} tone={d.feedback.pendingComments > 0 ? 'warn' : 'default'} hint="افتح قائمة التعليقات ←" href="/admin/comments" />
+        <Stat label="بلاغات جديدة" value={num(d.feedback.newReports)} tone={d.feedback.newReports > 0 ? 'bad' : 'default'} hint="افتح قائمة البلاغات ←" href="/admin/reports" />
+      </div>
+
       <Card title="الأكثر زيارة" description="أكثر الأدوية زيارةً (إجمالي تراكمي من عدّادات قاعدة بياناتنا، وليس من جوجل). لا يتوفّر عدّاد أسبوعي أو عدّاد «الأكثر بحثًا» بعد.">
         {d.topVisited.length === 0 ? (
           <p className="text-text-2">لا توجد بيانات زيارات بعد.</p>

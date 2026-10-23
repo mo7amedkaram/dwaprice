@@ -11,6 +11,7 @@ import {
   parseGa4Id,
   parseVerificationToken,
   parseWhatsapp,
+  parseWhatsappChannelUrl,
   type ContactSettings,
   type SeoSettings,
 } from './config';
@@ -112,8 +113,11 @@ export async function saveContactAction(_prev: SettingsFormState, form: FormData
     if (error) fieldErrors[key] = error;
     social[key] = value;
   }
+  const channelRaw = str(form, 'whatsappChannelUrl');
+  const whatsappChannelUrl = parseWhatsappChannelUrl(channelRaw);
+  if (channelRaw && !whatsappChannelUrl) fieldErrors.whatsappChannelUrl = 'يجب أن يكون رابط قناة واتساب بصيغة https://whatsapp.com/channel/…';
   if (Object.keys(fieldErrors).length) return { ok: false, fieldErrors, at: Date.now() };
-  const value: ContactSettings = { email, whatsapp: parseWhatsapp(str(form, 'whatsapp')), social };
+  const value: ContactSettings = { email, whatsapp: parseWhatsapp(str(form, 'whatsapp')), whatsappChannelUrl, social };
   await saveGroup('contact', value, admin.email);
   return { ok: true, at: Date.now() };
 }

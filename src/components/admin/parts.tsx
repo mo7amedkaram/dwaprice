@@ -38,15 +38,23 @@ export function Card({ title, description, children, className }: { title?: stri
   );
 }
 
-/** Dashboard stat tile. */
-export function Stat({ label, value, hint, tone = 'default' }: { label: string; value: ReactNode; hint?: ReactNode; tone?: 'default' | 'good' | 'warn' | 'bad' }) {
+/** Dashboard stat tile; with `href` the whole tile is a link. */
+export function Stat({ label, value, hint, tone = 'default', href }: { label: string; value: ReactNode; hint?: ReactNode; tone?: 'default' | 'good' | 'warn' | 'bad'; href?: string }) {
   const toneCls = { default: 'text-ink', good: 'text-down', warn: 'text-rx', bad: 'text-up' }[tone];
-  return (
-    <div className="rounded-card border border-border bg-bg p-4">
+  const body = (
+    <>
       <div className="type-small text-text-2">{label}</div>
       <div className={cx('mt-1 text-2xl font-semibold', toneCls)}>{value}</div>
       {hint && <div className="type-small mt-1 text-muted">{hint}</div>}
-    </div>
+    </>
+  );
+  const cls = 'block rounded-card border border-border bg-bg p-4';
+  return href ? (
+    <Link href={href} prefetch={false} className={cx(cls, 'transition-colors hover:border-primary')}>
+      {body}
+    </Link>
+  ) : (
+    <div className={cls}>{body}</div>
   );
 }
 

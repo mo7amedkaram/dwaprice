@@ -19,6 +19,8 @@ import {
   KeyIcon,
   MenuIcon,
   CloseIcon,
+  CommentIcon,
+  FlagIcon,
 } from './icons';
 import { adminLogoutAction } from '@/lib/api/admin-actions';
 
@@ -28,10 +30,20 @@ interface NavItem {
   icon: (p: { size?: number }) => React.ReactNode;
   /** The existing API admin lives outside this route group. */
   external?: boolean;
+  /** Which live count shows as a badge next to the label. */
+  badge?: keyof AdminCounts;
+}
+
+/** Live counts for the sidebar badges (read by the layout on every admin page, never cached). */
+export interface AdminCounts {
+  pendingComments: number;
+  newReports: number;
 }
 
 const NAV: NavItem[] = [
   { href: '/admin', label: 'لوحة التحكم', icon: ChartIcon },
+  { href: '/admin/comments', label: 'التعليقات', icon: CommentIcon, badge: 'pendingComments' },
+  { href: '/admin/reports', label: 'البلاغات', icon: FlagIcon, badge: 'newReports' },
   { href: '/admin/branding', label: 'الهوية البصرية', icon: ImageIcon },
   { href: '/admin/analytics', label: 'التحليلات والتحقق', icon: MegaphoneIcon },
   { href: '/admin/seo', label: 'تحسين الظهور (SEO)', icon: SearchIcon },
@@ -40,7 +52,7 @@ const NAV: NavItem[] = [
   { href: '/admin/api', label: 'إدارة الـ API', icon: KeyIcon, external: true },
 ];
 
-export function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
+export function AdminShell({ email, counts, children }: { email: string; counts?: AdminCounts; children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   // close the drawer on navigation (deferred, not a synchronous setState in the effect body)
@@ -72,6 +84,14 @@ export function AdminShell({ email, children }: { email: string; children: React
           >
             <Icon size={18} />
             <span className="flex-1">{item.label}</span>
+            {item.badge && counts && counts[item.badge] > 0 && (
+              <span
+                className={cx('min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs font-semibold tabular-nums', active(item.href) ? 'bg-on-primary/20 text-on-primary' : 'bg-up text-white')}
+                aria-label={`${counts[item.badge]} ${item.badge === 'pendingComments' ? 'بانتظار المراجعة' : 'جديد'}`}
+              >
+                {counts[item.badge]}
+              </span>
+            )}
             {item.external && <span aria-hidden className="text-xs opacity-60">↗</span>}
           </Link>
         );

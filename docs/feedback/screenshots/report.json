@@ -1,0 +1,173 @@
+{
+  "checks": [
+    {
+      "name": "admin login",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "channel URL saved",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home shows the WhatsApp channel button after the save",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "comment accepted with the \"after review\" message",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PENDING comment is NOT on the public page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "report accepted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "pending comment listed for the admin",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "sidebar shows the pending-count badge",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "comment is APPROVED",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "official reply saved",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "APPROVED comment is server-rendered on the public page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "comment section has a stable heading and the pharmacist + team badges",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no comment JSON-LD",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "page <title> unchanged by comments",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "drug page no horizontal overflow @390",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "report form @390: H1 and price card did not move",
+      "ok": true,
+      "detail": "h1 253→253, price 650→650"
+    },
+    {
+      "name": "report form @390 no horizontal overflow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home has the WhatsApp button @390",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home no horizontal overflow @390",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "last-prices has the WhatsApp button @390",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "drug page no horizontal overflow @1280",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "report form @1280: H1 and price card did not move",
+      "ok": true,
+      "detail": "h1 181→181, price 181→181"
+    },
+    {
+      "name": "report form @1280 no horizontal overflow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home has the WhatsApp button @1280",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home no horizontal overflow @1280",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "last-prices has the WhatsApp button @1280",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "new report listed with our price next to the suggested one",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin comments no horizontal overflow @390",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin reports no horizontal overflow @390",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "dashboard has the two cards",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "shots": [
+    "admin-contact-channel-1280",
+    "admin-comments-pending-1280",
+    "admin-comments-approved-1280",
+    "drug-comments-390",
+    "drug-report-form-390",
+    "home-whatsapp-390",
+    "last-prices-whatsapp-390",
+    "drug-comments-1280",
+    "drug-report-form-1280",
+    "home-whatsapp-1280",
+    "last-prices-whatsapp-1280",
+    "admin-reports-1280",
+    "admin-comments-390",
+    "admin-reports-390",
+    "admin-dashboard-1280"
+  ],
+  "info_shift_390": 412,
+  "info_shift_1280": 0
+}

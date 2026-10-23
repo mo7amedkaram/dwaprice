@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { requireAdminSession } from '@/lib/api/admin-data';
+import { getFeedbackCounts } from '@/lib/feedback/admin';
 import { AdminShell } from '@/components/admin/AdminShell';
 
 // The site admin area. Its own chrome (sidebar), never the public Header/Footer. Server-side auth
@@ -15,5 +16,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await requireAdminSession();
-  return <AdminShell email={session.email}>{children}</AdminShell>;
+  // Live (uncached) counts for the sidebar badges: two index-only count(*) per admin page view.
+  const counts = await getFeedbackCounts();
+  return (
+    <AdminShell email={session.email} counts={counts}>
+      {children}
+    </AdminShell>
+  );
 }

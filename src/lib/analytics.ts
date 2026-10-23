@@ -6,7 +6,8 @@ export type DwEvent =
   | { name: 'voice_search_used'; params?: never }
   | { name: 'view_alternatives'; params?: never }
   | { name: 'toggle_info_language'; params: { lang: 'ar' | 'en' } }
-  | { name: 'outbound_click'; params: { domain: string } };
+  | { name: 'outbound_click'; params: { domain: string } }
+  | { name: 'whatsapp_channel_click'; params: { placement: 'home' | 'header' | 'footer' | 'last_prices' } };
 
 declare global {
   interface Window {

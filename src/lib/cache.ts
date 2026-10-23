@@ -26,6 +26,9 @@ export const tags = {
   searchIndex: 'search-index',
   /** Editable site settings + uploaded assets (admin area). Revalidated on save, so the live site updates in seconds. */
   settings: 'site-settings',
+  /** Approved visitor comments of one drug page. Busted by the admin moderation actions only — never by
+   * price webhooks or catalogue refreshes, and approving a comment never busts the drug's own loaders. */
+  comments: (slug: string) => `comments:${slug}`,
 } as const;
 
 /** Tag names accepted by /api/revalidate. */

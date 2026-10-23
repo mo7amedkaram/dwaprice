@@ -7,6 +7,7 @@ import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
 import { apiQuery } from '@/lib/api/db';
 import { REVALIDATE_SECONDS, tags } from '@/lib/cache';
+import { getFeedbackCounts, type FeedbackCounts } from '@/lib/feedback/admin';
 
 export interface SiteStats {
   indexable_drugs: number;
@@ -51,6 +52,8 @@ export interface Dashboard {
   topVisited: TopDrug[];
   index: IndexInfo | null;
   api: { activeClients: number; activeKeys: number } | null;
+  /** Comments awaiting review + new problem reports (live). */
+  feedback: FeedbackCounts;
 }
 
 async function readIndexInfo(): Promise<IndexInfo | null> {
@@ -72,7 +75,7 @@ async function safe<T>(p: Promise<T>, fallback: T): Promise<T> {
 }
 
 export async function getDashboard(): Promise<Dashboard> {
-  const [dbPing, stats, changes, top, index, api] = await Promise.all([
+  const [dbPing, stats, changes, top, index, api, feedback] = await Promise.all([
     safe(query<{ ok: number }>('select 1 as ok').then((r) => r.length > 0), false),
     getStats(),
     safe(query<{ n: string }>('select count(*) n from web.latest_price_changes where effective_date >= current_date - 7').then((r) => Number(r[0]?.n ?? 0)), null),
@@ -91,6 +94,7 @@ export async function getDashboard(): Promise<Dashboard> {
       ).then((r) => ({ activeClients: Number(r[0]?.clients ?? 0), activeKeys: Number(r[0]?.keys ?? 0) })),
       null,
     ),
+    getFeedbackCounts(),
   ]);
-  return { commit: process.env.COMMIT_SHA || null, dbOk: dbPing, stats, changesThisWeek: changes, topVisited: top, index, api };
+  return { commit: process.env.COMMIT_SHA || null, dbOk: dbPing, stats, changesThisWeek: changes, topVisited: top, index, api, feedback };
 }

@@ -10,6 +10,8 @@ import { getLatestChanges } from '@/lib/data/listings';
 import { formatCount, pageCount, parseDirection, parsePage, type Direction } from '@/lib/listing/logic';
 import { buildMetadata, pageText } from '@/lib/seo/metadata';
 import { routes } from '@/lib/site';
+import { getSiteSettings } from '@/lib/settings/read';
+import { WhatsAppChannelButton } from '@/components/WhatsAppChannelButton';
 
 export const revalidate = 3600;
 
@@ -48,6 +50,7 @@ export default async function LastPricesPage({ searchParams }: Props) {
   if (page > pages) notFound();
   const path = routes.lastPrices();
   const title = pageText.lastPrices(direction).title;
+  const { contact } = await getSiteSettings();
 
   return (
     <Container className="py-6 md:py-10">
@@ -59,7 +62,13 @@ export default async function LastPricesPage({ searchParams }: Props) {
             آخر تغيير في سعر كل دواء: السعر القديم والجديد وقيمة التغيير ونسبته وتاريخه، الأحدث أولًا. نتابع قوائم الأسعار باستمرار.
           </>
         }
-      />
+      >
+        {contact.whatsappChannelUrl && (
+          <div className="mt-4">
+            <WhatsAppChannelButton url={contact.whatsappChannelUrl} placement="last_prices" />
+          </div>
+        )}
+      </PageHeader>
       <nav aria-label="نوع التغيير" className="mb-4">
         <ul className="flex flex-wrap gap-2">
           {FILTERS.map((f) => {

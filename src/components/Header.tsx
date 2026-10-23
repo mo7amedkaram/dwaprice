@@ -4,7 +4,9 @@ import { Container } from './ui';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 import { HeaderMobileSearch } from './HeaderMobileSearch';
+import { WhatsAppChannelButton } from './WhatsAppChannelButton';
 import { routes } from '@/lib/site';
+import { getSiteSettings } from '@/lib/settings/read';
 
 // "التصنيفات" is hidden below sm (the logo needs the room); the footer links it on every page.
 const NAV = [
@@ -15,8 +17,13 @@ const NAV = [
 /**
  * Logo + nav; the search field sits inside the header from md up and in a
  * separate bar under it on mobile, which stays stuck to the top while scrolling.
+ * The WhatsApp Channel button (an admin setting; hidden while empty) sits under the desktop search
+ * and, on phones, in a slim non-sticky strip under the sticky search bar — so it never pushes the
+ * search down or takes room in the sticky area. The home page has its own, larger button.
  */
-export function Header() {
+export async function Header() {
+  const { contact } = await getSiteSettings();
+  const channel = contact.whatsappChannelUrl;
   return (
     <>
       <header className="border-b border-border bg-bg">
@@ -24,6 +31,11 @@ export function Header() {
           <Logo />
           <div className="hidden flex-1 md:block">
             <SearchBox id="site-search-desktop" />
+            {channel && (
+              <div className="mt-1.5 flex justify-end">
+                <WhatsAppChannelButton url={channel} placement="header" size="sm" className="border-transparent bg-transparent py-0 hover:bg-[#25D366]/10" />
+              </div>
+            )}
           </div>
           <nav aria-label="القائمة الرئيسية" className="ms-auto md:ms-0">
             <ul className="flex items-center gap-1">
@@ -47,7 +59,7 @@ export function Header() {
           </div>
         </Container>
       </header>
-      <HeaderMobileSearch />
+      <HeaderMobileSearch channel={channel} />
     </>
   );
 }

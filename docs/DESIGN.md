@@ -490,3 +490,49 @@ admin sessions time out after 12 h (developer sessions stay 30 days). Full write
   sent with the path only, never `?q=` (`lib/analytics.ts`). Events via `track()`. Not loaded on
   `/admin`, and not loaded when the GA4 id is empty. Privacy page updated; the GA4 property's enhanced
   "Site search" must be turned off by hand (a user action).
+
+## 12. Comments, problem reports, WhatsApp channel (2026-10-23)
+
+Three visitor-facing additions, all moderated or admin-controlled. Storage: migration `0052`
+(`api.drug_comments`, `api.drug_reports`, written by the website's server actions with `api_app`;
+the public site reads approved comments only through the `web.drug_comments` view with `web_reader`
+— the view is the privacy boundary: name, text, pharmacist badge, site reply, date; never e-mail,
+IP hash, user agent or status). The database's `ensure_rls` event trigger switches RLS on for every
+new table, so the migration switches it back off, like every other `api.*` table (access is by grants).
+
+* **Comments** (`components/feedback/CommentsSection` + `CommentForm`, under the medical disclaimer):
+  name ≤ 60, comment 20–1000, optional e-mail (never shown), «أنا صيدلي» badge. Every comment starts
+  `PENDING` and is invisible until an admin approves it; the form then shows «تم استلام تعليقك وسيظهر
+  بعد المراجعة». Approved comments are server-rendered (real content), newest first, plain text, under
+  a stable `#comments` heading; no JSON-LD; the page title/description do not change. The admin can
+  post an official reply shown with the «فريق الموقع» badge. Cached per page under `comments:<slug>`
+  — moderation busts only that block, never the drug's loaders or the `drug:<slug>` tag.
+* **Report a problem** (`components/feedback/ReportProblem`, at the end of the price aside): an inline
+  form (type · details 10–800 · «السعر الصحيح» for the price type · optional contact, never shown).
+  Rows carry `page_url`/`referrer` filled on the client from the live document. Statuses
+  `NEW / IN_REVIEW / FIXED / REJECTED` + an internal note. On phones the aside precedes the main
+  column, so opening the form moves the content *below* it by the form's height (the H1 and the price
+  card do not move); `scripts/feedback-shots.mjs` measures and reports this.
+* **Safety (lib/feedback/logic.ts, server-enforced in lib/feedback/submit.ts):** HTML stripped, text
+  rendered as text; any URL rejected; honeypot field + submit-time window (3 s – 24 h, timestamp set
+  on the client because the pages are cached HTML); rate limits 3 comments / IP / hour, 1 / drug / IP /
+  day, 5 reports / IP / hour, counting rows of every status (only an admin *delete* refills a budget);
+  `ip_hash` = HMAC-SHA256(ip, `API_SECRET`) — the address is never stored. The admin notification
+  e-mail (existing `notifyAdmin`) carries the drug name and the admin link, never visitor text; with no
+  provider configured only "skipped" is logged. CSRF: Next's same-origin check on server actions.
+* **Admin** (`/admin/comments`, `/admin/reports`, sidebar badges with the pending/new counts read live
+  by the layout, two dashboard cards): status/type filters, drug linked to its public page (there is no
+  separate admin drug view — `drug_id`/`slug` are shown copyable), approve / reject / spam / delete /
+  reply, bulk approve/reject (checkboxes bound to the bulk form via the `form` attribute), report
+  status + note. Every action re-checks the admin server-side and answers 403 otherwise
+  (`lib/feedback/moderation.ts`, unit-tested).
+* **WhatsApp channel button** (`components/WhatsAppChannelButton`, client): «تابع آخر تحديثات الأسعار
+  على واتساب», `target=_blank rel=noopener`, GA4 `whatsapp_channel_click` with the placement only. The
+  URL is the admin setting `contact.whatsappChannelUrl` (Contact section; validated
+  `https://whatsapp.com/channel/…`; the button is hidden while empty). Placements: home under the
+  search (compact, never above it), header under the desktop search and a slim non-sticky strip under
+  the mobile sticky bar, footer, and under the title of «أحدث الأسعار».
+* Privacy page: section «التعليقات والبلاغات». Tests: `tests/feedback-logic.test.ts`,
+  `tests/feedback-actions.test.ts` (mocked write paths, 403s, APPROVED-only read, plus a real
+  PENDING→APPROVED round trip against the database). Proof: `scripts/feedback-shots.mjs`
+  → `docs/feedback/screenshots/`.

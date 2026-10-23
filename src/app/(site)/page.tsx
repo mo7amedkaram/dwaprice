@@ -5,6 +5,7 @@ import { getSiteSettings } from '@/lib/settings/read';
 import { ChevronEndIcon, ClockIcon, ShieldIcon, PillIcon } from '@/components/icons';
 import { JsonLd } from '@/components/JsonLd';
 import { SearchBox } from '@/components/SearchBox';
+import { WhatsAppChannelButton } from '@/components/WhatsAppChannelButton';
 import { LetterNav } from '@/components/listing/LetterNav';
 import { PriceChangesTable } from '@/components/listing/PriceChangesTable';
 import { getAtcRoots, getHubIndex, getLatestChanges, getLetterCounts } from '@/lib/data/listings';
@@ -42,12 +43,14 @@ function MoreLink({ href, children }: { href: string; children: React.ReactNode 
 }
 
 export default async function HomePage() {
-  const [changes, letterCounts, categories, atcRoots] = await Promise.all([
+  const [changes, letterCounts, categories, atcRoots, { contact }] = await Promise.all([
     getLatestChanges(null, 5, 0),
     getLetterCounts(),
     getHubIndex('category'),
     getAtcRoots(),
+    getSiteSettings(),
   ]);
+  const channel = contact.whatsappChannelUrl;
   const letters = orderLetters(letterCounts);
 
   return (
@@ -65,6 +68,12 @@ export default async function HomePage() {
             </p>
             <div className="order-2 mt-4 text-start md:order-3 md:mt-6">
               <SearchBox id="home-search" size="lg" prefetch />
+              {/* WhatsApp Channel (admin setting; hidden while empty): compact, BELOW the search so it never pushes the search down on phones. */}
+              {channel && (
+                <div className="mt-3 flex justify-center">
+                  <WhatsAppChannelButton url={channel} placement="home" />
+                </div>
+              )}
             </div>
           </div>
         </Container>

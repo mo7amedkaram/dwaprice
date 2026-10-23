@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Container } from './ui';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
+import { WhatsAppChannelButton } from './WhatsAppChannelButton';
 import { SITE, routes } from '@/lib/site';
 import { getSiteSettings } from '@/lib/settings/read';
 
@@ -66,6 +67,7 @@ export async function Footer() {
               ))}
             </div>
           )}
+          <WhatsAppChannelButton url={contact.whatsappChannelUrl} placement="footer" size="sm" />
           <ThemeToggle variant="group" className="mt-2" />
         </div>
         {GROUPS.map((group) => (
