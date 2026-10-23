@@ -19,8 +19,9 @@ import { tradeName } from '@/lib/format';
 import { track } from '@/lib/analytics';
 import { routes } from '@/lib/site';
 import { cx } from './ui';
-import { MAX_QUERY_CHARS, MIN_QUERY_CHARS, PRESELECT_MAX_TIER } from '@/lib/search/constants';
+import { isWildcardQuery, MAX_QUERY_CHARS, MIN_QUERY_CHARS, PRESELECT_MAX_TIER, WILDCARD_HINT, WILDCARD_HINT_KEY, WILDCARD_HINT_SHOWS } from '@/lib/search/constants';
 import type { Suggestion } from '@/lib/search/index-format';
+import type { Segment } from '@/lib/search/wildcard';
 import { VoiceButton } from './search/VoiceButton';
 import { VOICE_MESSAGES, type VoiceEvent } from './search/voice-detect';
 
@@ -33,28 +34,68 @@ const loadSuggest = (): Promise<SuggestModule> => (suggestModule ??= import('@/l
 const PLACEHOLDER = 'ابحث باسم الدواء أو المادة الفعالة';
 const LISTENING_PLACEHOLDER = 'اتكلم دلوقتي…';
 const MAX_LENGTH = MAX_QUERY_CHARS;
-type HighlightFn = (text: string, query: string) => boolean[];
+type HighlightFn = (text: string, query: string) => Segment[];
 
-/** The display string with the words the query matches wrapped in <mark>. */
+/** The display string with what the query matched wrapped in <mark>: whole words, or — for a
+ * wildcard pattern — only the letters the visitor typed inside the matching word. */
 function Highlight({ text, query, highlight }: { text: string; query: string; highlight: HighlightFn | null }) {
   if (!highlight) return <>{text}</>;
-  const parts = text.split(/(\s+)/); // words at even positions, the separators between them
-  const flags = highlight(text, query);
-  let word = 0;
   return (
     <>
-      {parts.map((part, i) => {
-        if (i % 2 === 1) return part;
-        const hit = flags[word++];
-        return hit ? (
+      {highlight(text, query).map((s, i) =>
+        s.hit ? (
           <mark key={i} className="rounded-sm bg-primary-tint text-inherit">
-            {part}
+            {s.text}
           </mark>
         ) : (
-          part
-        );
-      })}
+          s.text
+        ),
+      )}
     </>
+  );
+}
+
+/** How many times the wildcard hint was shown in this browser (localStorage; 0 when unavailable). */
+function hintShows(): number {
+  try {
+    return Number(localStorage.getItem(WILDCARD_HINT_KEY)) || 0;
+  } catch {
+    return WILDCARD_HINT_SHOWS; // storage blocked: never nag
+  }
+}
+function countHintShow(n: number): void {
+  try {
+    localStorage.setItem(WILDCARD_HINT_KEY, String(n + 1));
+  } catch {
+    /* ignore */
+  }
+}
+
+/** The "؟" popover: the two symbols with examples. */
+function WildcardHelp({ id, onClose }: { id: string; onClose: () => void }) {
+  return (
+    <div id={id} role="dialog" aria-label="طريقة البحث بالنجمة" className="absolute end-0 top-full z-50 mt-1 w-80 max-w-[calc(100vw-2rem)] rounded-card border border-border bg-bg p-4 text-start shadow-lg">
+      <p className="font-semibold text-ink">مش قاري الاسم كله؟</p>
+      <p className="type-small mt-1 text-text-2">اكتب الحروف اللي عارفها وحط رمزًا مكان الباقي:</p>
+      <dl className="type-small mt-2 space-y-1.5 text-text-2">
+        <div className="flex gap-2">
+          <dt className="w-8 shrink-0 text-center font-mono text-lg leading-5 text-ink" dir="ltr">*</dt>
+          <dd>أي عدد من الحروف — <code dir="ltr">Au*in</code> يجد Augmentin وAutrin</dd>
+        </div>
+        <div className="flex gap-2">
+          <dt className="w-8 shrink-0 text-center font-mono text-lg leading-5 text-ink" dir="ltr">?</dt>
+          <dd>حرف واحد بالضبط — <code dir="ltr">Br?fen</code> يجد Brufen</dd>
+        </div>
+        <div className="flex gap-2">
+          <dt className="w-8 shrink-0 text-center text-ink">ع</dt>
+          <dd>بالعربي كمان — <code dir="ltr">أو*ين</code> يجد أوجمنتين</dd>
+        </div>
+      </dl>
+      <p className="type-small mt-2 text-muted">حرفان على الأقل، وحتى 3 رموز.</p>
+      <button type="button" onClick={onClose} className="tap mt-2 inline-flex min-h-9 items-center rounded-control border border-border px-3 text-sm font-medium text-text-2 hover:text-ink">
+        فهمت
+      </button>
+    </div>
   );
 }
 
@@ -83,6 +124,11 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
   const termRef = useRef('');
   const reRun = useRef<() => void>(() => {});
   const subscribed = useRef(false);
+  // Wildcard search: the first-3-focuses hint, the "؟" help popover, one GA event per pattern.
+  const [hint, setHint] = useState(false);
+  const [help, setHelp] = useState(false);
+  const helpId = `${inputId}-help`;
+  const trackedPattern = useRef('');
 
   const term = q.trim();
   // Options: the suggestions, then "all results for …".
@@ -94,7 +140,7 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
   const ensure = useCallback(async (): Promise<SuggestModule> => {
     if (!mod.current) {
       mod.current = await loadSuggest();
-      setHighlight(() => mod.current!.matchedWords);
+      setHighlight(() => mod.current!.highlightSegments);
       if (!subscribed.current) {
         subscribed.current = true;
         mod.current.getSearchClient().onStatus((status) => {
@@ -110,6 +156,21 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
     if (prefetch) void ensure().then((m) => m.getSearchClient().prefetchWhenIdle());
   }, [prefetch, ensure]);
   useEffect(() => () => clearTimeout(noticeTimer.current), []);
+
+  // The help popover closes on Escape and on a click anywhere outside the search box.
+  useEffect(() => {
+    if (!help) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setHelp(false);
+    const onDown = (e: PointerEvent) => {
+      if (!boxRef.current?.parentElement?.contains(e.target as Node)) setHelp(false);
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onDown);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onDown);
+    };
+  }, [help]);
 
   const isMobile = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 
@@ -147,6 +208,12 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
     setStatus('');
   }, []);
 
+  const showNotice = useCallback((message: string) => {
+    setNotice(message);
+    clearTimeout(noticeTimer.current);
+    noticeTimer.current = setTimeout(() => setNotice(null), 8000);
+  }, []);
+
   const show = useCallback((results: Suggestion[], forTerm: string, preselectStrong: boolean) => {
     setItems(results);
     setShownFor(forTerm);
@@ -166,12 +233,22 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
       }
       const m = await ensure();
       if (id !== seq.current) return null;
-      const { items: results } = await m.getSearchClient().suggest(t);
+      const { items: results, problem } = await m.getSearchClient().suggest(t);
       if (id !== seq.current) return null;
+      if (problem) {
+        // A wildcard pattern the engine refuses (only symbols, too many): say why instead of "no results".
+        clear();
+        showNotice(problem);
+        return [];
+      }
+      if (isWildcardQuery(t) && results.length > 0 && trackedPattern.current !== t) {
+        trackedPattern.current = t;
+        track({ name: 'wildcard_search_used' }); // the pattern itself is never sent
+      }
       show(results, t, preselectStrong);
       return results;
     },
-    [clear, show, ensure],
+    [clear, show, ensure, showNotice],
   );
 
   // Track the current query (any source) and the "re-run when the index becomes ready" callback.
@@ -227,10 +304,23 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
     }
   }
 
-  function showNotice(message: string) {
-    setNotice(message);
-    clearTimeout(noticeTimer.current);
-    noticeTimer.current = setTimeout(() => setNotice(null), 8000);
+  function onFocus() {
+    warm();
+    setFocused(true);
+    if (items.length > 0) setOpen(true);
+    // The wildcard hint, on the first few focuses in this browser only.
+    const shows = hintShows();
+    if (shows < WILDCARD_HINT_SHOWS) {
+      setHint(true);
+      countHintShow(shows);
+    }
+    // On phones, bring the input just under the top so the suggestions have room above the keyboard.
+    if (isMobile()) {
+      requestAnimationFrame(() => {
+        const top = (boxRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - 8;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      });
+    }
   }
 
   async function onVoice(e: VoiceEvent) {
@@ -285,21 +375,11 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
             setTimeout(() => {
               setOpen(false);
               setFocused(false);
+              setHint(false);
               setListMaxH(null);
             }, 120)
           }
-          onFocus={() => {
-            warm();
-            setFocused(true);
-            if (items.length > 0) setOpen(true);
-            // On phones, bring the input just under the top so the suggestions have room above the keyboard.
-            if (isMobile()) {
-              requestAnimationFrame(() => {
-                const top = (boxRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - 8;
-                window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-              });
-            }
-          }}
+          onFocus={onFocus}
           placeholder={listening ? LISTENING_PLACEHOLDER : PLACEHOLDER}
           autoComplete="off"
           autoCorrect="off"
@@ -314,18 +394,37 @@ export function SearchBox({ id, size = 'md', autoFocus = false, prefetch = false
           aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
           className="min-h-11 min-w-0 flex-1 self-stretch bg-transparent py-2 text-base text-ink outline-none placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
         />
+        <button
+          type="button"
+          onClick={() => setHelp((v) => !v)}
+          aria-label="طريقة البحث بالنجمة"
+          aria-haspopup="dialog"
+          aria-expanded={help}
+          aria-controls={help ? helpId : undefined}
+          title="مش قاري الاسم كله؟"
+          className="tap grid size-9 shrink-0 place-items-center rounded-full text-lg font-semibold leading-none text-muted hover:bg-surface hover:text-primary"
+        >
+          ؟
+        </button>
         <VoiceButton onEvent={onVoice} onListeningChange={setListening} size={size} />
         <button type="submit" className="tap shrink-0 rounded-control-sm bg-primary px-3 font-medium text-on-primary hover:bg-primary-hover">
           بحث
         </button>
       </div>
+      {help && <WildcardHelp id={helpId} onClose={() => setHelp(false)} />}
       <p role="status" aria-live="polite" className="sr-only">
         {status}
       </p>
-      {notice && (
+      {notice ? (
         <p role="alert" className="type-small mt-1.5 text-up">
           {notice}
         </p>
+      ) : (
+        hint && (
+          <p className="type-small mt-1.5 text-text-2">
+            {WILDCARD_HINT}
+          </p>
+        )
       )}
       <ul
         id={listId}

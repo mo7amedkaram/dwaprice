@@ -16,6 +16,7 @@
 import { MIN_QUERY_CHARS, SUGGESTION_LIMIT } from './engine-shared';
 import { SEARCH_INDEX_PATH, type Suggestion } from './index-format';
 import { normalizeSearch } from './normalize';
+import { isWildcardQuery, WILDCARD_LIMIT, wildcardProblem } from './wildcard';
 import type { WorkerRequest, WorkerResponse } from './search.worker';
 
 export type SearchStatus = 'idle' | 'loading' | 'ready' | 'failed';
@@ -23,6 +24,8 @@ export type SuggestionSource = 'index' | 'server';
 export interface SuggestResult {
   items: Suggestion[];
   source: SuggestionSource;
+  /** A wildcard query the engine refuses (only wildcards, too many): the friendly message to show instead of results. */
+  problem?: string;
 }
 
 /** Hashed file name of the build-time index, inlined at build (next.config.ts); '' = none built. */
@@ -131,6 +134,14 @@ export class SearchClient {
   async suggest(raw: string): Promise<SuggestResult> {
     const term = raw.trim();
     if (term.length < MIN_QUERY_CHARS) return { items: [], source: this.status === 'ready' ? 'index' : 'server' };
+    // Wildcard ("Au*in"): the index engine when ready (up to 20), else the server's wildcard
+    // fallback with the raw pattern — never the 2-character prefix path (normalising drops the symbols).
+    if (isWildcardQuery(term)) {
+      const problem = wildcardProblem(term);
+      if (problem) return { items: [], source: 'index', problem };
+      if (this.status === 'ready' && this.worker) return { items: await this.query(term, WILDCARD_LIMIT), source: 'index' };
+      return { items: await this.fullResults(term, WILDCARD_LIMIT), source: 'server' };
+    }
     if (this.status === 'ready' && this.worker) return { items: await this.query(term), source: 'index' };
     return { items: await this.fromServer(term), source: 'server' };
   }
@@ -209,11 +220,11 @@ export class SearchClient {
     this.worker?.postMessage(m);
   }
 
-  private query(term: string): Promise<Suggestion[]> {
+  private query(term: string, limit = SUGGESTION_LIMIT): Promise<Suggestion[]> {
     const id = ++this.seq;
     return new Promise((resolve) => {
       this.pending.set(id, resolve);
-      this.post({ t: 'q', id, q: term, limit: SUGGESTION_LIMIT });
+      this.post({ t: 'q', id, q: term, limit });
     });
   }
 
@@ -254,7 +265,7 @@ export class SearchClient {
   }
 
   /** Server results for the full query — debounced 100 ms, previous request aborted, cached per full query. */
-  private fullResults(nq: string): Promise<Suggestion[]> {
+  private fullResults(nq: string, limit = SUGGESTION_LIMIT): Promise<Suggestion[]> {
     const cached = this.fullCache.get(nq);
     if (cached) return Promise.resolve(cached);
     this.fullPending?.([]); // resolve the superseded waiter so it never hangs
@@ -267,7 +278,7 @@ export class SearchClient {
         const controller = new AbortController();
         this.fullAbort = controller;
         try {
-          const res = await fetch(`/api/search?q=${encodeURIComponent(nq)}&limit=${SUGGESTION_LIMIT}`, { signal: controller.signal });
+          const res = await fetch(`/api/search?q=${encodeURIComponent(nq)}&limit=${limit}`, { signal: controller.signal });
           if (!res.ok) return resolve([]);
           const data = (await res.json()) as { results: ServerHit[] };
           const items = data.results.map(toSuggestion);

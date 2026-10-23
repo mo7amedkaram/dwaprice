@@ -15,7 +15,8 @@
 // Arabic name, English name. Units match across scripts and spellings (g = gm = جم …).
 import type { SearchIndexFile, Suggestion } from './index-format';
 import { normalizeSearch } from './normalize';
-import { allowedTypos, covered, expand, FUZZY_MIN_CHARS, MIN_QUERY_CHARS, startsWithAny, SUGGESTION_LIMIT, TIER } from './engine-shared';
+import { allowedTypos, covered, expand, FUZZY_MIN_CHARS, isPackToken, MIN_QUERY_CHARS, startsWithAny, SUGGESTION_LIMIT, TIER } from './engine-shared';
+import { coveredChars, isWildcardQuery, parseWildcard, WILDCARD_ANCHORED_MIN, type WildcardPattern } from './wildcard';
 
 interface Doc {
   i: number;
@@ -31,6 +32,10 @@ interface Doc {
   ings: number[];
   pop: number;
   len: number;
+  /** Wildcard anchored tier: first word of each name + the alias tokens. */
+  firstWords: string[];
+  /** Wildcard any-word tier: `named` minus strength / pack / form words. */
+  brandWords: string[];
 }
 
 interface Hit {
@@ -93,12 +98,21 @@ export class SearchEngine {
       const alias = index.dt[i].map((t) => index.tok[t]);
       const named = alias.length ? words.concat(alias) : words;
       const ingWords = index.di[i].length ? [...new Set(index.di[i].flatMap((id) => this.ingWords[id]))] : [];
-      this.docs.push({ i, nar, nen, words, named, all: ingWords.length ? named.concat(ingWords) : named, ings: index.di[i], pop: index.pop[i], len: nar.length || nen.length });
+      const firstWords = [...new Set([nen.split(' ')[0], nar.split(' ')[0], ...alias].filter(Boolean))];
+      this.docs.push({
+        i, nar, nen, words, named, all: ingWords.length ? named.concat(ingWords) : named, ings: index.di[i], pop: index.pop[i], len: nar.length || nen.length,
+        firstWords,
+        brandWords: named.filter((w) => !isPackToken(w)),
+      });
     }
   }
 
   /** Suggestions for a raw query, best first. */
   search(query: string, limit = SUGGESTION_LIMIT): Suggestion[] {
+    if (isWildcardQuery(query)) {
+      const p = parseWildcard(query);
+      return p.ok ? this.wildcardSearch(p.pattern, limit) : [];
+    }
     const nq = normalizeSearch(query);
     if (nq.length < MIN_QUERY_CHARS) return [];
     const qt = nq.split(' ');
@@ -126,6 +140,36 @@ export class SearchEngine {
     }
     hits.sort((a, b) => a.tier - b.tier || a.distance - b.distance || b.doc.pop - a.doc.pop || a.doc.len - b.doc.len || (a.doc.nen < b.doc.nen ? -1 : a.doc.nen > b.doc.nen ? 1 : 0));
     return hits.slice(0, limit).map((h) => this.suggestion(h));
+  }
+
+  /**
+   * Wildcard query: the pattern against the first word of each name (+ alias tokens); when that finds
+   * fewer than WILDCARD_ANCHORED_MIN products, also against any brand word. Closest matches first
+   * (fewest characters covered by the wildcards), then popularity.
+   */
+  private wildcardSearch(p: WildcardPattern, limit: number): Suggestion[] {
+    const re = p.regex;
+    const hits: Array<{ doc: Doc; tier: number; covered: number }> = [];
+    const matched = new Set<Doc>();
+    const tryWords = (tier: number, pick: (d: Doc) => string[]) => {
+      for (const doc of this.docs) {
+        if (matched.has(doc)) continue;
+        let best = -1;
+        for (const w of pick(doc)) {
+          if (!re.test(w)) continue;
+          const c = coveredChars(p, w);
+          if (best < 0 || c < best) best = c;
+        }
+        if (best >= 0) {
+          hits.push({ doc, tier, covered: best });
+          matched.add(doc);
+        }
+      }
+    };
+    tryWords(0, (d) => d.firstWords);
+    if (hits.length < WILDCARD_ANCHORED_MIN) tryWords(1, (d) => d.brandWords);
+    hits.sort((a, b) => a.tier - b.tier || a.covered - b.covered || b.doc.pop - a.doc.pop || a.doc.len - b.doc.len || (a.doc.nen < b.doc.nen ? -1 : a.doc.nen > b.doc.nen ? 1 : 0));
+    return hits.slice(0, limit).map((h) => this.suggestion({ doc: h.doc, tier: TIER.wildcard, ingredient: -1, distance: 0 }));
   }
 
   private strictTier(doc: Doc, nq: string, expanded: string[][], namesOnly: boolean): { tier: number; ingredient: number } {

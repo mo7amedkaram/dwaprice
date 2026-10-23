@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Pagination } from '@/components/Pagination';
 import { SearchBox } from '@/components/SearchBox';
 import { cleanQuery, searchDrugs } from '@/lib/data/search';
+import { isWildcardQuery, wildcardProblem } from '@/lib/search/wildcard';
 import { buildMetadata, pageText } from '@/lib/seo/metadata';
 import { strengthLabel } from '@/lib/listing/logic';
 
@@ -25,11 +26,16 @@ export default async function SearchPage({ searchParams }: Props) {
   const { q, page: pageParam } = await searchParams;
   const query = cleanQuery(q);
   const page = Math.max(1, Math.min(50, Number(pageParam) || 1));
+  // A wildcard pattern ("Au*in") the engine refuses: a friendly message, no query. Judged on the raw
+  // text, because a lone "*" is shorter than the 2-character minimum cleanQuery enforces.
+  const rawQ = (q ?? '').trim();
+  const problem = isWildcardQuery(rawQ) ? wildcardProblem(rawQ) : null;
+  const wildcard = !!query && !problem && isWildcardQuery(query);
   // One extra row tells whether a next page exists.
-  const rows = query ? await searchDrugs(query, PAGE_SIZE + 1, (page - 1) * PAGE_SIZE) : [];
+  const rows = query && !problem ? await searchDrugs(query, PAGE_SIZE + 1, (page - 1) * PAGE_SIZE) : [];
   const hasNext = rows.length > PAGE_SIZE;
   // Only vowel-insensitive / typo matches (tiers 4-5): say so, the spelling was off.
-  const approximate = rows.length > 0 && rows.every((r) => r.match_rank >= 4);
+  const approximate = !wildcard && rows.length > 0 && rows.every((r) => r.match_rank >= 4);
 
   return (
     <Container className="py-6 md:py-10">
@@ -39,12 +45,23 @@ export default async function SearchPage({ searchParams }: Props) {
         <SearchBox id="search-page" prefetch />
       </div>
 
-      {!query ? (
+      {problem ? (
+        <EmptyState className="mt-6" title="نمط البحث غير مكتمل" description={problem} />
+      ) : !query ? (
         <EmptyState className="mt-6" title="اكتب اسم الدواء أو المادة الفعالة" description="مثال: بنادول، أموكسيسيلين، أوجمنتين 1 جم." />
       ) : rows.length === 0 ? (
-        <EmptyState className="mt-6" title="لا توجد نتائج" description="تأكد من الكتابة، أو ابحث بالاسم الإنجليزي أو بالمادة الفعالة." />
+        <EmptyState
+          className="mt-6"
+          title="لا توجد نتائج"
+          description={wildcard ? 'لم يطابق هذا النمط أي اسم. جرّب حروفًا أقل مع *، أو ? مكان الحرف غير الواضح.' : 'تأكد من الكتابة، أو ابحث بالاسم الإنجليزي أو بالمادة الفعالة.'}
+        />
       ) : (
         <>
+          {wildcard && (
+            <p className="mt-4 rounded-control border border-border bg-surface px-4 py-3 text-text-2">
+              نتائج النمط <code dir="ltr" className="font-semibold text-ink">{query}</code>: الأقرب لما كتبته أولًا (* = أي عدد من الحروف، ? = حرف واحد).
+            </p>
+          )}
           {approximate && (
             <p className="mt-4 rounded-control border border-border bg-surface px-4 py-3 text-text-2">
               لم نجد اسمًا مطابقًا تمامًا لـ«{query}»، وهذه أقرب الأدوية إليه في الكتابة.

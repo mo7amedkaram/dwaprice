@@ -7,7 +7,9 @@ export type DwEvent =
   | { name: 'view_alternatives'; params?: never }
   | { name: 'toggle_info_language'; params: { lang: 'ar' | 'en' } }
   | { name: 'outbound_click'; params: { domain: string } }
-  | { name: 'whatsapp_channel_click'; params: { placement: 'home' | 'header' | 'footer' | 'last_prices' } };
+  | { name: 'whatsapp_channel_click'; params: { placement: 'home' | 'header' | 'footer' | 'last_prices' } }
+  /** A wildcard pattern ("Au*in") produced suggestions or results. Never the query text. */
+  | { name: 'wildcard_search_used'; params?: never };
 
 declare global {
   interface Window {

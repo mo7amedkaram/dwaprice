@@ -398,6 +398,24 @@ No listing component ships JavaScript (filters are a plain GET form): first-load
 is absolutely positioned and the count is announced in a visually hidden live region: **CLS 0.00**
 measured while typing. Display names drop availability markers ("(n/a)") via `tradeName()`.
 
+**Wildcards (2026-10-23)** — for half-read prescription names: `*` = any characters, `?` = one
+(Arabic `؟`/`٭` accepted). `lib/search/wildcard.ts` (pure, worker-safe): a query is a wildcard query
+only when it contains a symbol; literals are normalised like everything else; guards: ≥ 2 literal
+characters, ≤ 3 wildcards (a run of `*` is one), every other character escaped — nothing typed is ever
+a regex, in the browser or in SQL. Matching: the pattern against ONE word — first the first word of
+the English/Arabic name + approved alias tokens (anchored), then, if fewer than 3 products, any word
+that is not a strength/pack/form word (`isPackToken`). Ranking: fewest wildcard-covered characters,
+then popularity; up to 20 (the UI does not group brand variants, so no grouping). Engine tier
+`TIER.wildcard` (7). Client: index when ready, else the server's wildcard path with the raw pattern
+(never the 2-character prefix path). Server (`lib/data/search.ts`): regex built from the parsed
+tokens on `drug_cards.sort_name` + raw `name_ar` (hamza/ة/ى as classes) ≈ 110 ms per tier; aliases
+through `web.search_index` only with a `LIKE` prefix (≈ 370 ms; the view's unfiltered scan takes
+seconds and `web.search_normalize()` per row 4 s — both avoided). UI: a hint under the box on the
+first 3 focuses (localStorage), a "؟" popover, the typed letters highlighted inside the matched
+word (`highlightSegments`), a friendly message for a refused pattern (box + results page), GA
+`wildcard_search_used` with no text; voice untouched. `/guide` documents it. Tests:
+`tests/search-wildcard.test.ts` (incl. < 50 ms over the full built index).
+
 **On phones (part 2):** the home page shows the search box right under the header (a compact H1 above,
 the description below, via CSS `order` so the H1 stays first in the HTML); the header's sticky mobile
 search bar is hidden on `/` only (`HeaderMobileSearch`, so there are never two boxes). On focus the
