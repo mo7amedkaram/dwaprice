@@ -147,8 +147,13 @@ title, description, **canonical** (absolute, on `SITE_URL`), robots, Open Graph 
 site name, URL) and Twitter tags. The layout appends ` | دليل الأدوية المصري` (`title.template`,
 `TITLE_SUFFIX`) unless the title would exceed 60 characters; then the title stands alone (Google shows
 the site name separately). **Site name** (`SITE.name`, part 4): «دليل الأدوية المصري», used identically by
-the WebSite JSON-LD `name` (alternateName «دليل الأدوية», dwaprice.com), `og:site_name`, the title suffix,
-the logo and the footer.
+the WebSite JSON-LD `name`, `og:site_name`, the title suffix, the logo and the footer. Google was
+showing "dwaprice.com" instead (2026-10-23), so the signals were tightened: the **home `<title>` starts
+with the site name** («دليل الأدوية المصري | أسعار الأدوية في مصر محدثة يومياً», `HOME_TITLE_DEFAULT`),
+the WebSite/Organization `url` is the home page with its trailing slash, and `alternateName` carries
+only brand spellings (`dwaprice`, `Dwaprice`, «دليل الادوية المصري») — never the bare domain, which must
+not be offered as a name candidate. Both objects are output on the home page only; validate with
+validator.schema.org (`scripts/site-name-check.mjs` posts the rendered home HTML to it).
 `pageText.*` builds the Arabic titles and descriptions of hubs, index pages, A–Z, last prices
 and search; drug, alternatives and uses texts live in `src/lib/drug/logic.ts`. Pages 2+ of a list
 append " — صفحة N" to the title and "(صفحة N)" to the description, so every URL has its own.

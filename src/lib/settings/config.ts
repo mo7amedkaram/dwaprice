@@ -55,7 +55,10 @@ export interface SiteSettings {
   contact: ContactSettings;
 }
 
-export const HOME_TITLE_DEFAULT = `أسعار الأدوية في مصر محدثة يومياً | ${SITE.name}`;
+// The home <title> STARTS with the site name (Google reads the site name from the home page title,
+// the WebSite JSON-LD and og:site_name — they must agree, and the name must come first here).
+// Inner pages keep the name as the " | …" suffix (titleSuffix below).
+export const HOME_TITLE_DEFAULT = `${SITE.name} | أسعار الأدوية في مصر محدثة يومياً`;
 // Kept within SEO_LIMITS.homeDescription (160) so the default prefill is itself valid.
 export const HOME_DESCRIPTION_DEFAULT =
   'اعرف سعر أي دواء في مصر بآخر تحديث، مع المثائل الأرخص بنفس المادة الفعالة والبدائل، وأحدث تغييرات الأسعار، والأدوية حسب الشركة والتصنيف.';

@@ -5,6 +5,11 @@ import type { ListingStatus } from '@/lib/data/types';
 
 type Json = Record<string, unknown>;
 
+// Site-name signals for Google (home page only, see app/(site)/page.tsx): a WebSite whose `name` is
+// the site name, `url` is the home page WITH the trailing slash (Google matches it against the
+// canonical home URL), the short brand spellings as alternateName, plus the SearchAction; and the
+// publishing Organization with the same name and the logo served from the admin branding upload
+// (/icon-512.png falls back to the built-in mark). og:site_name and the title use the same string.
 export function websiteJsonLd(): Json {
   return {
     '@context': 'https://schema.org',
@@ -12,7 +17,7 @@ export function websiteJsonLd(): Json {
     '@id': `${SITE.url}/#website`,
     name: SITE.name,
     alternateName: SITE.alternateNames,
-    url: SITE.url,
+    url: `${SITE.url}/`,
     inLanguage: 'ar-EG',
     publisher: { '@id': `${SITE.url}/#organization` },
     potentialAction: {
@@ -30,7 +35,7 @@ export function organizationJsonLd(): Json {
     '@id': `${SITE.url}/#organization`,
     name: SITE.name,
     alternateName: SITE.alternateNames,
-    url: SITE.url,
+    url: `${SITE.url}/`,
     logo: absoluteUrl('/icon-512.png'),
     description: SITE.description,
     areaServed: { '@type': 'Country', name: 'Egypt' },

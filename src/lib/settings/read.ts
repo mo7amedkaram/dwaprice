@@ -45,7 +45,9 @@ const load = unstable_cache(
       return defaultSettings();
     }
   },
-  ['site-settings-v1'],
+  // Key bumped when a CODE default changes (v2: the home title now starts with the site name): the
+  // data cache persists across builds, so a stale computed default would otherwise survive a deploy.
+  ['site-settings-v2'],
   { tags: [tags.settings], revalidate: 3600 },
 );
 

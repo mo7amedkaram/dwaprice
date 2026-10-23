@@ -4,8 +4,12 @@ export const SITE = {
    * the title suffix and the logo all use it, so they never disagree.
    */
   name: 'دليل الأدوية المصري',
-  /** WebSite JSON-LD alternateName (other names people may use for the site). */
-  alternateNames: ['دليل الأدوية', 'dwaprice.com'],
+  /**
+   * WebSite / Organization JSON-LD alternateName: the short brand spellings people use. Never the
+   * bare domain — Google was picking "dwaprice.com" as the site name, so the domain must not be
+   * offered as a name candidate at all (the hamza-less Arabic spelling is a common typing variant).
+   */
+  alternateNames: ['dwaprice', 'Dwaprice', 'دليل الادوية المصري'],
   domain: 'dwaprice.com',
   url: (process.env.SITE_URL || 'https://dwaprice.com').replace(/\/+$/, ''),
   locale: 'ar_EG',
