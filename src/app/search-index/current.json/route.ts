@@ -1,72 +1,79 @@
-import { brotliCompressSync, constants, gzipSync } from 'node:zlib';
+import { brotliDecompress, gzip } from 'node:zlib';
+import { promisify } from 'node:util';
 import type { NextRequest } from 'next/server';
-import { getCurrentIndex } from '@/lib/search/current-index';
-import type { BuiltIndex } from '@/lib/search/build-from-db';
+import { getCurrentIndex, type CurrentIndex } from '@/lib/data/search-index-current';
+import { IMMUTABLE, pickEncoding } from '@/lib/search/http';
 
 // Live browser suggestion index, built from the public web.* views (same compact, privacy-safe
 // format as the build-time file: names, form, ingredients, popularity bucket — never prices,
-// barcodes, companies or counters). getCurrentIndex is a tagged cache, so it is built at most once
-// per window and rebuilt the moment the catalogue changes (revalidateTag('search-index') from
-// /api/revalidate) or, failing any webhook, within its 15-minute ceiling. The client fetches it as
-// current.json?v=<hash> (see version.json), so the content hash makes each version a new,
-// immutable URL that the worker caches in the browser. If this route ever fails, the client
-// falls back to the build-time static file, so suggestions never go away.
+// barcodes, companies or counters). getCurrentIndex is a tagged cache holding the index already
+// brotli-compressed (under Next's 2 MB entry limit), so it is built at most once per window and
+// rebuilt the moment the catalogue changes (revalidateTag('search-index') from /api/revalidate) or,
+// failing any webhook, within its 15-minute ceiling. The client fetches it as current.json?v=<hash>
+// (see version.json): the content hash makes each version its own immutable URL that the worker
+// caches in the browser. If this route fails, the client falls back to the build-time static file,
+// so suggestions never go away.
 export const dynamic = 'force-dynamic';
 
-const IMMUTABLE = 'public, max-age=31536000, immutable';
+const inflate = promisify(brotliDecompress);
+const deflate = promisify(gzip);
 
-// Pre-compressed variants, in process memory, keyed by content hash: compressed once per rebuild,
-// not per request. Keep the two most recent hashes so a version change never misses.
-interface Variants {
-  raw: Uint8Array;
-  gz: Uint8Array;
-  br: Uint8Array;
+// Per content hash, in process memory: the brotli bytes decoded once from the cached base64 and,
+// only if a client without brotli ever asks, the identity and gzip bodies derived from them. Kept
+// as promises so concurrent first requests share one derivation. The two most recent hashes are
+// retained so a version change never misses.
+interface Bodies {
+  br: Buffer;
+  raw?: Promise<Buffer>;
+  gz?: Promise<Buffer>;
 }
-const variants = new Map<string, Variants>();
+const bodies = new Map<string, Bodies>();
 
-function variantsFor(built: BuiltIndex): Variants {
-  const have = variants.get(built.hash);
-  if (have) return have;
-  const raw = Buffer.from(built.json, 'utf8');
-  const v: Variants = {
-    raw,
-    gz: gzipSync(raw, { level: 9 }),
-    br: brotliCompressSync(raw, {
-      params: { [constants.BROTLI_PARAM_QUALITY]: 9, [constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT, [constants.BROTLI_PARAM_SIZE_HINT]: raw.length },
-    }),
-  };
-  variants.set(built.hash, v);
-  while (variants.size > 2) variants.delete(variants.keys().next().value as string);
-  return v;
-}
-
-/** br > gzip > identity, from the request's Accept-Encoding. */
-function pickEncoding(accept: string | null): 'br' | 'gzip' | null {
-  if (!accept) return null;
-  if (/(^|,)\s*br\s*(;|,|$)/.test(accept)) return 'br';
-  if (/(^|,)\s*gzip\s*(;|,|$)/.test(accept)) return 'gzip';
-  return null;
+function bodiesFor(built: CurrentIndex): Bodies {
+  let b = bodies.get(built.hash);
+  if (!b) {
+    b = { br: Buffer.from(built.br, 'base64') };
+    bodies.set(built.hash, b);
+    while (bodies.size > 2) bodies.delete(bodies.keys().next().value as string);
+  }
+  return b;
 }
 
 export async function GET(request: NextRequest) {
-  let built: BuiltIndex;
+  let built: CurrentIndex;
   try {
     built = await getCurrentIndex();
   } catch {
     // Database trouble: tell the client to use the build-time static index instead.
     return new Response('index unavailable', { status: 503, headers: { 'Cache-Control': 'no-store' } });
   }
+  // The URL names a version (?v=<hash>). When it is not the version we hold (version.json may have
+  // been cached up to 60 s before a rebuild) still answer with the current content, but never let a
+  // cache store it under the other version's URL: each ?v= URL must stay genuinely immutable.
+  const requested = request.nextUrl.searchParams.get('v');
+  const cacheControl = requested === null || requested === built.hash ? IMMUTABLE : 'no-store';
   const etag = `"${built.hash}"`;
   if (request.headers.get('if-none-match') === etag) {
-    return new Response(null, { status: 304, headers: { ETag: etag, 'Cache-Control': IMMUTABLE } });
+    return new Response(null, { status: 304, headers: { ETag: etag, 'Cache-Control': cacheControl } });
   }
-  const v = variantsFor(built);
+  const b = bodiesFor(built);
   const encoding = pickEncoding(request.headers.get('accept-encoding'));
-  const body = encoding === 'br' ? v.br : encoding === 'gzip' ? v.gz : v.raw;
+  let body: Buffer;
+  if (encoding === 'br') {
+    body = b.br;
+  } else {
+    b.raw ??= inflate(b.br);
+    if (encoding === 'gzip') {
+      b.gz ??= b.raw.then((raw) => deflate(raw, { level: 9 }));
+      body = await b.gz;
+    } else {
+      body = await b.raw;
+    }
+  }
   const headers: Record<string, string> = {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': String(body.byteLength),
-    'Cache-Control': IMMUTABLE,
+    'Cache-Control': cacheControl,
     ETag: etag,
     Vary: 'Accept-Encoding',
   };

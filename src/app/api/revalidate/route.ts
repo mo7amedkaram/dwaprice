@@ -29,17 +29,14 @@ export async function POST(request: NextRequest) {
 
   const valid = [...new Set(requested.filter(isValidTag))].slice(0, 500);
   for (const tag of valid) revalidateTag(tag, 'max');
-  // A price change also changes the latest-prices list and the sitemap lastmod.
-  if (valid.some((t) => t.startsWith('drug:'))) {
-    revalidateTag(tags.prices, 'max');
-    revalidateTag(tags.sitemap, 'max');
-  }
-  // Any catalogue change (a drug added, edited or removed; a full "catalog" refresh) changes the
-  // sitemap and the browser suggestion index, so new drugs appear in search and the sitemap without
-  // waiting for the time-based rebuild.
-  if (valid.includes(tags.catalog) || valid.some((t) => t.startsWith('drug:'))) {
-    revalidateTag(tags.searchIndex, 'max');
-    revalidateTag(tags.sitemap, 'max');
-  }
+  const drugChanged = valid.some((t) => t.startsWith('drug:'));
+  const catalogChanged = valid.includes(tags.catalog);
+  // A price change (drug:<slug>) also changes the latest-prices list; any change moves the sitemap lastmod.
+  if (drugChanged) revalidateTag(tags.prices, 'max');
+  if (drugChanged || catalogChanged) revalidateTag(tags.sitemap, 'max');
+  // Only a catalogue change (a drug added, renamed or removed: the "catalog" tag) can change the
+  // browser suggestion index — it carries names, forms and ingredients, never prices — so the common
+  // price webhook (drug:<slug>) must NOT force its ~7 s rebuild.
+  if (catalogChanged) revalidateTag(tags.searchIndex, 'max');
   return NextResponse.json({ revalidated: valid, rejected: requested.length - valid.length });
 }

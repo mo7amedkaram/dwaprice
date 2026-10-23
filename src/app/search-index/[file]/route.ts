@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { NextRequest } from 'next/server';
+import { IMMUTABLE, pickEncoding } from '@/lib/search/http';
 import { SEARCH_INDEX_FILE_RE, type SearchIndexManifest } from '@/lib/search/index-format';
 
 // Serves the suggestion index generated at build time (scripts/build-search-index.mts →
@@ -11,7 +12,6 @@ import { SEARCH_INDEX_FILE_RE, type SearchIndexManifest } from '@/lib/search/ind
 export const dynamic = 'force-dynamic';
 
 const DIR = join(process.cwd(), 'data', 'search-index');
-const IMMUTABLE = 'public, max-age=31536000, immutable';
 const files = new Map<string, Promise<Uint8Array<ArrayBuffer> | null>>();
 let manifest: Promise<SearchIndexManifest | null> | null = null;
 
@@ -35,14 +35,6 @@ function currentManifest(): Promise<SearchIndexManifest | null> {
     .then((text) => JSON.parse(text) as SearchIndexManifest)
     .catch(() => null);
   return manifest;
-}
-
-/** br > gzip > identity, from the request's Accept-Encoding. */
-export function pickEncoding(accept: string | null): 'br' | 'gzip' | null {
-  if (!accept) return null;
-  if (/(^|,)\s*br\s*(;|,|$)/.test(accept)) return 'br';
-  if (/(^|,)\s*gzip\s*(;|,|$)/.test(accept)) return 'gzip';
-  return null;
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ file: string }> }) {

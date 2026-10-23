@@ -22,7 +22,7 @@ const PAGES = [
   ['atc', '/atc/j01cr02-penicillin-with-beta-lactamase-inhibitor'],
   ['atc-index', '/atc'],
   ['last-prices', '/last-prices'],
-  ['letter', `/adwiya/${encodeURIComponent('ب')}`],
+  ['letter', '/adwiya/b'],
   ['letters-index', '/adwiya'],
   ['about', '/about'],
   ['contact', '/contact'],

@@ -3,7 +3,7 @@
 //   data/search-index/manifest.json      (next.config.ts inlines `file` as NEXT_PUBLIC_SEARCH_INDEX)
 // This file is only the FIRST-LOAD FALLBACK now: in production the browser loads the live
 // /search-index/current.json, which rebuilds from the database within minutes of a change. Both are
-// built by the same code (src/lib/search/build-from-db.ts) from the same public web.* views with
+// built by the same code (src/lib/data/search-index-build.ts) from the same public web.* views with
 // the read-only role (WEB_DATABASE_URL), so they are byte-identical for the same data.
 // usage: npx tsx scripts/build-search-index.mts      (fails the build on any error)
 import nextEnv from '@next/env';
@@ -14,7 +14,7 @@ import { brotliCompressSync, constants, gzipSync } from 'node:zlib';
 nextEnv.loadEnvConfig(process.cwd());
 
 const { pool, query } = await import('../src/lib/db/pool');
-const { buildIndexFromDb } = await import('../src/lib/search/build-from-db');
+const { buildIndexFromDb } = await import('../src/lib/data/search-index-build');
 const { SEARCH_INDEX_VERSION } = await import('../src/lib/search/index-format');
 type SearchIndexManifest = import('../src/lib/search/index-format').SearchIndexManifest;
 

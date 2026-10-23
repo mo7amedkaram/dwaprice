@@ -31,14 +31,21 @@ trace runs past the load event.
 
 ## Index
 
-- 13,106 drugs (the sitemap set: indexable, minus pack variants that canonicalise elsewhere).
-- 2046.5 KB raw, **475.7 KB gzip, 378.7 KB brotli** — well under the 1 MB target, no sharding needed.
+- 16,509 drugs (every indexable drug page; the live index and the build-time file are built by the
+  same code from the same `web.*` views, so they carry the same hash for the same data).
+- 2527.8 KB raw, **588.2 KB gzip, 459.8 KB brotli** — under the 1 MB target, no sharding needed.
 - Only: slug, Arabic/English names, dosage form, ingredient names, alias/spelling tokens, popularity
   *bucket* (0–5). Never prices, barcodes, companies or raw counters — `tests/search-index.test.ts`
   fails the build if any appear (and asserts the file is columnar and under 1 MB compressed).
-- Content-hashed name, served immutable for a year at `/search-index/index.<hash>.json`, brotli or
-  gzip by `Accept-Encoding` (`src/app/search-index/[file]/route.ts`). A new deploy = new hash = fresh
-  data with no stale cache.
+- **Live, fresh without a deploy.** The browser first reads `/search-index/version.json` (`{hash,
+  drugs, generatedAt}`, `max-age=60`) and then loads `/search-index/current.json?v=<hash>`: the index
+  built from the database on the server (`src/lib/data/search-index-current.ts`, a tagged cache
+  busted by `/api/revalidate` on the `catalog` tag, 15-minute ceiling), served brotli/gzip by
+  `Accept-Encoding` and immutable per hash — an unchanged hash is reused from the worker's Cache API,
+  a changed one is downloaded once. The build-time `/search-index/index.<hash>.json`
+  (`src/app/search-index/[file]/route.ts`) is only the first-load fallback when the live route fails.
+- The cached value is the brotli bytes (≈ 0.65 MB as base64), not the raw JSON: Next's data cache
+  silently refuses entries over 2 MB and would otherwise rebuild the index on every request.
 
 ## Loading (first page load is never blocked)
 
@@ -102,18 +109,16 @@ script in the git history of this folder; the unit tests run offline against it.
 Verified locally; cannot be set from here.
 
 1. **Voice:** confirm Nginx passes `Permissions-Policy: microphone=(self)` through to the browser.
-2. **Immutable + brotli index:** Nginx currently appends `Cache-Control: no-cache` to every response
-   and only gzips. Add a location block mirroring the `/_next/static/` one in `DEPLOY.md` step 10b:
+2. **Do NOT override `Cache-Control` for `/search-index/`.** The app sets the right header per
+   route itself: `immutable` for the hashed file and for `current.json?v=<hash>` when the hash
+   matches, `no-store` when it does not, and `max-age=60` for `version.json` — the freshness marker
+   that must never be cached for long. A blanket `proxy_hide_header Cache-Control; add_header
+   Cache-Control "… immutable"` on the prefix (an earlier version of this note) would freeze
+   `version.json` for a year and stamp a mismatched `current.json` immutable: don't.
 
-   ```nginx
-   location ^~ /search-index/ {
-       proxy_pass http://127.0.0.1:3100;
-       proxy_http_version 1.1;
-       proxy_set_header Host $host;
-       proxy_hide_header Cache-Control;
-       add_header Cache-Control "public, max-age=31536000, immutable";
-   }
-   ```
-
-   The app already serves the pre-compressed `.br`/`.gz` and the immutable header; this stops Nginx
-   overriding them.
+   Nginx currently appends `Cache-Control: no-cache` to every response. For this prefix that is
+   *safe* (browsers just revalidate: one 304 per load), so leaving it is fine. The only improvement is
+   to stop the global `add_header` from applying to `/search-index/` so the app's headers stand
+   alone — e.g. a `location ^~ /search-index/ { proxy_pass …; }` block with no `add_header` of its
+   own, placed where the global one does not inherit (or move the global `add_header` into the
+   locations that need it). Never add an `immutable` header here yourself.

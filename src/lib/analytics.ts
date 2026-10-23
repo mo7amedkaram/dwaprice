@@ -1,6 +1,6 @@
-// Tiny client helper for GA4 events. No-op until the Google script is loaded (which only happens
-// after the visitor accepts analytics cookies). Never pass drug names or search text — only the
-// coarse, non-personal parameters below.
+// Tiny client helper for GA4 events. No-op until the Google script is loaded (SiteAnalytics loads
+// it directly on every public page; there is no consent gate). Never pass drug names or search
+// text — only the coarse, non-personal parameters below.
 export type DwEvent =
   | { name: 'search_used'; params: { method: 'suggestion_clicked' | 'full_search' } }
   | { name: 'voice_search_used'; params?: never }

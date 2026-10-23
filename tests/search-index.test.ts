@@ -3,11 +3,11 @@
 // a generated index is on disk (npm run build:index), on the real file too. Also the small pure
 // helpers of the client (fallback filter, prefetch skip) and of the index route (encoding).
 import { existsSync, readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { buildSearchIndex, serializeSearchIndex, type DrugSource } from '@/lib/search/index-build';
 import { SEARCH_INDEX_FILE_RE, SEARCH_INDEX_KEYS, SEARCH_INDEX_VERSION, type SearchIndexFile, type SearchIndexManifest } from '@/lib/search/index-format';
 import { matchesLocally, SearchClient, shouldSkipPrefetch, toSuggestion } from '@/lib/search/client';
-import { pickEncoding } from '@/app/search-index/[file]/route';
+import { pickEncoding } from '@/lib/search/http';
 
 // Rows as the web views could hand them over: full of fields the index must not keep.
 const ROWS = [
@@ -136,32 +136,38 @@ const manifestPath = new URL('../data/search-index/manifest.json', import.meta.u
 // covers the current catalogue (freshness: not a frozen snapshot) and finds every drug by its name.
 const DB = process.env.WEB_DATABASE_URL || (() => { try { return readFileSync(new URL('../.env.local', import.meta.url), 'utf8').split('\n').find((l) => l.startsWith('WEB_DATABASE_URL='))?.slice('WEB_DATABASE_URL='.length).trim(); } catch { return undefined; } })();
 
+// Through a small pool, not one pg.Client: collectDrugSources runs its first three queries
+// concurrently, which a single client cannot (pg 8 warns, pg 9 removes it).
 async function buildFromDb(): Promise<{ index: SearchIndexFile; pages: number }> {
   const { default: pg } = await import('pg');
-  const client = new pg.Client({ connectionString: DB, ssl: { rejectUnauthorized: false } });
-  await client.connect();
-  const q = <T>(text: string, params?: unknown[]) => client.query(text, params).then((r) => r.rows as T[]);
+  const pool = new pg.Pool({ connectionString: DB, ssl: { rejectUnauthorized: false }, max: 3 });
+  const q = <T>(text: string, params?: unknown[]) => pool.query(text, params).then((r) => r.rows as T[]);
   try {
-    const { collectDrugSources } = await import('@/lib/search/build-from-db');
+    const { collectDrugSources } = await import('@/lib/data/search-index-build');
     const { buildSearchIndex } = await import('@/lib/search/index-build');
     const { sources, ingredients } = await collectDrugSources(q);
     const pages = Number((await q<{ n: string }>('select count(*) n from web.drug_cards'))[0].n);
     return { index: buildSearchIndex(sources, ingredients), pages };
   } finally {
-    await client.end();
+    await pool.end();
   }
 }
 
 (DB ? describe : describe.skip)('the database-built suggestion index (live current.json)', () => {
-  it('covers exactly the drugs with a public page, and carries no forbidden data', { timeout: 120_000 }, async () => {
-    const { index, pages } = await buildFromDb();
+  // One ~15 s database build for the whole block, not one per test.
+  let index: SearchIndexFile;
+  let pages: number;
+  beforeAll(async () => {
+    ({ index, pages } = await buildFromDb());
+  }, 120_000);
+
+  it('covers exactly the drugs with a public page, and carries no forbidden data', () => {
     expect(index.n).toBe(pages); // every drug with deleted_at is null and a name; nothing dropped
     expect(index.n).toBeGreaterThan(1000);
     checkStructure(index);
   });
 
-  it('finds known drugs by Arabic and English name', { timeout: 120_000 }, async () => {
-    const { index } = await buildFromDb();
+  it('finds known drugs by Arabic and English name', async () => {
     const { SearchEngine } = await import('@/lib/search/engine');
     const engine = new SearchEngine(index);
     const finds = (query: string, slugPart: string) => engine.search(query).some((s) => s.slug.includes(slugPart));
@@ -174,7 +180,6 @@ async function buildFromDb(): Promise<{ index: SearchIndexFile; pages: number }>
   });
 
   it('200 random drug names find their own drug (index mode and fallback mode)', { timeout: 180_000 }, async () => {
-    const { index } = await buildFromDb();
     const { SearchEngine } = await import('@/lib/search/engine');
     const engine = new SearchEngine(index);
     const { default: pg } = await import('pg');

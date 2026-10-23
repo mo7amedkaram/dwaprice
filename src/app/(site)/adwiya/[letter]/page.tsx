@@ -32,6 +32,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     path: routes.letter(entry.letter),
     ...pageText.letter(entry.letter, entry.n),
     page: parsePage((await searchParams).page) ?? 1,
+    // A bucket with no drugs (currently w, x, y, z) keeps its button and renders, but is noindex and
+    // left out of the sitemap (lib/data/sitemap.ts) rather than offered to Google as a thin page.
+    indexable: entry.n > 0,
   });
 }
 

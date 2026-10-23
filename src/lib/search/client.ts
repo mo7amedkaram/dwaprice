@@ -8,7 +8,8 @@
 //   * `warm()` (every page): the moment the user focuses, hovers or touches the search box.
 //   * The worker keeps the file in the Cache API, keyed by its hashed URL: repeat visits use
 //     the cached copy with zero network; older versions are deleted. A failed load falls back
-//     to the server and is retried once, 5 s later.
+//     to the server and is retried once, 5 s later — and when the LIVE index (current.json) is
+//     what failed, the retry loads the build-time static file instead.
 // Fallback while loading: GET /api/search for the first 2 characters (50 results), cached in
 // memory by those 2 characters, then filtered locally for the following keystrokes; a request
 // still in flight is aborted when the first 2 characters change.
@@ -17,7 +18,7 @@ import { SEARCH_INDEX_PATH, type Suggestion } from './index-format';
 import { normalizeSearch } from './normalize';
 import type { WorkerRequest, WorkerResponse } from './search.worker';
 
-export type SearchStatus = 'unavailable' | 'idle' | 'loading' | 'ready' | 'failed';
+export type SearchStatus = 'idle' | 'loading' | 'ready' | 'failed';
 export type SuggestionSource = 'index' | 'server';
 export interface SuggestResult {
   items: Suggestion[];
@@ -89,6 +90,7 @@ export class SearchClient {
   private seq = 0;
   private readonly pending = new Map<number, (items: Suggestion[]) => void>();
   private retried = false;
+  private liveFailed = false;
   private readonly listeners = new Set<(status: SearchStatus) => void>();
   private readonly serverCache = new Map<string, Suggestion[]>();
   private abort: AbortController | null = null;
@@ -135,6 +137,8 @@ export class SearchClient {
 
   /** The index URL to load: the live current.json at its current version, else the build-time file. */
   private async resolveUrl(): Promise<string | null> {
+    // The live route already failed this session (503, bad payload…): take the build-time file.
+    if (this.liveFailed) return INDEX_URL;
     try {
       const res = await fetch(VERSION_URL, { credentials: 'omit' });
       if (res.ok) {
@@ -183,6 +187,8 @@ export class SearchClient {
 
   private fail(message: string): void {
     this.debug.error = message;
+    // Remember when the live index was the URL that failed, so the retry resolves to the static file.
+    if (this.debug.url?.startsWith(CURRENT_URL)) this.liveFailed = true;
     this.worker?.terminate();
     this.worker = null;
     for (const resolve of this.pending.values()) resolve([]);

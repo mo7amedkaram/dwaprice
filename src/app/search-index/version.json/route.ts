@@ -1,4 +1,4 @@
-import { getCurrentIndex } from '@/lib/search/current-index';
+import { getCurrentIndex } from '@/lib/data/search-index-current';
 
 // Tiny version marker for the live suggestion index. The client fetches this on load (cheap, cached
 // 60 s at the edge), compares `hash` with the index it already has, and only downloads

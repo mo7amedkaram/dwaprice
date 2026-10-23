@@ -1,11 +1,12 @@
 // Collects the rows the suggestion index needs from the public web.* views and builds the index.
-// Shared by the build-time generator (scripts/build-search-index.mts) and the live route
-// (src/app/search-index/current.json/route.ts), so both produce byte-identical output from the
-// same data. No database handle here: the caller passes its own `query` (the build script's pool,
-// or the website's read-only role via @/lib/db), so this file imports no server-only code.
+// Shared by the build-time generator (scripts/build-search-index.mts) and the live route's cache
+// (src/lib/data/search-index-current.ts), so both produce byte-identical output from the same data.
+// No database handle here: the caller passes its own `query` (the build script's pool, or the
+// website's read-only role via @/lib/db). Lives in lib/data (server side): src/lib/search/ is
+// bundled into the browser worker and must stay free of node/server imports.
 import { createHash } from 'node:crypto';
 import type { QueryResultRow } from 'pg';
-import { buildSearchIndex, serializeSearchIndex, type DrugSource, type IngredientSource } from './index-build';
+import { buildSearchIndex, serializeSearchIndex, type DrugSource, type IngredientSource } from '../search/index-build';
 
 /** A query function shaped like @/lib/db and scripts' pool: run SQL, get typed rows. */
 export type QueryFn = <T extends QueryResultRow>(text: string, params?: unknown[]) => Promise<T[]>;
