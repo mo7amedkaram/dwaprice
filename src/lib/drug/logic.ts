@@ -207,6 +207,23 @@ export function drugDescription(d: DescriptionInput): string {
   ]);
 }
 
+/**
+ * Drug JSON-LD `description`: the data-driven facts only (price + its date, active ingredient,
+ * form + company, prescription status) — no marketing sentence, nothing not backed by a field.
+ */
+export function drugFactsDescription(d: DescriptionInput & { prescriptionStatus?: string | null }): string | null {
+  const name = displayName(d);
+  const amount = formatAmount(d.price);
+  const rx = d.prescriptionStatus === 'PRESCRIPTION' ? 'يُصرف بوصفة طبية.' : d.prescriptionStatus === 'OTC' ? 'يُصرف دون وصفة طبية.' : null;
+  const parts = [
+    amount ? `سعر ${name} في مصر ${amount} ${CURRENCY_AR}${d.updated ? ` (آخر تحديث ${formatDate(d.updated)})` : ''}.` : null,
+    d.ingredients.length ? `المادة الفعالة: ${d.ingredients.slice(0, 3).join(' + ')}.` : null,
+    d.formAr ? `${d.formAr}${d.company ? ` من ${d.company}` : ''}.` : d.company ? `إنتاج ${d.company}.` : null,
+    rx,
+  ].filter((p): p is string => !!p);
+  return parts.length ? parts.join(' ') : null;
+}
+
 export function alternativesH1(d: DrugNames): string {
   return `بدائل ومثائل ${nameWithStrength(displayName(d), d.strength)}`;
 }

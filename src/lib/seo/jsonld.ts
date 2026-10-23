@@ -75,6 +75,12 @@ export interface DrugJsonLdInput {
   price: string | number | null;
   priceUpdated: string | null;
   listingStatus: ListingStatus;
+  /** Verified product photo only (web.drug_pages.image_url is null unless image_verified); never a placeholder. */
+  imageUrl: string | null;
+  /** Package barcode as stored; emitted as gtin13 only when it is a valid 13-digit GTIN. */
+  barcode: string | null;
+  /** Data-driven facts paragraph (price, ingredient, form, company) — real fields only. */
+  description: string | null;
 }
 
 const RX_STATUS: Record<string, string> = {
@@ -82,23 +88,64 @@ const RX_STATUS: Record<string, string> = {
   OTC: 'https://schema.org/OTC',
 };
 
-const AVAILABILITY: Record<string, string> = {
-  NOT_AVAILABLE: 'https://schema.org/OutOfStock',
-  NOT_YET_AVAILABLE: 'https://schema.org/PreOrder',
-  CANCELLED: 'https://schema.org/Discontinued',
-};
+/**
+ * Offer.availability from the official listing status: a priced drug on the price list is in stock
+ * at pharmacies (InStock); withdrawn / not yet released / cancelled → OutOfStock; an unofficial
+ * import has no known availability → omitted. Only InStock/OutOfStock are used (what Google reads).
+ */
+export function offerAvailability(status: ListingStatus): string | null {
+  if (status === null) return 'https://schema.org/InStock';
+  if (status === 'NOT_AVAILABLE' || status === 'NOT_YET_AVAILABLE' || status === 'CANCELLED') return 'https://schema.org/OutOfStock';
+  return null;
+}
 
-/** schema.org Drug; `offers` only when a price exists. */
-export function drugJsonLd(d: DrugJsonLdInput): Json {
+/** True for a 13-digit GTIN whose check digit (GS1 mod-10) is correct. */
+export function isValidGtin13(code: string | null | undefined): code is string {
+  if (!code || !/^\d{13}$/.test(code)) return false;
+  let sum = 0;
+  for (let i = 0; i < 12; i++) sum += Number(code[i]) * (i % 2 === 0 ? 1 : 3);
+  return (10 - (sum % 10)) % 10 === Number(code[12]);
+}
+
+const DAY = 86_400_000;
+const PRICE_VALID_DAYS = 30;
+
+/**
+ * Offer.priceValidUntil: 30 days after the price's last update — but never in the past. Most listed
+ * prices were last changed months ago while still being the current official price, and pages
+ * regenerate daily, so the window is counted from the later of the update and today (a rolling
+ * "still valid for 30 days" statement, not an expired one). `now` is injectable for tests.
+ */
+export function priceValidUntil(priceUpdated: string | null, now = new Date()): string {
+  const today = new Date(now.toISOString().slice(0, 10));
+  const updated = priceUpdated ? new Date(priceUpdated.slice(0, 10)) : null;
+  const from = updated && !Number.isNaN(updated.getTime()) && updated > today ? updated : today;
+  return new Date(from.getTime() + PRICE_VALID_DAYS * DAY).toISOString().slice(0, 10);
+}
+
+/**
+ * schema.org Drug (never Product, though Google files Drug under its Product reports). Name is the
+ * page's display name (Arabic), alternateName the English trade name. `image` only for a verified
+ * photo, `gtin13` only for a valid barcode. One Offer only when a price exists: price, EGP,
+ * availability from the listing status, priceValidUntil, a priceSpecification stating the listed
+ * price is the final consumer price (medicines are VAT-exempt in Egypt: nothing is added at sale).
+ * Deliberately absent, because this is a price directory and not a store: seller, aggregateRating,
+ * review, shippingDetails, hasMerchantReturnPolicy.
+ */
+export function drugJsonLd(d: DrugJsonLdInput, now = new Date()): Json {
   const price = toNumber(d.price);
   const url = absoluteUrl(routes.drug(d.slug));
+  const availability = offerAvailability(d.listingStatus);
   return {
     '@context': 'https://schema.org',
     '@type': 'Drug',
     '@id': `${url}#drug`,
-    name: d.nameEn,
-    ...(d.nameAr ? { alternateName: d.nameAr } : {}),
+    name: d.nameAr ?? d.nameEn,
+    ...(d.nameAr ? { alternateName: d.nameEn } : {}),
     url,
+    ...(d.description ? { description: d.description } : {}),
+    ...(d.imageUrl ? { image: d.imageUrl } : {}),
+    ...(isValidGtin13(d.barcode) ? { gtin13: d.barcode } : {}),
     ...(d.ingredients.length ? { activeIngredient: d.ingredients.join(', ') } : {}),
     ...(d.scientificName ? { nonProprietaryName: d.scientificName } : {}),
     ...(d.dosageForm ? { dosageForm: d.dosageForm } : {}),
@@ -109,11 +156,17 @@ export function drugJsonLd(d: DrugJsonLdInput): Json {
       ? {
           offers: {
             '@type': 'Offer',
+            url,
             price: price.toFixed(2),
             priceCurrency: 'EGP',
-            url,
-            ...(d.priceUpdated ? { validFrom: d.priceUpdated } : {}),
-            ...(d.listingStatus && AVAILABILITY[d.listingStatus] ? { availability: AVAILABILITY[d.listingStatus] } : {}),
+            ...(availability ? { availability } : {}),
+            priceValidUntil: priceValidUntil(d.priceUpdated, now),
+            priceSpecification: {
+              '@type': 'UnitPriceSpecification',
+              price: price.toFixed(2),
+              priceCurrency: 'EGP',
+              valueAddedTaxIncluded: true,
+            },
           },
         }
       : {}),

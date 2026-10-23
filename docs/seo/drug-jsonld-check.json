@@ -1,0 +1,305 @@
+{
+  "checkedAt": "2026-10-23T13:45:02.823Z",
+  "base": "http://localhost:3100",
+  "results": [
+    {
+      "slug": "agera-acne-facial-cleanser-150ml",
+      "types": [
+        "BreadcrumbList",
+        "Drug"
+      ],
+      "drugFields": [
+        "@context",
+        "@type",
+        "@id",
+        "name",
+        "alternateName",
+        "url",
+        "description",
+        "image",
+        "activeIngredient",
+        "dosageForm",
+        "administrationRoute",
+        "manufacturer",
+        "offers"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "url": "https://dwaprice.com/dawa/agera-acne-facial-cleanser-150ml",
+        "price": "259.00",
+        "priceCurrency": "EGP",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-11-22",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "259.00",
+          "priceCurrency": "EGP",
+          "valueAddedTaxIncluded": true
+        }
+      },
+      "image": "https://bbipharma.com/wp-content/uploads/2024/03/51-1.webp",
+      "gtin13": null,
+      "validator": {
+        "errors": 0,
+        "warnings": 0,
+        "types": [
+          "Drug",
+          "Organization",
+          "Offer",
+          "UnitPriceSpecification",
+          "BreadcrumbList",
+          "ListItem",
+          "Thing"
+        ],
+        "problems": []
+      }
+    },
+    {
+      "slug": "carnitine-30-oral-drops-60ml",
+      "types": [
+        "BreadcrumbList",
+        "Drug"
+      ],
+      "drugFields": [
+        "@context",
+        "@type",
+        "@id",
+        "name",
+        "alternateName",
+        "url",
+        "description",
+        "activeIngredient",
+        "nonProprietaryName",
+        "dosageForm",
+        "administrationRoute",
+        "manufacturer",
+        "prescriptionStatus",
+        "offers"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "url": "https://dwaprice.com/dawa/carnitine-30-oral-drops-60ml",
+        "price": "45.90",
+        "priceCurrency": "EGP",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-11-22",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "45.90",
+          "priceCurrency": "EGP",
+          "valueAddedTaxIncluded": true
+        }
+      },
+      "image": null,
+      "gtin13": null,
+      "validator": {
+        "errors": 0,
+        "warnings": 0,
+        "types": [
+          "Drug",
+          "Organization",
+          "Offer",
+          "UnitPriceSpecification",
+          "BreadcrumbList",
+          "ListItem",
+          "Thing"
+        ],
+        "problems": []
+      }
+    },
+    {
+      "slug": "aerotropa-nebulizer-soln-10-amp-2-5ml",
+      "types": [
+        "BreadcrumbList",
+        "Drug"
+      ],
+      "drugFields": [
+        "@context",
+        "@type",
+        "@id",
+        "name",
+        "alternateName",
+        "url",
+        "description",
+        "gtin13",
+        "activeIngredient",
+        "nonProprietaryName",
+        "dosageForm",
+        "administrationRoute",
+        "manufacturer",
+        "prescriptionStatus",
+        "offers"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "url": "https://dwaprice.com/dawa/aerotropa-nebulizer-soln-10-amp-2-5ml",
+        "price": "65.00",
+        "priceCurrency": "EGP",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-11-22",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "65.00",
+          "priceCurrency": "EGP",
+          "valueAddedTaxIncluded": true
+        }
+      },
+      "image": null,
+      "gtin13": "6221076070139",
+      "validator": {
+        "errors": 0,
+        "warnings": 0,
+        "types": [
+          "Drug",
+          "Organization",
+          "Offer",
+          "UnitPriceSpecification",
+          "BreadcrumbList",
+          "ListItem",
+          "Thing"
+        ],
+        "problems": []
+      }
+    },
+    {
+      "slug": "alumag-20-tab",
+      "types": [
+        "BreadcrumbList",
+        "Drug"
+      ],
+      "drugFields": [
+        "@context",
+        "@type",
+        "@id",
+        "name",
+        "alternateName",
+        "url",
+        "description",
+        "activeIngredient",
+        "nonProprietaryName",
+        "dosageForm",
+        "administrationRoute",
+        "manufacturer"
+      ],
+      "offers": null,
+      "image": null,
+      "gtin13": null,
+      "validator": {
+        "errors": 0,
+        "warnings": 0,
+        "types": [
+          "Drug",
+          "Organization",
+          "BreadcrumbList",
+          "ListItem",
+          "Thing"
+        ],
+        "problems": []
+      }
+    },
+    {
+      "slug": "alprax-1mg-10-s-r-caps",
+      "types": [
+        "BreadcrumbList",
+        "Drug"
+      ],
+      "drugFields": [
+        "@context",
+        "@type",
+        "@id",
+        "name",
+        "url",
+        "description",
+        "activeIngredient",
+        "nonProprietaryName",
+        "dosageForm",
+        "administrationRoute",
+        "manufacturer",
+        "offers"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "url": "https://dwaprice.com/dawa/alprax-1mg-10-s-r-caps",
+        "price": "11.25",
+        "priceCurrency": "EGP",
+        "availability": "https://schema.org/OutOfStock",
+        "priceValidUntil": "2026-11-22",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "11.25",
+          "priceCurrency": "EGP",
+          "valueAddedTaxIncluded": true
+        }
+      },
+      "image": null,
+      "gtin13": null,
+      "validator": {
+        "errors": 0,
+        "warnings": 0,
+        "types": [
+          "Drug",
+          "Organization",
+          "Offer",
+          "UnitPriceSpecification",
+          "BreadcrumbList",
+          "ListItem",
+          "Thing"
+        ],
+        "problems": []
+      }
+    },
+    {
+      "slug": "brufen-600mg-30-tab",
+      "types": [
+        "BreadcrumbList",
+        "Drug"
+      ],
+      "drugFields": [
+        "@context",
+        "@type",
+        "@id",
+        "name",
+        "alternateName",
+        "url",
+        "description",
+        "gtin13",
+        "activeIngredient",
+        "nonProprietaryName",
+        "dosageForm",
+        "administrationRoute",
+        "manufacturer",
+        "offers"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "url": "https://dwaprice.com/dawa/brufen-600mg-30-tab",
+        "price": "99.00",
+        "priceCurrency": "EGP",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-11-22",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "99.00",
+          "priceCurrency": "EGP",
+          "valueAddedTaxIncluded": true
+        }
+      },
+      "image": null,
+      "gtin13": "8002660037688",
+      "validator": {
+        "errors": 0,
+        "warnings": 0,
+        "types": [
+          "Drug",
+          "Organization",
+          "Offer",
+          "UnitPriceSpecification",
+          "BreadcrumbList",
+          "ListItem",
+          "Thing"
+        ],
+        "problems": []
+      }
+    }
+  ]
+}

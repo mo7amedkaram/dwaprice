@@ -9,6 +9,7 @@ import {
   alsoSearchedAs,
   cleanCompanyName,
   displayName,
+  drugFactsDescription,
   drugRobots,
   groupAlternatives,
   groupSubstitutes,
@@ -74,6 +75,18 @@ export function drugModel(data: DrugPageData, subPage: DrugSubPage) {
     price: page.current_price,
     priceUpdated: page.price_updated_date,
     listingStatus: page.listing_status,
+    // web.drug_pages.image_url is null unless the image was verified — so this is the verified photo or nothing.
+    imageUrl: page.image_url,
+    barcode: page.barcode,
+    description: drugFactsDescription({
+      ...names,
+      price: page.current_price,
+      updated: page.price_updated_date,
+      ingredients,
+      company,
+      formAr: page.dosage_form_ar,
+      prescriptionStatus: page.prescription_status,
+    }),
   };
 
   return {
